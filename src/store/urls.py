@@ -6,7 +6,12 @@ urlpatterns = [
     path('about/', views.about_view, name='about'),
     path('contact/', views.contact_view, name='contact'),
     path('products/', views.product_view, name='products'),
+    path('contact_us/', views.contact, name='contact_us'),
 
+    path('product-details/', views.product_details, name='product-details'),
+    path('profile-page/', views.profile_view, name='profile-page'),
+    path('edit-profile-page/', views.edit_profile_view, name='edit-profile-page'),
+    path('cart-view/', views.cart_view, name='cart-view'),
 
     #Authentication Links
     path('login/', views.login_user, name='login-page'),

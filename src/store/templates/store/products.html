@@ -1,9 +1,69 @@
 {% extends 'store/index.html' %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-{% block head %}
-    {% include "store/header.html" %}
-{% endblock %}
 
 {% block content %}
-    <h1>Products Page</h1>
+<!-- Breadcrumb Navigation -->
+<nav aria-label="breadcrumb" class="bg-light p-3 mb-4">
+    <div class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'store_home' %}"><i class="fas fa-home"></i> Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Products</li>
+        </ol>
+    </div>
+</nav>
+
+<!-- Products Section -->
+<section class="products-section py-5">
+    <div class="container">
+        <!-- Section Title -->
+        <div class="text-center mb-5">
+            <h1 class="fw-bold">Our Exclusive Collection</h1>
+            <p class="text-muted">Explore our premium range of [Product Category], crafted to meet your needs.</p>
+        </div>
+
+        <!-- Product Listings -->
+        <div class="row">
+            <!-- Sample Product Item -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="#" class="card-img-top" alt="Product Image">
+                    <div class="card-body">
+                        <h5 class="card-title">Product Name 1</h5>
+                        <p class="card-text text-muted">$99.99</p>
+                        <a href="{% url 'product-details' %}" class="btn btn-outline-primary"><i class="fas fa-info-circle"></i> View Details</a>
+                        <button class="btn btn-primary"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Repeat Product Items as Needed -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="#" class="card-img-top" alt="Product Image">
+                    <div class="card-body">
+                        <h5 class="card-title">Product Name 2</h5>
+                        <p class="card-text text-muted">$89.99</p>
+                        <a href="{% url 'product-details' %}" class="btn btn-outline-primary"><i class="fas fa-info-circle"></i> View Details</a>
+                        <button class="btn btn-primary"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="#" class="card-img-top" alt="Product Image">
+                    <div class="card-body">
+                        <h5 class="card-title">Product Name 3</h5>
+                        <p class="card-text text-muted">$79.99</p>
+                        <a href="{% url 'product-details' %}" class="btn btn-outline-primary"><i class="fas fa-info-circle"></i> View Details</a>
+                        <button class="btn btn-primary"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add more product items as necessary -->
+        </div>
+    </div>
+</section>
 {% endblock %}

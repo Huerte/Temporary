@@ -152,3 +152,52 @@ def about_view(request):
 @login_required(login_url='/login')
 def contact_view(request):
     return render(request, 'store/contact.html')
+
+@login_required(login_url='/login')
+def contact(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+
+        email_subject = f"New Contact Form Submission: {subject}"
+        email_body = (
+            f"Dear Site Owner,\n\n"
+            f"You have received a new message from your contact form.\n\n"
+            f"Sender's Name: {name}\n"
+            f"Sender's Email: {email}\n"
+            f"Subject: {subject}\n\n"
+            f"Message:\n{message}\n\n"
+            f"Best regards,\n"
+            f"Your Website Contact Form"
+        )
+
+        send_mail(
+            email_subject,
+            email_body,
+            email,
+            [settings.EMAIL_HOST_USER],
+            fail_silently=False,
+        )
+
+        messages.success(request, "Thank you for contacting us. We will get back to you shortly!")
+        return redirect('contact')
+
+    return render(request, 'store/contact.html')
+
+@login_required(login_url='/login')
+def product_details(request):
+    return render(request, 'store/product-detail.html')
+
+@login_required(login_url='/login')
+def cart_view(request):
+    return render(request, 'store/cart.html')
+
+@login_required(login_url='/login')
+def profile_view(request):
+    return render(request, 'store/profile-page.html')
+
+@login_required(login_url='/login')
+def edit_profile_view(request):
+    return render(request, 'store/edit-profile-page.html')

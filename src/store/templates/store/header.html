@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">MySite</a>
@@ -25,10 +27,26 @@
                     <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                 </li>
             </ul>
-            <form class="d-flex mt-2" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <form class="d-flex mt-2  me-3" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search products..." aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
+            
+            <!-- User and Cart Icons -->
+            <div class="d-flex align-items-center gap-3 mt-3">
+                <a href="{% url 'profile-page' %}" class="text-black text-decoration-none" title="Your Profile">
+                    <i class="fas fa-user fa-lg"></i>
+                </a>
+
+                <a href="{% url 'cart-view' %}" class="text-black text-decoration-none position-relative" title="Your Cart">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                    <!-- Optional: Cart Count Badge -->
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger me-3">
+                        3
+                    </span>
+                </a>
+            </div>
+
         </div>
     </div>
 </nav>

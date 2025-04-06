@@ -1,9 +1,65 @@
 {% extends 'store/index.html' %}
 
-{% block head %}
-    {% include "store/header.html" %}
-{% endblock %}
-
 {% block content %}
-    <h1>Contacts Page</h1>
+<section class="py-5 bg-light">
+    <div class="container">
+        <!-- Page Title and Description -->
+        <h1 class="text-center mb-4">Contact Us</h1>
+        <p class="text-center mb-5">Have a question or feedback? Reach out to us through the form below or via our contact information.</p>
+
+        <!-- Display Messages -->
+        {% if messages %}
+            <div class="container mt-4">
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="row">
+            <!-- Contact Form Section -->
+            <div class="col-md-7 mb-4">
+                <form method="post" action="{% url 'contact_us' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Your Name</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Your Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="email@example.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="subject" name="subject" placeholder="Question or feedback" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea class="form-control" id="message" name="message" rows="5" placeholder="Write your message here..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary px-4">Send Message</button>
+                </form>
+            </div>
+
+            <!-- Contact Information Section -->
+            <div class="col-md-5">
+                <div class="bg-white p-4 shadow rounded">
+                    <h5>Project Contact Information</h5>
+                    <p><i class="fas fa-envelope me-2 text-primary"></i>softwaredesign@school.edu</p>
+                    <p><i class="fas fa-phone me-2 text-primary"></i>+63 912 345 6789</p>
+                    <p><i class="fas fa-map-marker-alt me-2 text-primary"></i>School of Information Technology, University Name, City, Philippines</p>
+
+                    <hr>
+                    <h6>Follow Us</h6>
+                    <a href="#" class="text-decoration-none me-3"><i class="fab fa-facebook fa-lg text-primary"></i></a>
+                    <a href="#" class="text-decoration-none me-3"><i class="fab fa-twitter fa-lg text-primary"></i></a>
+                    <a href="#" class="text-decoration-none"><i class="fab fa-github fa-lg text-primary"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

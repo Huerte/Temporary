@@ -1,5 +1,127 @@
 {% extends 'store/index.html' %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-{% block head %}
-    {% include "store/header.html" %}
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section py-5 text-center bg-light">
+    <div class="container">
+        <h1 class="display-4">Welcome to Our Store</h1>
+        <p class="lead">Discover a wide range of products tailored to your needs.</p>
+        <a href="{% url 'products' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-shopping-bag me-2"></i>Shop Now
+        </a>
+    </div>
+</section>
+
+<!-- Featured Products Section -->
+<section class="featured-products py-5">
+    <div class="container">
+        <h2 class="text-center mb-4"><i class="fas fa-star me-2"></i>Featured Products</h2>
+        <div class="row">
+            <!-- Product Item -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Product Image">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Product Name</h5>
+                        <p class="card-text">$99.99</p>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-info-circle me-2"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Product Image">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Product Name</h5>
+                        <p class="card-text">$99.99</p>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-info-circle me-2"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Product Image">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Product Name</h5>
+                        <p class="card-text">$99.99</p>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-info-circle me-2"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- Repeat Product Items as Needed -->
+        </div>
+    </div>
+</section>
+
+<!-- Promotional Banner Section -->
+<section class="promo-banner py-5 text-center text-white" style="background-color: #343a40;">
+    <div class="container">
+        <h2>Special Offer: 20% Off on All Items!</h2>
+        <p>Use code <strong>SALE20</strong> at checkout. Offer valid until April 30, 2025.</p>
+        <a href="{% url 'products' %}" class="btn btn-light btn-lg">
+            <i class="fas fa-tags me-2"></i>Shop Now
+        </a>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials py-5">
+    <div class="container">
+        <h2 class="text-center mb-4"><i class="fas fa-comments me-2"></i>What Our Customers Say</h2>
+        <div class="row">
+            <!-- Testimonial Item -->
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    <i class="fas fa-user-circle fa-3x mb-3"></i>
+                    <p class="fst-italic">"Great products and excellent customer service!"</p>
+                    <h6>- Jerald</h6>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    <i class="fas fa-user-circle fa-3x mb-3"></i>
+                    <p class="fst-italic">"Excellent product qualities!"</p>
+                    <h6>- Rustom</h6>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    <i class="fas fa-user-circle fa-3x mb-3"></i>
+                    <p class="fst-italic">"Have a great quality for a low price? Unbelievable!"</p>
+                    <h6>- Celes</h6>
+                </div>
+            </div>
+            <!-- Repeat Testimonial Items as Needed -->
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Subscription Section -->
+<section class="newsletter py-5 bg-light">
+    <div class="container text-center">
+        <h2><i class="fas fa-envelope-open-text me-2"></i>Subscribe to Our Page</h2>
+        <p>Get the latest updates on new products and upcoming sales.</p>
+        <form class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="email" class="form-control me-1" placeholder="Enter your email" aria-label="Subscriber's email" required>
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-paper-plane me-2"></i>Subscribe
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
 {% endblock %}

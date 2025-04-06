@@ -1,0 +1,117 @@
+{% extends 'store/index.html' %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+{% block content %}
+<!-- Breadcrumb Navigation -->
+<nav aria-label="breadcrumb" class="bg-light p-3 mb-4">
+    <div class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'store_home' %}"><i class="fas fa-home"></i> Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">User Profile</li>
+        </ol>
+    </div>
+</nav>
+
+<!-- User Profile Section -->
+<section class="user-profile-section py-5">
+    <div class="container">
+        <!-- Section Title -->
+        <div class="text-center mb-5">
+            <h1 class="fw-bold"><i class="fas fa-user-circle"></i> Your Profile</h1>
+            <p class="text-muted">Manage your personal information and shipping details.</p>
+        </div>
+
+        <div class="row">
+            <!-- Profile Overview -->
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <!-- User Avatar -->
+                        <img src="https://via.placeholder.com/150" alt="User Avatar" class="rounded-circle mb-3">
+                        <h5 class="card-title">{{ user.full_name }}</h5>
+                        <p class="text-muted">{{ user.email }}</p>
+                        <p class="text-muted"><i class="fas fa-phone"></i> {{ user.phone }}</p>
+                        <!-- Edit Profile Button -->
+                        <a href="{% url 'edit-profile-page' %}" class="btn btn-outline-primary"><i class="fas fa-edit"></i> Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping Information -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-shipping-fast"></i> Shipping Information</h5>
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="full_name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="full_name" name="full_name" value="{{ user.shipping.full_name }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <textarea class="form-control" id="address" name="address" rows="3" required>{{ user.shipping.address }}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="city" name="city" value="{{ user.shipping.city }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="state" class="form-label">State/Province</label>
+                                <input type="text" class="form-control" id="state" name="state" value="{{ user.shipping.state }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="zip_code" class="form-label">ZIP Code</label>
+                                <input type="text" class="form-control" id="zip_code" name="zip_code" value="{{ user.shipping.zip_code }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="country" class="form-label">Country</label>
+                                <input type="text" class="form-control" id="country" name="country" value="{{ user.shipping.country }}" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order History -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h5><i class="fas fa-history"></i> Order History</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Order ID</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Total</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in user.orders %}
+                            <tr>
+                                <td>{{ order.id }}</td>
+                                <td>{{ order.date }}</td>
+                                <td>{{ order.status }}</td>
+                                <td>${{ order.total }}</td>
+                                <td>
+                                    <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i> View</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No orders found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

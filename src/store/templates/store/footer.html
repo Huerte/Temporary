@@ -1,0 +1,49 @@
+<footer class="bg-dark text-light py-4 mt-5">
+    <div class="container">
+        <div class="row">
+            <!-- Project Branding -->
+            <div class="col-md-3 mb-4">
+                <h5>Software Design Project</h5>
+                <p class="small">A student-developed eCommerce web app for our Software Design subject, showcasing real-world design and development principles.</p>
+            </div>
+
+            <!-- Project Links (conditionally rendered) -->
+            {% if user.is_authenticated %}
+                <div class="col-md-2 mb-4">
+                    <h5>Explore</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'store_home' %}" class="text-light text-decoration-none">Home</a></li>
+                        <li><a href="{% url 'products' %}" class="text-light text-decoration-none">Products</a></li>
+                        <li><a href="{% url 'about' %}" class="text-light text-decoration-none">About the Project</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-light text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+            {% endif %}
+
+            <!-- Contact Details -->
+            <div class="{% if user.is_authenticated %}col-md-3{% else %}col-md-4{% endif %} mb-4">
+                <h5>Contact</h5>
+                <ul class="list-unstyled small">
+                    <li><i class="fas fa-envelope me-2"></i>softwaredesign@school.edu</li>
+                    <li><i class="fas fa-phone me-2"></i>+63 912 345 6789</li>
+                    <li><i class="fas fa-map-marker-alt me-2"></i>University Name, City, PH</li>
+                </ul>
+            </div>
+
+            <!-- Socials -->
+            <div class="{% if user.is_authenticated %}col-md-3{% else %}col-md-4{% endif %} mb-4">
+                <h5>Follow Us</h5>
+                <div>
+                    <a href="#" class="text-light me-3" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-light me-3" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-light" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <hr class="border-secondary">
+        <div class="text-center small">
+            &copy; {{ year }} Software Design Project | Created by [Your Group Name]
+        </div>
+    </div>
+</footer>

@@ -1,0 +1,126 @@
+{% extends 'store/index.html' %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+{% block content %}
+<!-- Breadcrumb Navigation -->
+<nav aria-label="breadcrumb" class="bg-light p-3 mb-4">
+    <div class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'store_home' %}"><i class="fas fa-home"></i> Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'profile-page' %}">User Profile</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Profile</li>
+        </ol>
+    </div>
+</nav>
+
+<!-- Edit Profile Section -->
+<section class="edit-profile-section py-5">
+    <div class="container">
+        <!-- Section Title -->
+        <div class="text-center mb-5">
+            <h1 class="fw-bold"><i class="fas fa-user-edit"></i> Edit Your Profile</h1>
+            <p class="text-muted">Update your personal information and shipping details.</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Profile Picture Update -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-image"></i> Update Profile Picture
+                    </div>
+                    <div class="card-body text-center">
+                        <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="rounded-circle mb-3" width="150">
+                        <div class="mb-3">
+                            <label for="profilePicture" class="form-label">Choose a new profile picture</label>
+                            <input class="form-control" type="file" id="profilePicture" name="profile_picture">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Profile Form -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-user-cog"></i> Personal Information
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="fullName" class="form-label"><i class="fas fa-user"></i> Full Name</label>
+                                <input type="text" class="form-control" id="fullName" name="full_name" value="{{ user.full_name }}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label"><i class="fas fa-envelope"></i> Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phone" class="form-label"><i class="fas fa-phone"></i> Phone Number</label>
+                                <input type="text" class="form-control" id="phone" name="phone" value="{{ user.phone }}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="address" class="form-label"><i class="fas fa-map-marker-alt"></i> Shipping Address</label>
+                                <textarea class="form-control" id="address" name="address" rows="3" required>{{ user.address }}</textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="city" class="form-label"><i class="fas fa-city"></i> City</label>
+                                <input type="text" class="form-control" id="city" name="city" value="{{ user.city }}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="postalCode" class="form-label"><i class="fas fa-mail-bulk"></i> Postal Code</label>
+                                <input type="text" class="form-control" id="postalCode" name="postal_code" value="{{ user.postal_code }}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="country" class="form-label"><i class="fas fa-flag"></i> Country</label>
+                                <input type="text" class="form-control" id="country" name="country" value="{{ user.country }}" required>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save Changes</button>
+                                <a href="#" class="btn btn-secondary"><i class="fas fa-times"></i> Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Change Password Section -->
+                <div class="card">
+                    <div class="card-header bg-warning text-white">
+                        <i class="fas fa-key"></i> Change Password
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="currentPassword" class="form-label"><i class="fas fa-lock"></i> Current Password</label>
+                                <input type="password" class="form-control" id="currentPassword" name="current_password" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="newPassword" class="form-label"><i class="fas fa-lock-open"></i> New Password</label>
+                                <input type="password" class="form-control" id="newPassword" name="new_password" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="confirmNewPassword" class="form-label"><i class="fas fa-lock"></i> Confirm New Password</label>
+                                <input type="password" class="form-control" id="confirmNewPassword" name="confirm_new_password" required>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-warning text-white"><i class="fas fa-sync-alt"></i> Update Password</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
