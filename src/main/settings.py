@@ -1,5 +1,6 @@
 from django.contrib.messages import constants as messages
 from pathlib import Path
+from dotenv import load_dotenv
 import os
 
 
@@ -18,9 +19,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -126,8 +130,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-SECRET_KEY = os.getenv('SECRET_KEY')
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 465
