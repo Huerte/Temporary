@@ -2,6 +2,9 @@ from pathlib import Path
 import os
 from django.contrib.messages import constants as messages
 
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
 MESSAGE_TAGS = {
     messages.DEBUG: 'alert-info',
     messages.INFO: 'alert-info',
@@ -10,6 +13,7 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-danger',
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -116,7 +120,21 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'huertejerald@gmail.com'
+EMAIL_HOST_PASSWORD = 'jsnm ddgr htcv ybao'
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
