@@ -3,6 +3,12 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='store_home'),
+    path('about/', views.about_view, name='about'),
+    path('contact/', views.contact_view, name='contact'),
+    path('products/', views.product_view, name='products'),
+
+
+    #Authentication Links
     path('login/', views.login_user, name='login-page'),
     path('register/', views.register_user, name='register-page'),
     path('logout/', views.logout_view, name='logout'),

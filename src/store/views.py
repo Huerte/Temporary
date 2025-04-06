@@ -21,6 +21,7 @@ from . import models
 def home(request):
     return render(request, 'store/home.html')
 
+##################################################################################
 def login_user(request):
     
     if request.method == 'POST':
@@ -40,7 +41,7 @@ def login_user(request):
         else:
             messages.error(request, 'Username or Password does not exists')
             
-    return render(request, 'store/login_page.html')
+    return render(request, 'store/authentication-page/login_page.html')
 
 def register_user(request):
     if request.method == 'POST':
@@ -51,7 +52,7 @@ def register_user(request):
     else:
         form = CustomUserCreationForm()
 
-    return render(request, 'store/register_page.html', {'form': form})
+    return render(request, 'store/authentication-page/register_page.html', {'form': form})
 
 def logout_view(request):
     logout(request)
@@ -89,16 +90,15 @@ def forgot_password(request):
             messages.error(request, f"No user with email '{email}' found")
             return redirect('forgot-password')
 
-    return render(request, 'store/reset-password/forgot-password.html')
+    return render(request, 'store/authentication-page/reset-password/forgot-password.html')
 
 def password_reset_sent(request, reset_id):
 
     if models.PasswordReset.objects.filter(reset_id=reset_id).exists():
-        return render(request, 'store/reset-password/password-reset-sent.html')
+        return render(request, 'store/authentication-page/reset-password/password-reset-sent.html')
     else:
         messages.error(request, f"Invalid reset id")
         return redirect('forgot-password')
-
 
 def reset_password(request, reset_id):
     try:
@@ -138,4 +138,17 @@ def reset_password(request, reset_id):
         messages.error(request, f"Invalid reset id")
         return redirect('forgot-password')
     
-    return render(request, 'store/reset-password/reset-password.html', {'reset_id': str(reset_entry.reset_id)})
+    return render(request, 'store/authentication-page/reset-password/reset-password.html', {'reset_id': str(reset_entry.reset_id)})
+##################################################################################
+
+@login_required(login_url='/login')
+def product_view(request):
+    return render(request, 'store/products.html')
+
+@login_required(login_url='/login')
+def about_view(request):
+    return render(request, 'store/about.html')
+
+@login_required(login_url='/login')
+def contact_view(request):
+    return render(request, 'store/contact.html')
