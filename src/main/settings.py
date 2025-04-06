@@ -1,6 +1,6 @@
+from django.contrib.messages import constants as messages
 from pathlib import Path
 import os
-from django.contrib.messages import constants as messages
 
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
@@ -21,9 +21,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w@x$$4na#^)c1#6pyon=w$u_e03vge9xme+#@8flqrp*9x2=it'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -130,11 +127,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+SECRET_KEY = os.getenv('SECRET_KEY')
+
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
-EMAIL_HOST_USER = 'huertejerald@gmail.com'
-EMAIL_HOST_PASSWORD = 'jsnm ddgr htcv ybao'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
