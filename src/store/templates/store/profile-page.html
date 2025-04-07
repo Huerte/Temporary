@@ -1,5 +1,5 @@
 {% extends 'store/index.html' %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% load static %}
 
 {% block content %}
 <!-- Breadcrumb Navigation -->
@@ -18,63 +18,78 @@
         <!-- Section Title -->
         <div class="text-center mb-5">
             <h1 class="fw-bold"><i class="fas fa-user-circle"></i> Your Profile</h1>
-            <p class="text-muted">Manage your personal information and shipping details.</p>
+            <p class="text-muted">Review your personal information and shipping details.</p>
         </div>
 
         <div class="row">
             <!-- Profile Overview -->
-            <div class="col-lg-4 mb-4">
-                <div class="card shadow-sm">
-                    <div class="card-body text-center">
+            <div class="col-lg-4 mb-4 d-flex">
+                <div class="card shadow-sm w-100 border rounded-3">
+                    <div class="card-body text-center py-4">
                         <!-- User Avatar -->
-                        <img src="https://via.placeholder.com/150" alt="User Avatar" class="rounded-circle mb-3">
-                        <h5 class="card-title">{{ user.full_name }}</h5>
-                        <p class="text-muted">{{ user.email }}</p>
-                        <p class="text-muted"><i class="fas fa-phone"></i> {{ user.phone }}</p>
+                        {% if user_address.user_profile %}
+                            <img src="{{ user_address.user_profile.url }}" alt="User Avatar"
+                                 class="rounded-circle shadow-sm mb-3"
+                                 style="width: 140px; height: 140px; object-fit: cover;">
+                        {% else %}
+                            <i class="fas fa-user-circle fa-9x text-secondary mb-3"></i>
+                        {% endif %}
+        
+                        <!-- Username -->
+                        <h5 class="fw-bold text-dark mb-1">{{ user.username }}</h5>
+        
+                        <!-- Email -->
+                        <p class="text-muted mb-2 small"><i class="fas fa-envelope me-2"></i>{{ user.email }}</p>
+        
+                        <!-- Full Name -->
+                        {% if user_address.full_name %}
+                            <p class="text-muted mb-3 small"><i class="fas fa-id-card me-2"></i>{{ user_address.full_name }}</p>
+                        {% endif %}
+        
                         <!-- Edit Profile Button -->
-                        <a href="{% url 'edit-profile-page' %}" class="btn btn-outline-primary"><i class="fas fa-edit"></i> Edit Profile</a>
+                        <a href="{% url 'edit-profile-page' %}" class="btn btn-outline-primary btn-sm w-75 mt-2">
+                            <i class="fas fa-edit me-1"></i> Edit Profile
+                        </a>
                     </div>
                 </div>
             </div>
-
+        
             <!-- Shipping Information -->
-            <div class="col-lg-8">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fas fa-shipping-fast"></i> Shipping Information</h5>
-                        <form method="post" action="">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="full_name" class="form-label">Full Name</label>
-                                <input type="text" class="form-control" id="full_name" name="full_name" value="{{ user.shipping.full_name }}" required>
+            <div class="col-lg-8 mb-4 d-flex">
+                <div class="card shadow-sm w-100 border rounded-3">
+                    <div class="card-body py-4">
+                        <h5 class="fw-bold text-dark mb-4">
+                            <i class="fas fa-shipping-fast me-2 text-primary"></i> Shipping Information
+                        </h5>
+                        <div class="row">
+                            <div class="col-sm-6 mb-2">
+                                <p class="mb-1 fw-medium text-muted">Full Name</p>
+                                <p class="fw-semibold">{{ user_address.full_name }}</p>
                             </div>
-                            <div class="mb-3">
-                                <label for="address" class="form-label">Address</label>
-                                <textarea class="form-control" id="address" name="address" rows="3" required>{{ user.shipping.address }}</textarea>
+                            <div class="col-sm-6 mb-2">
+                                <p class="mb-1 fw-medium text-muted">Address</p>
+                                <p class="fw-semibold">{{ user_address.address }}</p>
                             </div>
-                            <div class="mb-3">
-                                <label for="city" class="form-label">City</label>
-                                <input type="text" class="form-control" id="city" name="city" value="{{ user.shipping.city }}" required>
+                            <div class="col-sm-6 mb-2">
+                                <p class="mb-1 fw-medium text-muted">Postal Code</p>
+                                <p class="fw-semibold">{{ user_address.postal_code }}</p>
                             </div>
-                            <div class="mb-3">
-                                <label for="state" class="form-label">State/Province</label>
-                                <input type="text" class="form-control" id="state" name="state" value="{{ user.shipping.state }}" required>
+                            <div class="col-sm-6 mb-2">
+                                <p class="mb-1 fw-medium text-muted">Country</p>
+                                <p class="fw-semibold">{{ user_address.country }}</p>
                             </div>
-                            <div class="mb-3">
-                                <label for="zip_code" class="form-label">ZIP Code</label>
-                                <input type="text" class="form-control" id="zip_code" name="zip_code" value="{{ user.shipping.zip_code }}" required>
+                            <div class="col-sm-6 mb-2">
+                                <p class="mb-1 fw-medium text-muted">Phone Number</p>
+                                <p class="fw-semibold">{{ user_address.phone }}</p>
                             </div>
-                            <div class="mb-3">
-                                <label for="country" class="form-label">Country</label>
-                                <input type="text" class="form-control" id="country" name="country" value="{{ user.shipping.country }}" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
+        
+        
+        
         <!-- Order History -->
         <div class="row mt-5">
             <div class="col-12">
@@ -91,7 +106,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for order in user.orders %}
+                            {% for order in orders %}
                             <tr>
                                 <td>{{ order.id }}</td>
                                 <td>{{ order.date }}</td>

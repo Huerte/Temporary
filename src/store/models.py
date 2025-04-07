@@ -34,18 +34,6 @@ class Order(models.Model):
     is_paid = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
 
-class ShippingAddress(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    full_name = models.CharField(max_length=100, blank=True)
-    address = models.CharField(max_length=255)
-    postal_code = models.CharField(max_length=20)
-    country = models.CharField(max_length=100)
-    phone = models.CharField(max_length=15)
-    is_default = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f'{self.address}, {self.city}'
-
 class PaymentMethod(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -65,3 +53,15 @@ class PasswordReset(models.Model):
 
     def __str__(self):
         return f'Password reset for {self.user.username} at {self.created_when}'
+    
+class ShippingAddress(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    full_name = models.CharField(max_length=100)
+    address = models.CharField(max_length=255)
+    postal_code = models.CharField(max_length=20)
+    country = models.CharField(max_length=100)
+    phone = models.CharField(max_length=15)
+    user_profile = models.ImageField(upload_to='images/', blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.address}, {self.country}'

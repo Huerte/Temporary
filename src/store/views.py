@@ -196,8 +196,28 @@ def cart_view(request):
 
 @login_required(login_url='/login')
 def profile_view(request):
-    return render(request, 'store/profile-page.html')
+    user_address, created = models.ShippingAddress.objects.get_or_create(user=request.user)
+
+    return render(request, 'store/profile-page.html', {'user_address': user_address})
 
 @login_required(login_url='/login')
 def edit_profile_view(request):
-    return render(request, 'store/edit-profile-page.html')
+    user_address, created = models.ShippingAddress.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        user_address.full_name = request.POST.get('full_name')
+        user_address.phone = request.POST.get('phone')
+        user_address.address = request.POST.get('address')
+        user_address.postal_code = request.POST.get('postal_code')
+        user_address.country = request.POST.get('country')
+
+        profile = request.FILES.get('profile_picture')
+        if profile:
+            user_address.user_profile = profile
+
+        user_address.save()
+        return redirect('profile-page')
+
+    context = {'user_address': user_address}
+
+    return render(request, 'store/edit-profile-page.html', context)

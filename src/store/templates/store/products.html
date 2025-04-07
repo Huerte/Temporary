@@ -1,7 +1,6 @@
 {% extends 'store/index.html' %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-
 {% block content %}
 <!-- Breadcrumb Navigation -->
 <nav aria-label="breadcrumb" class="bg-light p-3 mb-4">
@@ -16,53 +15,101 @@
 <!-- Products Section -->
 <section class="products-section py-5">
     <div class="container">
-        <!-- Section Title -->
         <div class="text-center mb-5">
             <h1 class="fw-bold">Our Exclusive Collection</h1>
-            <p class="text-muted">Explore our premium range of [Product Category], crafted to meet your needs.</p>
+            <p class="text-muted">Explore our premium range of fashion products crafted to meet your needs.</p>
         </div>
 
-        <!-- Product Listings -->
         <div class="row">
-            <!-- Sample Product Item -->
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <img src="#" class="card-img-top" alt="Product Image">
-                    <div class="card-body">
-                        <h5 class="card-title">Product Name 1</h5>
-                        <p class="card-text text-muted">$99.99</p>
-                        <a href="{% url 'product-details' %}" class="btn btn-outline-primary"><i class="fas fa-info-circle"></i> View Details</a>
-                        <button class="btn btn-primary"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-                    </div>
+            <!-- Repeat this block for each product -->
+            {% comment %} Product 1 {% endcomment %}
+            <div class="col-md-3 mb-4">
+                <div class="position-relative border rounded p-2 h-100">
+                    <a href="{% url 'product-details' %}" class="text-decoration-none text-dark d-block">
+                        <img src="https://via.placeholder.com/300x200?text=Product+1" class="img-fluid mb-3 rounded" alt="Product 1">
+                        <div class="px-1">
+                            <div class="d-flex justify-content-between">
+                                <small class="fw-semibold">Product 1</small>
+                                <span class="fw-bold text-primary">$30.99</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">Category</small>
+                            </div>
+                        </div>
+                    </a>
+                    <button class="btn btn-dark w-100 mt-3">
+                        <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                    </button>
                 </div>
             </div>
 
-            <!-- Repeat Product Items as Needed -->
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <img src="#" class="card-img-top" alt="Product Image">
-                    <div class="card-body">
-                        <h5 class="card-title">Product Name 2</h5>
-                        <p class="card-text text-muted">$89.99</p>
-                        <a href="{% url 'product-details' %}" class="btn btn-outline-primary"><i class="fas fa-info-circle"></i> View Details</a>
-                        <button class="btn btn-primary"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-                    </div>
+            <!-- Product 2 -->
+            <div class="col-md-3 mb-4">
+                <div class="position-relative border rounded p-2 h-100">
+                    <a href="{% url 'product-details' %}" class="text-decoration-none text-dark d-block">
+                        <img src="https://via.placeholder.com/300x200?text=Product+2" class="img-fluid mb-3 rounded" alt="Product 2">
+                        <div class="px-1">
+                            <div class="d-flex justify-content-between">
+                                <small class="fw-semibold">Product 2</small>
+                                <span class="fw-bold text-primary">$31.99</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">Category</small>
+                            </div>
+                        </div>
+                    </a>
+                    <button class="btn btn-dark w-100 mt-3">
+                        <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                    </button>
                 </div>
             </div>
 
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <img src="#" class="card-img-top" alt="Product Image">
-                    <div class="card-body">
-                        <h5 class="card-title">Product Name 3</h5>
-                        <p class="card-text text-muted">$79.99</p>
-                        <a href="{% url 'product-details' %}" class="btn btn-outline-primary"><i class="fas fa-info-circle"></i> View Details</a>
-                        <button class="btn btn-primary"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-                    </div>
+            <!-- Product 3 (Sale) -->
+            <div class="col-md-3 mb-4">
+                <div class="position-relative border rounded p-2 h-100">
+                    <span class="badge bg-danger position-absolute top-0 start-0 m-2">Sale</span>
+                    <a href="{% url 'product-details' %}" class="text-decoration-none text-dark d-block">
+                        <img src="https://via.placeholder.com/300x200?text=Product+3" class="img-fluid mb-3 rounded" alt="Product 3">
+                        <div class="px-1">
+                            <div class="d-flex justify-content-between">
+                                <small class="fw-semibold">Product 3</small>
+                                <span class="fw-bold text-primary">$32.99</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">Category</small>
+                                <small class="text-muted"><del>$42.99</del></small>
+                            </div>
+                        </div>
+                    </a>
+                    <button class="btn btn-dark w-100 mt-3">
+                        <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                    </button>
                 </div>
             </div>
 
-            <!-- Add more product items as necessary -->
+            <!-- Product 4 -->
+            <div class="col-md-3 mb-4">
+                <div class="position-relative border rounded p-2 h-100">
+                    <a href="{% url 'product-details' %}" class="text-decoration-none text-dark d-block">
+                        <img src="https://via.placeholder.com/300x200?text=Product+4" class="img-fluid mb-3 rounded" alt="Product 4">
+                        <div class="px-1">
+                            <div class="d-flex justify-content-between">
+                                <small class="fw-semibold">Product 4</small>
+                                <span class="fw-bold text-primary">$33.99</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">Category</small>
+                            </div>
+                        </div>
+                    </a>
+                    <button class="btn btn-dark w-100 mt-3">
+                        <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <!-- Add the remaining products (Product 5 to Product 12) in the same style -->
+            <!-- You can repeat and just update the numbers, prices, and optionally badges -->
         </div>
     </div>
 </section>
