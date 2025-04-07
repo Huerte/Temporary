@@ -1,52 +1,47 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">MySite</a>
+<nav class="navbar navbar-expand-lg bg-white border-bottom py-3">
+  <div class="container-fluid">
+    <!-- Logo -->
+    <a class="navbar-brand d-flex align-items-center fw-bold" href="#">
+      <i class="fas fa-shopping-cart me-2"></i> ShopNow
+    </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <!-- Toggle Button for Mobile -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'store_home' %}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'products' %}">Products</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'about' %}">About</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'contact' %}">Contact</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-                </li>
-            </ul>
-            <form class="d-flex mt-2  me-3" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search products..." aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
-            
-            <!-- User and Cart Icons -->
-            <div class="d-flex align-items-center gap-3 mt-3">
-                <a href="{% url 'profile-page' %}" class="text-black text-decoration-none" title="Your Profile">
-                    <i class="fas fa-user fa-lg"></i>
-                </a>
+    <!-- Navbar Links + Search + Icons -->
+    <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+      <!-- Navigation Links -->
+      <ul class="navbar-nav me-3">
+        <li class="nav-item"><a class="nav-link" href="{% url 'store_home' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'products' %}">All Products</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Categories</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+      </ul>
 
-                <a href="{% url 'cart-view' %}" class="text-black text-decoration-none position-relative" title="Your Cart">
-                    <i class="fas fa-shopping-cart fa-lg"></i>
-                    <!-- Optional: Cart Count Badge -->
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger me-3">
-                        3
-                    </span>
-                </a>
-            </div>
-
+      <!-- Search Bar -->
+      <form class="d-flex" role="search" style="width: 280px;">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0"><i class="fas fa-search"></i></span>
+          <input class="form-control border-start-0" type="search" placeholder="Search products..." aria-label="Search">
         </div>
+      </form>
+
+      <!-- Icons -->
+      <div class="d-flex align-items-center gap-4">
+        <a href="#" title="Profile" class="text-dark"><i class="fas fa-user"></i></a>
+        <a href="#" title="Cart" class="position-relative text-dark">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
+            3
+          </span>
+        </a>
+      </div>
     </div>
+  </div>
 </nav>
