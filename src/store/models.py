@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db import models
+from decimal import Decimal
 import uuid
 
 
@@ -11,8 +12,30 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2)
     image = models.ImageField(upload_to='products/', blank=True)
 
+    discount_percentage = models.PositiveIntegerField(default=0)
+    buyers_count = models.PositiveIntegerField(default=0)
+
     def __str__(self):
         return self.name
+
+    @property
+    def is_on_sale(self):
+        return self.discount_percentage > 0
+
+    @property
+    def discounted_price(self):
+        if self.is_on_sale:
+            return self.price * (Decimal(1) - Decimal(self.discount_percentage) / Decimal(100))
+        return self.price
+
+    @property
+    def buyers_count_display(self):
+        count = self.buyers_count
+        if count >= 1_000_000:
+            return f"{count / 1_000_000:.1f}M"
+        elif count >= 1_000:
+            return f"{count / 1_000:.1f}K"
+        return str(count)
 
 class CartItem(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
