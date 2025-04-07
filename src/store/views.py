@@ -17,7 +17,6 @@ from main import settings
 from . import models
 
 
-@login_required(login_url='/login')
 def home(request):
     return render(request, 'store/home.html')
 
@@ -56,7 +55,7 @@ def register_user(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('login-page')
+    return redirect('store_home')
 
 def forgot_password(request):
     if request.method == 'POST':
@@ -197,7 +196,7 @@ def cart_view(request):
 @login_required(login_url='/login')
 def profile_view(request):
     user_address, created = models.ShippingAddress.objects.get_or_create(user=request.user)
-
+    
     return render(request, 'store/profile-page.html', {'user_address': user_address})
 
 @login_required(login_url='/login')
