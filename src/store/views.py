@@ -1,4 +1,5 @@
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth import authenticate, login, logout
@@ -8,7 +9,6 @@ from django.contrib.auth.forms import SetPasswordForm
 from django.core.mail import send_mail, EmailMessage
 from django.template.loader import render_to_string
 from django.contrib.auth import get_user_model
-from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.contrib import messages
@@ -157,7 +157,7 @@ def product_view(request):
         'categories': category, 
         'selected_category': selected_category, 
         'page_obj': page_obj,
-        'show_pagination': paginator.num_pages > 1
+        'show_pagination': paginator.num_pages > 1,
     }
 
     return render(request, 'store/products.html', context)
@@ -206,11 +206,22 @@ def contact(request):
 @login_required(login_url='/login')
 def product_details(request, product_id):
     product = models.Product.objects.get(id=product_id)
-    return render(request, 'store/product-detail.html', {'product':product})
+    cart_item_exist = models.CartItem.objects.filter(user=request.user, product=product).exists()
+
+    context = {'product':product, 'cart_item_exist': cart_item_exist}
+    return render(request, 'store/product-detail.html', context)
 
 @login_required(login_url='/login')
 def cart_view(request):
-    return render(request, 'store/cart.html')
+    cart_items = models.CartItem.objects.filter(user=request.user)
+    sub_total = 0
+    for item in cart_items:
+        sub_total += item.product.price * item.quantity
+    shipping = 120 
+    to_pay = sub_total + shipping
+
+    context = {'cart_items': cart_items, 'sub_total': sub_total, 'to_pay': to_pay, 'shipping': shipping}
+    return render(request, 'store/cart.html', context)
 
 @login_required(login_url='/login')
 def profile_view(request):
@@ -239,3 +250,27 @@ def edit_profile_view(request):
     context = {'user_address': user_address}
 
     return render(request, 'store/edit-profile-page.html', context)
+
+@login_required(login_url='/login')
+def add_to_cart(request, product_id):
+    if request.method == 'POST':
+        quantity = request.POST.get('quantity', 1)
+        product = models.Product.objects.get(id=product_id)
+        cart_item, created = models.CartItem.objects.get_or_create(
+            user=request.user,
+            product=product,
+            defaults={'quantity': quantity}
+        )
+
+        if not created:
+            cart_item.quantity += 1
+            cart_item.save()
+
+    return redirect('cart-view')
+
+@login_required(login_url='/login')
+def remove_from_cart(request, product_id):
+    if request.method == 'POST':
+        item = get_object_or_404(models.CartItem, id=product_id, user=request.user)
+        item.delete()
+    return redirect('cart-view')

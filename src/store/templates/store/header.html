@@ -63,9 +63,11 @@
           <!-- Cart Icon -->
           <a href="{% url 'cart-view' %}" class="btn btn-outline-secondary position-relative rounded-pill px-3 shadow-sm" title="Cart">
             <i class="fas fa-shopping-cart"></i>
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-              3
-            </span>
+            {% if cart_item_quantity > 0 %}
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{ cart_item_quantity }}
+              </span>
+            {% endif %}
           </a>
         {% else %}
           <!-- Login & Register -->

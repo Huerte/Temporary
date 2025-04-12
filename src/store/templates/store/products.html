@@ -71,9 +71,18 @@
                     </div>
                     </a>
                     <div class="card-footer bg-white border-0 px-3 pb-3 pt-0 mt-auto">
-                    <button class="btn btn-dark w-100">
-                        <i class="fas fa-shopping-cart me-2"></i>Add to Cart
-                    </button>
+                      {% if product.id in products_in_cart %}
+                        <button class="btn btn-outline-secondary w-100" disabled>
+                          <i class="fas fa-check me-2"></i>Already in Cart
+                        </button>
+                      {% else %}
+                        <form method="post" action="{% url 'add-to-cart' product.id %}">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-dark w-100">
+                            <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                          </button>
+                        </form>
+                      {% endif %}
                     </div>
                 </div>
                 </div>
