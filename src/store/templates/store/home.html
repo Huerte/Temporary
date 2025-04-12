@@ -9,7 +9,7 @@
         <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
             <span class="visually-hidden">Loading...</span>
         </div>
-        <p class="mt-3" style="font-size: 1.25rem; color: #6c757d; font-weight: 500;">Please wait while we load the content...</p>
+        <p class="mt-3" style="font-size: 1.25rem; color: #6c757d; font-weight: 500;">Please wait...</p>
     </div>
 </div>
 
@@ -24,8 +24,16 @@
                     Shop our curated collection of premium products with fast shipping and excellent customer service.
                 </p>
                 <div class="d-flex gap-3">
-                    <a href="{% url 'products' %}" class="btn btn-dark btn-lg">Shop Now</a>
-                    <a href="#" class="btn btn-outline-dark btn-lg">Browse Categories</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'products' %}" class="btn btn-dark btn-lg">Shop Now</a>
+                        {% else %}
+                        <a href="#" class="btn btn-dark btn-lg" data-bs-toggle="modal" data-bs-target="#loginModal">Shop Now</a>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                        <a href="#categories" class="btn btn-outline-dark btn-lg">Browse Categories</a>
+                    {% else %}
+                        <a href="#" class="btn btn-outline-dark btn-lg" data-bs-toggle="modal" data-bs-target="#loginModal">Browse Categories</a>
+                    {% endif %}
                 </div>
             </div>
 
@@ -37,8 +45,6 @@
     </div>
 </section>
 
-
-
 <!-- Featured Products Section -->
 <section class="featured-products py-5" id="featured-products" style="display: none;">
     <div class="container">
@@ -47,9 +53,15 @@
                 <h2 class="fw-bold mb-1">Featured Products</h2>
                 <p class="text-muted mb-0">Discover our handpicked selection of premium products.</p>
             </div>
-            <a href="#" class="text-decoration-none fw-semibold">
-                View All Products <i class="fas fa-arrow-right ms-1"></i>
-            </a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'products' %}" class="text-decoration-none fw-semibold"></a>
+                    View All Products <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            {% else %}
+                <a href="#" class="text-decoration-none fw-semibold" data-bs-toggle="modal" data-bs-target="#loginModal">
+                    View All Products <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            {% endif %}
         </div>
 
         <div class="row" id="product-catalog">
@@ -58,116 +70,20 @@
     </div>
 </section>
 
-<script>
-    const apiEndpoint = 'https://api.escuelajs.co/api/v1/products';
-    const productsPerPage = 6;
-    let allProducts = [];
-    let currentPage = 1;
-    let isLoading = false;
-    let hasReachedEnd = false;
-
-    async function fetchAllProducts() {
-        try {
-            const response = await fetch(apiEndpoint);
-            allProducts = await response.json();
-            loadMoreProducts(); // Load first batch
-        } catch (error) {
-            console.error('Failed to fetch products:', error);
-        }
-    }
-
-    function loadMoreProducts() {
-        if (isLoading || hasReachedEnd) return;
-        isLoading = true;
-
-        const startIndex = (currentPage - 1) * productsPerPage;
-        const endIndex = startIndex + productsPerPage;
-        const productsToShow = allProducts.slice(startIndex, endIndex);
-
-        const productCatalog = document.getElementById('product-catalog');
-
-        if (productsToShow.length === 0) {
-            if (!hasReachedEnd) {
-                const viewMoreCard = `
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100 text-center border-0 bg-light d-flex flex-column justify-content-center align-items-center" style="min-height: 400px;">
-                            <div class="p-4">
-                                <h5 class="fw-bold text-muted mb-3">Interested for more?</h5>
-                                <a href="#" class="btn btn-outline-dark">View More Products</a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                productCatalog.insertAdjacentHTML('beforeend', viewMoreCard);
-                hasReachedEnd = true;
-            }
-            isLoading = false;
-            return;
-        }
-
-        productsToShow.forEach(product => {
-            const truncatedTitle = product.title.length > 30 ? product.title.slice(0, 30) + "..." : product.title;
-            const card = `
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow-sm border-0 hover-shadow">
-                    <div class="bg-white rounded-top overflow-hidden position-relative" style="height: 260px; display: flex; align-items: center; justify-content: center;">
-                        <img src="${product.image}" class="img-fluid p-3" style="max-height: 100%; object-fit: contain;" alt="${product.title}">
-                        <span class="badge bg-dark position-absolute top-0 start-0 m-2">${product.category.name}</span>
-                    </div>
-                    <div class="card-body d-flex flex-column justify-content-between">
-                        <div>
-                        <h6 class="fw-semibold text-truncate" title="${product.title}">${truncatedTitle}</h6>
-                        <p class="fw-bold text-dark fs-5 mb-2">$${product.price.toFixed(2)}</p>
-                        </div>
-                        <a href="#" class="btn btn-outline-dark w-100 mt-auto">
-                        <i class="fas fa-shopping-cart me-2"></i>Add to Cart
-                        </a>
-                    </div>
-                    </div>
-                </div>
-                `;
-
-            // Add hover effect styles
-            const style = document.createElement('style');
-            style.textContent = `
-                .hover-shadow:hover {
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-                    transform: translateY(-5px);
-                    transition: all 0.3s ease-in-out;
-                }
-            `;
-            document.head.appendChild(style);
-            productCatalog.insertAdjacentHTML('beforeend', card);
-        });
-
-        currentPage++;
-        isLoading = false;
-    }
-
-    function handleScroll() {
-        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-        if (scrollTop + clientHeight >= scrollHeight - 100 && !isLoading) {
-            loadMoreProducts();
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', async () => {
-        await fetchAllProducts();
-        document.getElementById('loading').style.display = 'none'; // Hide loading screen
-        document.getElementById('content').style.display = 'block'; // Show main content
-        document.getElementById('featured-products').style.display = 'block'; // Show featured products
-        window.addEventListener('scroll', handleScroll);
-    });
-</script>
-
 <!-- Promotional Banner -->
-<section class="promo-banner py-5 text-center text-white" style="background-color: #343a40;">
+<section class="promo-banner py-5 text-center text-white" style="background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);">
     <div class="container">
-        <h2>Special Offer: 20% Off on All Items!</h2>
-        <p>Use code <strong>SALE20</strong> at checkout. Offer valid until April 30, 2025.</p>
-        <a href="{% url 'products' %}" class="btn btn-light btn-lg">
+        <h2 class="fw-bold display-5 mb-3">Special Offer: 20% Off on All Items!</h2>
+        <p class="fs-5 mb-4">Use code <strong>SALE20</strong> at checkout. Offer valid until <span class="fw-semibold">April 30, 2025</span>.</p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'products' %}" class="btn btn-light btn-sm px-5 py-3 shadow-sm">
             <i class="fas fa-tags me-2"></i>Shop Now
-        </a>
+            </a>
+        {% else %}
+            <a href="#" class="btn btn-light btn-sm px-5 py-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#loginModal">
+            <i class="fas fa-tags me-2"></i>Shop Now
+            </a>
+        {% endif %}
     </div>
 </section>
 
@@ -181,122 +97,163 @@
         <div class="row">
             <!-- Electronics -->
             <div class="col-md-2 mb-4">
-                <div class="card h-100 text-center">
+                <div class="card h-100 text-center hover-up">
                     <div class="bg-light rounded-top" style="height: 200px; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-laptop fa-3x text-muted"></i>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column">
                         <h6 class="fw-bold">Electronics</h6>
-                        <a href="#" class="btn btn-outline-dark">Explore</a>
+                        <a href="#" class="btn btn-outline-dark mt-auto w-100">Explore</a>
                     </div>
                 </div>
             </div>
             <!-- Fashion -->
             <div class="col-md-2 mb-4">
-                <div class="card h-100 text-center">
+                <div class="card h-100 text-center hover-up">
                     <div class="bg-light rounded-top" style="height: 200px; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-tshirt fa-3x text-muted"></i>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column">
                         <h6 class="fw-bold">Fashion</h6>
-                        <a href="#" class="btn btn-outline-dark">Explore</a>
+                        <a href="#" class="btn btn-outline-dark mt-auto w-100">Explore</a>
                     </div>
                 </div>
             </div>
             <!-- Furniture -->
             <div class="col-md-2 mb-4">
-                <div class="card h-100 text-center">
+                <div class="card h-100 text-center hover-up">
                     <div class="bg-light rounded-top" style="height: 200px; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-chair fa-3x text-muted"></i>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column">
                         <h6 class="fw-bold">Furniture</h6>
-                        <a href="#" class="btn btn-outline-dark">Explore</a>
+                        <a href="#" class="btn btn-outline-dark mt-auto w-100">Explore</a>
                     </div>
                 </div>
             </div>
             <!-- Mobile Phones -->
             <div class="col-md-2 mb-4">
-                <div class="card h-100 text-center">
+                <div class="card h-100 text-center hover-up">
                     <div class="bg-light rounded-top" style="height: 200px; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-mobile-alt fa-3x text-muted"></i>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column">
                         <h6 class="fw-bold">Mobile Phones</h6>
-                        <a href="#" class="btn btn-outline-dark">Explore</a>
+                        <a href="#" class="btn btn-outline-dark mt-auto w-100">Explore</a>
                     </div>
                 </div>
             </div>
             <!-- Home Appliances -->
             <div class="col-md-2 mb-4">
-                <div class="card h-100 text-center">
+                <div class="card h-100 text-center hover-up">
                     <div class="bg-light rounded-top" style="height: 200px; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-blender fa-3x text-muted"></i>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column">
                         <h6 class="fw-bold">Home Appliances</h6>
-                        <a href="#" class="btn btn-outline-dark">Explore</a>
+                        <a href="#" class="btn btn-outline-dark mt-auto w-100">Explore</a>
                     </div>
                 </div>
             </div>
            <!-- Sports -->
             <div class="col-md-2 mb-4">
-                <div class="card h-100 text-center">
+                <div class="card h-100 text-center hover-up">
                     <div class="bg-light rounded-top" style="height: 200px; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-football-ball fa-3x text-muted"></i>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column">
                         <h6 class="fw-bold">Sports</h6>
-                        <a href="#" class="btn btn-outline-dark">Explore</a>
+                        <a href="#" class="btn btn-outline-dark mt-auto w-100">Explore</a>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </section>
+
+<style>
+    .hover-up {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    .hover-up:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+</style>
 
 <!-- Testimonials Section -->
 <section class="testimonials-section py-5 bg-light">
     <div class="container">
         <div class="text-center mb-4">
             <h2 class="fw-bold">What Our Customers Say</h2>
-            <p class="text-muted">Hear from our satisfied customers.</p>
+            <p class="text-muted">See why our customers love shopping with us.</p>
         </div>
-        <div class="row">
-            <!-- Testimonial 1 -->
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <p class="text-muted fst-italic">"Amazing quality and fast delivery! Highly recommend this store."</p>
-                        <h6 class="fw-bold mt-3">John Doe</h6>
-                        <p class="text-muted">Verified Buyer</p>
+        <div id="testimonialCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <!-- Testimonial 1 -->
+                <div class="carousel-item active">
+                    <div class="card h-200 shadow-sm border-0">
+                        <div class="card-body text-center">
+                            <p class="text-muted fst-italic">"The quality is outstanding, and the delivery was super fast. Highly recommend!"</p>
+                            <h6 class="fw-bold mt-3">John Doe</h6>
+                            <p class="text-muted">Verified Buyer</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- Testimonial 2 -->
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <p class="text-muted fst-italic">"Great customer service and fantastic products. Will shop again!"</p>
-                        <h6 class="fw-bold mt-3">Jane Smith</h6>
-                        <p class="text-muted">Verified Buyer</p>
+                <!-- Testimonial 2 -->
+                <div class="carousel-item">
+                    <div class="card h-200 shadow-sm border-0">
+                        <div class="card-body text-center">
+                            <p class="text-muted fst-italic">"Exceptional customer service and top-notch products. Will definitely shop again!"</p>
+                            <h6 class="fw-bold mt-3">Jane Smith</h6>
+                            <p class="text-muted">Verified Buyer</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- Testimonial 3 -->
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <p class="text-muted fst-italic">"The best online shopping experience I've ever had. Thank you!"</p>
-                        <h6 class="fw-bold mt-3">Emily Johnson</h6>
-                        <p class="text-muted">Verified Buyer</p>
+                <!-- Testimonial 3 -->
+                <div class="carousel-item">
+                    <div class="card h-200 shadow-sm border-0"></div>
+                        <div class="card-body text-center">
+                            <p class="text-muted fst-italic">"The best online shopping experience I've ever had. Thank you for the amazing service!"</p>
+                            <h6 class="fw-bold mt-3">Emily Johnson</h6>
+                            <p class="text-muted">Verified Buyer</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Testimonial 4 -->
+                <div class="carousel-item">
+                    <div class="card h-200 shadow-sm border-0">
+                        <div class="card-body text-center">
+                            <p class="text-muted fst-italic">"Great prices and excellent quality. I'm beyond satisfied with my purchase!"</p>
+                            <h6 class="fw-bold mt-3">Michael Brown</h6>
+                            <p class="text-muted">Verified Buyer</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Testimonial 5 -->
+                <div class="carousel-item">
+                    <div class="card h-200 shadow-sm border-0"></div>
+                        <div class="card-body text-center">
+                            <p class="text-muted fst-italic">"Fast delivery and outstanding support. I highly recommend this store to everyone!"</p>
+                            <h6 class="fw-bold mt-3">Sarah Wilson</h6>
+                            <p class="text-muted">Verified Buyer</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const carousel = new bootstrap.Carousel(document.getElementById('testimonialCarousel'), {
+            interval: 3000,
+            ride: 'carousel',
+            wrap: true
+        });
+    });
+</script>
 
 <!-- Newsletter Subscription Section -->
 <section class="newsletter-section py-5 text-center text-white" style="background-color: #007bff;">
@@ -364,8 +321,6 @@
     </div>
 </section>
 
-
-
 <!-- FAQ Section -->
 <section class="faq-section py-5 bg-light">
     <div class="container">
@@ -381,7 +336,7 @@
                     </button>
                 </h2>
                 <div id="faqCollapseOne" class="accordion-collapse collapse show" aria-labelledby="faqHeadingOne" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body">
+                    <div class="accordion-body text-primary">
                         We offer a 30-day return policy for all items. Please ensure the product is in its original condition.
                     </div>
                 </div>
@@ -393,7 +348,7 @@
                     </button>
                 </h2>
                 <div id="faqCollapseTwo" class="accordion-collapse collapse" aria-labelledby="faqHeadingTwo" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body">
+                    <div class="accordion-body text-primary">
                         Yes, we ship to over 50 countries worldwide. Shipping fees and delivery times vary by location.
                     </div>
                 </div>
@@ -405,13 +360,269 @@
                     </button>
                 </h2>
                 <div id="faqCollapseThree" class="accordion-collapse collapse" aria-labelledby="faqHeadingThree" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body">
+                    <div class="accordion-body text-primary">
                         Once your order is shipped, you will receive a tracking number via email to monitor its progress.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseFour" aria-expanded="false" aria-controls="faqCollapseFour">
+                        What payment methods do you accept?
+                    </button>
+                </h2>
+                <div id="faqCollapseFour" class="accordion-collapse collapse" aria-labelledby="faqHeadingFour" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-primary">
+                        We accept major credit cards, PayPal, and other secure payment options.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingFive">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseFive" aria-expanded="false" aria-controls="faqCollapseFive">
+                        Can I cancel my order?
+                    </button>
+                </h2>
+                <div id="faqCollapseFive" class="accordion-collapse collapse" aria-labelledby="faqHeadingFive" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-primary">
+                        Yes, you can cancel your order before it is shipped. Please contact our support team for assistance.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingSix">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseSix" aria-expanded="false" aria-controls="faqCollapseSix">
+                        Do you offer gift wrapping services?
+                    </button>
+                </h2>
+                <div id="faqCollapseSix" class="accordion-collapse collapse" aria-labelledby="faqHeadingSix" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-primary">
+                        Yes, we offer gift wrapping for an additional fee. You can select this option during checkout.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingSeven">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseSeven" aria-expanded="false" aria-controls="faqCollapseSeven">
+                        How do I contact customer support?
+                    </button>
+                </h2>
+                <div id="faqCollapseSeven" class="accordion-collapse collapse" aria-labelledby="faqHeadingSeven" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-primary">
+                        You can reach our customer support team via email, phone, or live chat on our website.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingEight">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseEight" aria-expanded="false" aria-controls="faqCollapseEight">
+                        Are your products covered by warranty?
+                    </button>
+                </h2>
+                <div id="faqCollapseEight" class="accordion-collapse collapse" aria-labelledby="faqHeadingEight" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-primary">
+                        Yes, most of our products come with a manufacturer’s warranty. Please check the product details for more information.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingNine">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseNine" aria-expanded="false" aria-controls="faqCollapseNine">
+                        Do you have a loyalty program?
+                    </button>
+                </h2>
+                <div id="faqCollapseNine" class="accordion-collapse collapse" aria-labelledby="faqHeadingNine" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-primary">
+                        Yes, we offer a loyalty program where you can earn points for every purchase and redeem them for discounts.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingTen">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseTen" aria-expanded="false" aria-controls="faqCollapseTen">
+                        Can I change my shipping address after placing an order?
+                    </button>
+                </h2>
+                <div id="faqCollapseTen" class="accordion-collapse collapse" aria-labelledby="faqHeadingTen" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-primary">
+                        Yes, you can update your shipping address before the order is shipped. Contact our support team for help.
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+{% if not user.is_authenticated %}
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content shadow-lg border-0 rounded-4">
+            <div class="modal-header border-0 pb-0 text-center">
+                <h3 class="modal-title fw-bold w-100" id="loginModalLabel">Log in</h3>
+                <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <div class="container py-4">
+                    <div class="row align-items-center">
+                        <!-- Image Section -->
+                        <div class="col-md-6 text-center mb-4 mb-md-0">
+                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg"
+                                class="img-fluid" alt="Login Illustration">
+                        </div>
+                        <!-- Form Section -->
+                        <div class="col-md-6">
+                            <form id="loginForm" action="{% url 'login-page' %}" method="POST">
+                                {% csrf_token %}
+                                <!-- Email Input -->
+                                <div class="form-outline mb-4">
+                                    <label class="form-label" for="form1Example13">Email Address</label>
+                                    <input type="email" id="form1Example13" name="username" class="form-control form-control-lg" required />
+                                </div>
+                                <!-- Password Input -->
+                                <div class="form-outline mb-4">
+                                    <label class="form-label" for="form1Example23">Password</label>
+                                    <input type="password" id="form1Example23" name="password" class="form-control form-control-lg" required />
+                                </div>
+                                <!-- Remember Me and Forgot Password -->
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="form1Example3" />
+                                        <label class="form-check-label" for="form1Example3">Remember me</label>
+                                    </div>
+                                    <a href="{% url 'forgot-password' %}">Forgot password?</a>
+                                </div>
+                                <!-- Submit Button -->
+                                <button type="submit" class="btn btn-dark btn-lg w-100">Sign In</button>
+                                <!-- Divider -->
+                                <div class="divider d-flex align-items-center justify-content-center my-4">
+                                    <p class="text-center fw-bold mx-3 mb-0 text-muted">OR</p>
+                                </div>
+                                <!-- Social Login Buttons -->
+                                <div class="d-grid gap-3">
+                                    <a class="btn btn-outline-dark btn-lg w-100" href="#!" role="button">
+                                        <i class="fab fa-facebook-f me-2"></i>Continue with Facebook
+                                    </a>
+                                    <a class="btn btn-outline-dark btn-lg w-100" href="#!" role="button">
+                                        <i class="fab fa-twitter me-2"></i>Continue with Twitter
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+    const apiEndpoint = 'https://api.escuelajs.co/api/v1/products';
+    const productsPerPage = 6;
+    let allProducts = [];
+    let currentPage = 1;
+    let isLoading = false;
+    let hasReachedEnd = false;
+
+    async function fetchAllProducts() {
+        try {
+            const response = await fetch(apiEndpoint);
+            allProducts = await response.json();
+            loadMoreProducts(); // Load first batch
+        } catch (error) {
+            console.error('Failed to fetch products:', error);
+        }
+    }
+
+    function loadMoreProducts() {
+        if (isLoading || hasReachedEnd) return;
+        isLoading = true;
+
+        const startIndex = (currentPage - 1) * productsPerPage;
+        const endIndex = startIndex + productsPerPage;
+        const productsToShow = allProducts.slice(startIndex, endIndex);
+
+        const productCatalog = document.getElementById('product-catalog');
+
+        if (productsToShow.length === 0) {
+            if (!hasReachedEnd) {
+                const viewMoreCard = `
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 text-center border-0 bg-light d-flex flex-column justify-content-center align-items-center" style="min-height: 400px;">
+                            <div class="p-4">
+                                <h5 class="fw-bold text-muted mb-3">Interested for more?</h5>
+                                <a href="#" class="btn btn-outline-dark">View More Products</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                productCatalog.insertAdjacentHTML('beforeend', viewMoreCard);
+                hasReachedEnd = true;
+            }
+            isLoading = false;
+            return;
+        }
+
+        productsToShow.forEach(product => {
+            const truncatedTitle = product.title.length > 30 ? product.title.slice(0, 30) + "..." : product.title;
+            const card = `
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm border-0 hover-shadow">
+                    <div class="bg-white rounded-top overflow-hidden position-relative" style="height: 260px; display: flex; align-items: center; justify-content: center;">
+                        <img src="${product.image}" class="img-fluid p-3" style="max-height: 100%; object-fit: contain;" alt="${product.title}">
+                        <span class="badge bg-dark position-absolute top-0 start-0 m-2">${product.category.name}</span>
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div>
+                        <h6 class="fw-semibold text-truncate" title="${product.title}">${truncatedTitle}</h6>
+                        <p class="fw-bold text-dark fs-5 mb-2">$${product.price.toFixed(2)}</p>
+                        </div>
+                        {% if user.is_authenticated %}
+                            <a href="#" class="btn btn-outline-dark w-100 mt-auto">
+                                <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                            </a>
+                        {% else %}
+                            <a href="#" class="btn btn-outline-dark w-100 mt-auto" data-bs-toggle="modal" data-bs-target="#loginModal">
+                                <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                            </a>
+                        {% endif %}
+                    </div>
+                    </div>
+                </div>
+                `;
+
+            // Add hover effect styles
+            const style = document.createElement('style');
+            style.textContent = `
+                .hover-shadow:hover {
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                    transform: translateY(-5px);
+                    transition: all 0.3s ease-in-out;
+                }
+            `;
+            document.head.appendChild(style);
+            productCatalog.insertAdjacentHTML('beforeend', card);
+        });
+
+        currentPage++;
+        isLoading = false;
+    }
+
+    function handleScroll() {
+        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+        if (scrollTop + clientHeight >= scrollHeight - 100 && !isLoading) {
+            loadMoreProducts();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        await fetchAllProducts();
+        document.getElementById('loading').style.display = 'none'; // Hide loading screen
+        document.getElementById('content').style.display = 'block'; // Show main content
+        document.getElementById('featured-products').style.display = 'block'; // Show featured products
+        window.addEventListener('scroll', handleScroll);
+    });
+</script>
 
 {% endblock %}
