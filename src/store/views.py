@@ -10,6 +10,7 @@ from django.template.loader import render_to_string
 from django.contrib.auth import get_user_model
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from django.contrib import messages
 from django.utils import timezone
 from django.urls import reverse
@@ -142,7 +143,24 @@ def reset_password(request, reset_id):
 
 @login_required(login_url='/login')
 def product_view(request):
-    return render(request, 'store/products.html')
+    category = models.Category.objects.all()
+    selected_category = request.GET.get('category')
+    products = models.Product.objects.filter(category__name=selected_category) if selected_category else models.Product.objects.all()
+
+    #page view
+    paginator = Paginator(products, 9)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'products': page_obj.object_list, 
+        'categories': category, 
+        'selected_category': selected_category, 
+        'page_obj': page_obj,
+        'show_pagination': paginator.num_pages > 1
+    }
+
+    return render(request, 'store/products.html', context)
 
 @login_required(login_url='/login')
 def about_view(request):
@@ -186,8 +204,9 @@ def contact(request):
     return render(request, 'store/contact.html')
 
 @login_required(login_url='/login')
-def product_details(request):
-    return render(request, 'store/product-detail.html')
+def product_details(request, product_id):
+    product = models.Product.objects.get(id=product_id)
+    return render(request, 'store/product-detail.html', {'product':product})
 
 @login_required(login_url='/login')
 def cart_view(request):

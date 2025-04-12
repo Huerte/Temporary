@@ -1,94 +1,101 @@
 {% extends 'store/index.html' %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+{% load static %}
 
 {% block content %}
-<!-- Breadcrumb Navigation -->
-<nav aria-label="breadcrumb" class="bg-light p-3 mb-4">
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="bg-body-tertiary py-3 mb-4">
     <div class="container">
         <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a href="{% url 'store_home' %}"><i class="fas fa-home"></i> Home</a></li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'store_home' %}" class="text-decoration-none">
+                    <i class="fas fa-home me-1"></i>Home
+                </a>
+            </li>
             <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
         </ol>
     </div>
 </nav>
 
-<!-- Shopping Cart Section -->
-<section class="shopping-cart-section py-5">
+<!-- Shopping Cart -->
+<section class="py-5">
     <div class="container">
-        <!-- Section Title -->
+        <!-- Title -->
         <div class="text-center mb-5">
-            <h1 class="fw-bold"><i class="fas fa-shopping-cart"></i> Your Shopping Cart</h1>
-            <p class="text-muted">Review the items in your cart before proceeding to checkout.</p>
+            <h1 class="fw-bold">
+                <i class="fas fa-shopping-cart me-2"></i>Your Cart
+            </h1>
+            <p class="text-muted mb-0">Review items before checkout</p>
         </div>
 
-        <!-- Cart Items Table -->
+        <!-- Cart Table -->
         <div class="table-responsive mb-4">
             <table class="table align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th scope="col">Product</th>
-                        <th scope="col">Price</th>
-                        <th scope="col" class="text-center">Quantity</th>
-                        <th scope="col" class="text-end">Total</th>
-                        <th scope="col" class="text-center">Actions</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th class="text-center">Qty</th>
+                        <th class="text-end">Total</th>
+                        <th class="text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Sample Cart Item -->
+                    <!-- Example Row -->
                     <tr>
                         <td>
                             <div class="d-flex align-items-center">
-                                <img src="#" alt="Product Image" class="me-3" style="width: 60px; height: 60px;">
+                                <img src="#" alt="Product" class="me-3 rounded" style="width: 60px; height: 60px;">
                                 <div>
-                                    <h6 class="mb-0">Product Name 1</h6>
-                                    <small class="text-muted">Category: [Category Name]</small>
+                                    <h6 class="mb-1">Product Name</h6>
+                                    <small class="text-muted">Category: Example</small>
                                 </div>
                             </div>
                         </td>
                         <td>$99.99</td>
                         <td class="text-center">
-                            <input type="number" class="form-control text-center" value="1" min="1">
+                            <input type="number" class="form-control form-control-sm text-center" value="1" min="1">
                         </td>
                         <td class="text-end">$99.99</td>
                         <td class="text-center">
-                            <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Remove</button>
+                            <button class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash-alt me-1"></i>Remove
+                            </button>
                         </td>
                     </tr>
-                    <!-- Repeat Cart Items as Needed -->
+                    <!-- End Example Row -->
                 </tbody>
             </table>
         </div>
-
-        <!-- Cart Summary -->
+        <!-- Summary -->
         <div class="row justify-content-end">
             <div class="col-md-6 col-lg-4">
-                <div class="bg-light p-4 rounded">
-                    <h5 class="fw-bold">Cart Summary</h5>
-                    <ul class="list-unstyled">
-                        <li class="d-flex justify-content-between py-2">
-                            <span>Subtotal</span>
-                            <span>$99.99</span>
+                <div class="bg-light rounded p-4 shadow-sm">
+                    <h5 class="fw-bold mb-3">Summary</h5>
+                    <ul class="list-unstyled mb-4">
+                        <li class="d-flex justify-content-between mb-2">
+                            <span>Subtotal</span><span>$99.99</span>
                         </li>
-                        <li class="d-flex justify-content-between py-2">
-                            <span>Tax (10%)</span>
-                            <span>$9.99</span>
+                        <li class="d-flex justify-content-between mb-2">
+                            <span>Tax (10%)</span><span>$9.99</span>
                         </li>
-                        <li class="d-flex justify-content-between py-2">
-                            <span><strong>Total</strong></span>
-                            <span><strong>$109.98</strong></span>
+                        <li class="d-flex justify-content-between border-top pt-2 fw-bold">
+                            <span>Total</span><span>$109.98</span>
                         </li>
                     </ul>
                     <div class="d-grid">
-                        <a href="#" class="btn btn-primary btn-lg"><i class="fas fa-credit-card"></i> Proceed to Checkout</a>
+                        <a href="#" class="btn btn-primary btn-lg">
+                            <i class="fas fa-credit-card me-2"></i>Checkout
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Continue Shopping Link -->
+        <!-- Continue Shopping -->
         <div class="text-center mt-4">
-            <a href="{% url 'products' %}" class="text-decoration-none"><i class="fas fa-arrow-left"></i> Continue Shopping</a>
+            <a href="{% url 'products' %}" class="btn btn-link text-decoration-none">
+                <i class="fas fa-arrow-left me-1"></i>Continue Shopping
+            </a>
         </div>
     </div>
 </section>

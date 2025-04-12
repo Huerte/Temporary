@@ -2,115 +2,170 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 {% block content %}
-<!-- Breadcrumb Navigation -->
-<nav aria-label="breadcrumb" class="bg-light p-3 mb-4">
-    <div class="container">
-        <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a href="{% url 'store_home' %}"><i class="fas fa-home"></i> Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Products</li>
-        </ol>
-    </div>
+<style>
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-thumb { background-color: rgba(0, 0, 0, 0.2); border-radius: 3px; }
+  .category-scroll { max-height: 75vh; overflow-y: auto; }
+</style>
+
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="bg-light py-3 mb-4 border-bottom">
+  <div class="container">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="{% url 'store_home' %}"><i class="fas fa-home me-1"></i>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Products</li>
+    </ol>
+  </div>
 </nav>
 
 <!-- Products Section -->
-<section class="products-section py-5">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h1 class="fw-bold">Our Exclusive Collection</h1>
-            <p class="text-muted">Explore our premium range of fashion products crafted to meet your needs.</p>
+<section class="py-5">
+  <div class="container">
+
+    <div class="row">
+        <!-- Category Sidebar -->
+        <aside class="col-lg-3 mb-4 mb-lg-0">
+        <div class="bg-white border rounded shadow-sm p-3 category-scroll">
+            <h5 class="fw-bold mb-3">Categories</h5>
+            <div class="list-group list-group-flush" id="category-list">
+            <a href="{% url 'products' %}"
+                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {% if not selected_category %}active bg-dark text-white border-dark{% endif %}">
+                <span><i class="fas fa-tags me-2"></i>All</span>
+            </a>
+            {% for cat in categories %}
+            <a href="?category={{ cat.name }}"
+                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center category-item {% if forloop.counter > 5 %}d-none extra-cat{% endif %} {% if selected_category == cat.name %}active bg-dark text-white border-dark{% endif %}">
+                <span><i class="fas fa-tag me-2"></i>{{ cat.name }}</span>
+            </a>
+            {% endfor %}
+            </div>
+            {% if categories|length > 5 %}
+            <button class="btn btn-link mt-2 px-0 text-decoration-none" id="toggle-category">
+            <span>See More</span> <i class="fas fa-chevron-down small"></i>
+            </button>
+            {% endif %}
         </div>
+        </aside>
 
-        <div class="row">
-            <!-- Repeat this block for each product -->
-            {% comment %} Product 1 {% endcomment %}
-            <div class="col-md-3 mb-4">
-                <div class="position-relative border rounded p-2 h-100">
-                    <a href="{% url 'product-details' %}" class="text-decoration-none text-dark d-block">
-                        <img src="https://via.placeholder.com/300x200?text=Product+1" class="img-fluid mb-3 rounded" alt="Product 1">
-                        <div class="px-1">
-                            <div class="d-flex justify-content-between">
-                                <small class="fw-semibold">Product 1</small>
-                                <span class="fw-bold text-primary">$30.99</span>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <small class="text-muted">Category</small>
-                            </div>
-                        </div>
-                    </a>
-                    <button class="btn btn-dark w-100 mt-3">
-                        <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-                    </button>
-                </div>
-            </div>
-
-            <!-- Product 2 -->
-            <div class="col-md-3 mb-4">
-                <div class="position-relative border rounded p-2 h-100">
-                    <a href="{% url 'product-details' %}" class="text-decoration-none text-dark d-block">
-                        <img src="https://via.placeholder.com/300x200?text=Product+2" class="img-fluid mb-3 rounded" alt="Product 2">
-                        <div class="px-1">
-                            <div class="d-flex justify-content-between">
-                                <small class="fw-semibold">Product 2</small>
-                                <span class="fw-bold text-primary">$31.99</span>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <small class="text-muted">Category</small>
-                            </div>
-                        </div>
-                    </a>
-                    <button class="btn btn-dark w-100 mt-3">
-                        <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-                    </button>
-                </div>
-            </div>
-
-            <!-- Product 3 (Sale) -->
-            <div class="col-md-3 mb-4">
-                <div class="position-relative border rounded p-2 h-100">
+      <!-- Product Grid -->
+        <div class="col-lg-9">
+        {% if products %}
+            <div class="row g-4">
+            {% for product in products %}
+                <div class="col-6 col-sm-6 col-md-4 d-flex">
+                <div class="card h-100 w-100 shadow-sm border-0 position-relative d-flex flex-column">
+                    {% if product.on_sale %}
                     <span class="badge bg-danger position-absolute top-0 start-0 m-2">Sale</span>
-                    <a href="{% url 'product-details' %}" class="text-decoration-none text-dark d-block">
-                        <img src="https://via.placeholder.com/300x200?text=Product+3" class="img-fluid mb-3 rounded" alt="Product 3">
-                        <div class="px-1">
-                            <div class="d-flex justify-content-between">
-                                <small class="fw-semibold">Product 3</small>
-                                <span class="fw-bold text-primary">$32.99</span>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <small class="text-muted">Category</small>
-                                <small class="text-muted"><del>$42.99</del></small>
-                            </div>
+                    {% endif %}
+                    <a href="{% url 'product-details' product.id %}" class="text-decoration-none text-dark">
+                    <img src="{{ product.image.url }}" class="card-img-top rounded-top object-fit-cover" style="height: 200px;" alt="{{ product.name }}">
+                    <div class="card-body px-3 pt-3 pb-2 d-flex flex-column">
+                        <h6 class="fw-semibold mb-1 text-truncate">{{ product.name }}</h6>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="text-primary fw-bold">${{ product.price }}</span>
+                        {% if product.old_price %}
+                            <small class="text-muted"><del>${{ product.old_price }}</del></small>
+                        {% endif %}
                         </div>
+                        <p class="text-muted small mb-0">{{ product.category }}</p>
+                    </div>
                     </a>
-                    <button class="btn btn-dark w-100 mt-3">
-                        <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                    <div class="card-footer bg-white border-0 px-3 pb-3 pt-0 mt-auto">
+                    <button class="btn btn-dark w-100">
+                        <i class="fas fa-shopping-cart me-2"></i>Add to Cart
                     </button>
+                    </div>
                 </div>
-            </div>
-
-            <!-- Product 4 -->
-            <div class="col-md-3 mb-4">
-                <div class="position-relative border rounded p-2 h-100">
-                    <a href="{% url 'product-details' %}" class="text-decoration-none text-dark d-block">
-                        <img src="https://via.placeholder.com/300x200?text=Product+4" class="img-fluid mb-3 rounded" alt="Product 4">
-                        <div class="px-1">
-                            <div class="d-flex justify-content-between">
-                                <small class="fw-semibold">Product 4</small>
-                                <span class="fw-bold text-primary">$33.99</span>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <small class="text-muted">Category</small>
-                            </div>
-                        </div>
-                    </a>
-                    <button class="btn btn-dark w-100 mt-3">
-                        <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-                    </button>
                 </div>
+            {% endfor %}
             </div>
-
-            <!-- Add the remaining products (Product 5 to Product 12) in the same style -->
-            <!-- You can repeat and just update the numbers, prices, and optionally badges -->
+        {% else %}
+            <div class="text-center py-5">
+            <i class="fas fa-box-open fa-3x text-muted mb-4"></i>
+            <h4 class="fw-bold text-muted">No products found in this category.</h4>
+            <p class="text-muted">Try selecting a different category or check back later.</p>
+            </div>  
+        {% endif %}
         </div>
+
+        {% if show_pagination %}
+            <nav class="mt-4">
+            <ul class="pagination justify-content-center flex-wrap">
+
+                <!-- Previous -->
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                <a class="page-link rounded-pill px-3 py-2" href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
+                </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                <span class="page-link rounded-pill px-3 py-2" aria-hidden="true">
+                    <i class="fas fa-angle-left"></i>
+                </span>
+                </li>
+                {% endif %}
+
+
+                <!-- Page Numbers with Ellipsis -->
+                {% for num in page_obj.paginator.page_range %}
+                {% if num == 1 or num == page_obj.paginator.num_pages or num|add:'-1' == page_obj.number or num == page_obj.number or num|add:'1' == page_obj.number %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                {% elif num == 2 and page_obj.number > 4 %}
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                {% elif num == page_obj.paginator.num_pages|add:'-1' and page_obj.number < page_obj.paginator.num_pages|add:'-3' %}
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                {% endif %}
+                {% endfor %}
+
+                <!-- Next -->
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                  <a class="page-link rounded-pill px-3 py-2" href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ page_obj.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
+                  </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                  <span class="page-link rounded-pill px-3 py-2" aria-hidden="true">
+                    <i class="fas fa-angle-right"></i>
+                  </span>
+                </li>
+                {% endif %}
+                
+
+            </ul>
+            </nav>
+        {% endif %}
+
+    
     </div>
+  </div>
 </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const toggleBtn = document.getElementById("toggle-category");
+      const extraItems = document.querySelectorAll(".extra-cat");
+      let expanded = false;
+  
+      if (toggleBtn) {
+        toggleBtn.addEventListener("click", function () {
+          expanded = !expanded;
+          extraItems.forEach(el => el.classList.toggle("d-none"));
+          toggleBtn.innerHTML = expanded
+            ? '<span>See Less</span> <i class="fas fa-chevron-up small"></i>'
+            : '<span>See More</span> <i class="fas fa-chevron-down small"></i>';
+        });
+      }
+    });
+  </script>
+  
 {% endblock %}
