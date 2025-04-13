@@ -1,8 +1,13 @@
 from django.contrib import admin
 from .models import *
 
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'price', 'discount_percentage', 'is_on_sale', 'buyers_count', 'is_featured')
+    fields = ('name', 'category', 'description', 'price', 'image', 'discount_percentage', 'buyers_count', 'is_featured')
+    search_fields = ['name', 'category__name']
+
 admin.site.register(Category)
-admin.site.register(Product)
+admin.site.register(Product, ProductAdmin)
 admin.site.register(CartItem)
 admin.site.register(Order)
 admin.site.register(ShippingAddress)

@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db import models
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 import uuid
 
 class Category(models.Model):
@@ -15,8 +15,9 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=8, decimal_places=2)
-    image = models.URLField(blank=True)
-
+    image = models.URLField(max_length=500, blank=True)
+    
+    is_featured = models.BooleanField(default=False)
     discount_percentage = models.PositiveIntegerField(default=0)
     buyers_count = models.PositiveIntegerField(default=0)
 
@@ -30,7 +31,8 @@ class Product(models.Model):
     @property
     def discounted_price(self):
         if self.is_on_sale:
-            return self.price * (Decimal(1) - Decimal(self.discount_percentage) / Decimal(100))
+            discounted = self.price * (Decimal(1) - Decimal(self.discount_percentage) / Decimal(100))
+            return discounted.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         return self.price
 
     @property
@@ -41,6 +43,9 @@ class Product(models.Model):
         elif count >= 1_000:
             return f"{count / 1_000:.1f}K"
         return str(count)
+    
+        def save(self, *args, **kwargs):
+            super().save(*args, **kwargs)
 
 class CartItem(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

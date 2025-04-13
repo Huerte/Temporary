@@ -51,25 +51,32 @@
         <div class="col-lg-9">
         {% if products %}
             <div class="row g-4">
-            {% for product in products %}
+              {% for product in products %}
                 <div class="col-6 col-sm-6 col-md-4 d-flex">
-                <div class="card h-100 w-100 shadow-sm border-0 position-relative d-flex flex-column">
-                    {% if product.on_sale %}
+                  <div class="card h-100 w-100 shadow-sm border-0 position-relative d-flex flex-column">
+                
+                    {% if product.is_on_sale %}
                     <span class="badge bg-danger position-absolute top-0 start-0 m-2">Sale</span>
                     {% endif %}
+                
                     <a href="{% url 'product-details' product.id %}" class="text-decoration-none text-dark">
-                    <img src="{{ product.image }}" class="card-img-top rounded-top object-fit-cover" style="height: 200px;" alt="{{ product.name }}">
-                    <div class="card-body px-3 pt-3 pb-2 d-flex flex-column">
+                      <img src="{{ product.image }}" class="card-img-top rounded-top object-fit-cover" style="height: 200px;" alt="{{ product.name }}">
+                      <div class="card-body px-3 pt-3 pb-2 d-flex flex-column">
                         <h6 class="fw-semibold mb-1 text-truncate">{{ product.name }}</h6>
+                
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="text-primary fw-bold">${{ product.price }}</span>
-                        {% if product.old_price %}
-                            <small class="text-muted"><del>${{ product.old_price }}</del></small>
-                        {% endif %}
+                          {% if product.is_on_sale %}
+                            <span class="text-danger fw-bold">${{ product.discounted_price|floatformat:2 }}</span>
+                            <small class="text-muted"><del>${{ product.price|floatformat:2 }}</del></small>
+                          {% else %}
+                            <span class="text-primary fw-bold">${{ product.price|floatformat:2 }}</span>
+                          {% endif %}
                         </div>
+                
                         <p class="text-muted small mb-0">{{ product.category }}</p>
-                    </div>
+                      </div>
                     </a>
+                
                     <div class="card-footer bg-white border-0 px-3 pb-3 pt-0 mt-auto">
                       {% if product.id in products_in_cart %}
                         <button class="btn btn-outline-secondary w-100" disabled>
@@ -84,9 +91,10 @@
                         </form>
                       {% endif %}
                     </div>
+                  </div>
                 </div>
-                </div>
-            {% endfor %}
+              {% endfor %}
+              
             </div>
         {% else %}
             <div class="text-center py-5">

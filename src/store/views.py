@@ -33,6 +33,7 @@ def home(request):
             messages.error(request, 'User does not exist.')
 
         return redirect('login-page')
+    # products = models.Product.objects.filter(is_featured=True)[:6]
     products = models.Product.objects.all()[:6]
     return render(request, 'store/home.html', {'products': products})
 
