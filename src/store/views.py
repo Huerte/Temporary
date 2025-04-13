@@ -19,7 +19,22 @@ from . import models
 
 
 def home(request):
-    return render(request, 'store/home.html')
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        try:
+            user = User.objects.get(email=email)
+            if user.check_password(password):
+                login(request, user)
+                return redirect('store_home')
+            else:
+                messages.error(request, 'Incorrect password.')
+        except User.DoesNotExist:
+            messages.error(request, 'User does not exist.')
+
+        return redirect('login-page')
+    products = models.Product.objects.all()[:6]
+    return render(request, 'store/home.html', {'products': products})
 
 ##################################################################################
 def login_user(request):

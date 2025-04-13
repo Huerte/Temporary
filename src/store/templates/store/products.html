@@ -58,7 +58,7 @@
                     <span class="badge bg-danger position-absolute top-0 start-0 m-2">Sale</span>
                     {% endif %}
                     <a href="{% url 'product-details' product.id %}" class="text-decoration-none text-dark">
-                    <img src="{{ product.image.url }}" class="card-img-top rounded-top object-fit-cover" style="height: 200px;" alt="{{ product.name }}">
+                    <img src="{{ product.image }}" class="card-img-top rounded-top object-fit-cover" style="height: 200px;" alt="{{ product.name }}">
                     <div class="card-body px-3 pt-3 pb-2 d-flex flex-column">
                         <h6 class="fw-semibold mb-1 text-truncate">{{ product.name }}</h6>
                         <div class="d-flex justify-content-between align-items-center mb-1">

@@ -15,7 +15,7 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=8, decimal_places=2)
-    image = models.ImageField(upload_to='products/', blank=True)
+    image = models.URLField(blank=True)
 
     discount_percentage = models.PositiveIntegerField(default=0)
     buyers_count = models.PositiveIntegerField(default=0)
