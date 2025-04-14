@@ -74,36 +74,53 @@ def logout_view(request):
     logout(request)
     return redirect('store_home')
 
+
 def forgot_password(request):
     if request.method == 'POST':
         email = request.POST.get('email')
 
         try: 
+            # Check if the user exists
             user = User.objects.get(email__iexact=email)
 
+            # Create a password reset record
             new_password_reset = models.PasswordReset(user=user)
             new_password_reset.save()
 
+            # Generate password reset URL
             password_reset_url = reverse('reset-password', kwargs={'reset_id': str(new_password_reset.reset_id)})
-            
             full_password_reset_url = f'{request.scheme}://{request.get_host()}{password_reset_url}'
 
-            email_body = f'Reset your password using the link below:\n{full_password_reset_url}'
+            # Email body (can be plain text or HTML)
+            email_body = f'''
+                <p>Click the link below to reset your password:</p>
+                <p><a href="{full_password_reset_url}">Reset your password</a></p>
+                <p>The link will expire in 10 minutes.</p>
+            '''
 
+            # Send the email
             email_message = EmailMessage(
                 'Reset your password',
                 email_body,
                 settings.EMAIL_HOST_USER,
-                [email] #email receiver
+                [email]  # Receiver's email
             )
 
-            email_message.fail_silently = True
-            email_message.send()
+            # Set content type to HTML for better formatting
+            email_message.content_subtype = "html"
 
+            # Send email and handle potential error
+            email_message.send(fail_silently=False)
+
+            # Redirect to a page notifying user that an email has been sent
             return redirect('password-reset-sent', reset_id=new_password_reset.reset_id)
 
         except User.DoesNotExist:
             messages.error(request, f"No user with email '{email}' found")
+            return redirect('forgot-password')
+        except Exception as e:
+            # Catch other errors (e.g., email failure)
+            messages.error(request, f"An error occurred: {str(e)}")
             return redirect('forgot-password')
 
     return render(request, 'store/authentication-page/reset-password/forgot-password.html')
