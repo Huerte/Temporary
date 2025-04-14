@@ -290,3 +290,18 @@ def remove_from_cart(request, product_id):
         item = get_object_or_404(models.CartItem, id=product_id, user=request.user)
         item.delete()
     return redirect('cart-view')
+
+@login_required(login_url='/login')
+def update_cart(requests, product_id):
+    if requests.method == 'POST':
+        quantity = requests.POST.get('quantity')
+
+        product = models.Product.objects.get(id=product_id)
+        cart_item = models.CartItem.objects.get(user=requests.user, product=product)
+
+        try:
+            cart_item.quantity = quantity
+            cart_item.save()
+        except models.CartItem.DoesNotExist:
+            pass
+    return redirect('cart-view')
