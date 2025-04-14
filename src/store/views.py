@@ -305,3 +305,4 @@ def update_cart(requests, product_id):
         except models.CartItem.DoesNotExist:
             pass
     return redirect('cart-view')
+    

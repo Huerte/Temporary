@@ -45,7 +45,16 @@
                     {% csrf_token %}
                     <h1 class="fw-bold">{{ product.name }}</h1>
                     <p class="">{{ product.category }}</p>
-                    <h4 class="text-primary">${{ product.price }}</h4>
+                    {% if product.is_on_sale %}
+                        <h4 class="fw-bold text-danger">
+                            ${{ product.discounted_price }}
+                            <span class="text-muted text-decoration-line-through fs-6 ms-2">${{ product.price }}</span>
+                            <span class="badge bg-success ms-2">On Sale</span>
+                        </h4>
+                    {% else %}
+                        <h4 class="text-primary fw-bold">${{ product.price }}</h4>
+                    {% endif %}
+
                     <p>{{ product.description }}</p>
 
                     <!-- Action Buttons -->
@@ -85,7 +94,7 @@
             </div>
         </div>
 
-        <!-- Reviews Section -->
+
 <!-- Reviews Section -->
 <div class="row mt-5">
     <div class="col">

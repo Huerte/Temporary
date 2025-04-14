@@ -2,114 +2,145 @@
 {% load static %}
 
 {% block content %}
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="bg-body-tertiary py-3 mb-4">
-        <div class="container">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item">
-                    <a href="{% url 'store_home' %}" class="text-decoration-none">
-                        <i class="fas fa-home me-1"></i>Home
-                    </a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
-            </ol>
-        </div>
-    </nav>
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="bg-body-tertiary py-3 mb-4">
+    <div class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a href="{% url 'store_home' %}" class="text-decoration-none">
+                    <i class="fas fa-home me-1"></i>Home
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
+        </ol>
+    </div>
+</nav>
 
+<!-- Shopping Cart -->
+<section class="py-5 py-md-6">
+    <div class="container">
 
-    <!-- Shopping Cart -->
-    <section class="py-5">
-        <div class="container">
         <!-- Title -->
         <div class="text-center mb-5">
             <h1 class="fw-bold">
-            <i class="fas fa-shopping-cart me-2"></i>Your Cart
+                <i class="fas fa-shopping-cart me-2"></i>Your Cart
             </h1>
             <p class="text-muted mb-0">Review items before checkout</p>
         </div>
-    
+
         <!-- Cart Items -->
         <div class="row g-4">
             {% for item in cart_items %}
-                <div class="col-12">
-                <div class="card border-0 shadow-sm">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm shadow-hover">
                     <div class="card-body d-flex flex-wrap align-items-center gap-3">
-                    <!-- Product Image -->
-                    <img src="{{ item.product.image }}" alt="{{ item.product.name }}"
-                        class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                        <!-- Product Image -->
+                        <img src="{{ item.product.image }}" alt="{{ item.product.name }}"
+                             class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
 
-                    <!-- Product Info -->
-                    <div class="flex-grow-1">
-                        <h5 class="mb-1">{{ item.product.name }}</h5>
-                        <small class="text-muted d-block mb-1">
-                        Category: {{ item.product.category.name }}
-                        </small>
+                        <!-- Product Info -->
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1">{{ item.product.name }}</h5>
+                            <small class="text-muted d-block mb-1">
+                                Category: {{ item.product.category.name }}
+                            </small>
 
-                        <!-- Quantity Form -->
-                        <form method="POST" action="{% url 'update-cart' item.product.id %}" class="d-flex align-items-center flex-wrap gap-2">
-                        {% csrf_token %}
-                        <label class="mb-0 text-muted">Qty:</label>
-                        <div class="input-group input-group-sm w-auto">
-                            <input type="number" name="quantity" value="{{ item.quantity }}"
-                                min="1" class="form-control text-center">
-                            <button type="submit" class="btn btn-outline-secondary">
-                            <i class="fas fa-sync-alt"></i>
-                            </button>
+                            <!-- Quantity Form -->
+                            <form method="POST" action="{% url 'update-cart' item.product.id %}"
+                                  class="d-flex align-items-center flex-wrap gap-2">
+                                {% csrf_token %}
+                                <label class="mb-0 text-muted">Qty:</label>
+                                <div class="input-group input-group-sm w-auto">
+                                    <input type="number" name="quantity" value="{{ item.quantity }}"
+                                           min="1" class="form-control text-center">
+                                    <button type="submit" class="btn btn-outline-secondary">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </div>
+                                <span class="text-muted ms-2">Price: ₱{{ item.product.price }}</span>
+                            </form>
                         </div>
-                        <span class="text-muted ms-2">Price: ₱{{ item.product.price }}</span>
-                        </form>
-                    </div>
 
-                    <!-- Total + Remove -->
-                    <div class="text-end ms-auto">
-                        {% widthratio item.product.price 1 item.quantity as total %}
-                        <p class="mb-2 fw-semibold">Total: ₱ {{ total|floatformat:2 }}</p>
-                        <form method="post" action="{% url 'remove-from-cart' item.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                            <i class="fas fa-trash-alt me-1"></i>Remove
-                        </button>
-                        </form>
-                    </div>
+                        <!-- Total + Remove -->
+                        <div class="text-end ms-auto">
+                            {% widthratio item.product.price 1 item.quantity as total %}
+                            <p class="mb-2 fw-semibold">Total: ₱ {{ total|floatformat:2 }}</p>
+                            <form method="post" action="{% url 'remove-from-cart' item.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash-alt me-1"></i>Remove
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5 px-3 bg-light rounded-3 shadow-sm animate__animated animate__fadeIn">
+                    <div class="mb-4">
+                        <i class="fas fa-shopping-cart fa-4x text-secondary mb-3"></i>
+                        <h4 class="fw-bold text-dark">Your cart is empty</h4>
+                        <p class="text-muted">Looks like you haven’t added anything yet.</p>
+                    </div>
+                    <a href="{% url 'products' %}" class="btn btn-outline-primary btn-lg px-4 shadow-sm">
+                        <i class="fas fa-store me-2"></i>Browse Products
+                    </a>
                 </div>
+            </div>
             {% endfor %}
         </div>
-  
-    
+
+        {% if cart_items %}
+        <!-- Continue Shopping -->
+        <div class="row mt-5 justify-content-center">
+            <div class="col-md-8 text-center">
+                <div class="p-4 border rounded-3 bg-light animate__animated animate__fadeInUp shadow-sm shadow-hover">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fas fa-store me-2 text-primary"></i>Not done shopping?
+                    </h5>
+                    <p class="text-muted mb-4">Explore more items and find what you love.</p>
+                    <a href="{% url 'products' %}" 
+                       class="btn btn-primary btn-lg px-4 shadow-sm d-inline-flex align-items-center gap-2 animate__animated animate__pulse animate__infinite animate__slower">
+                        <i class="fas fa-arrow-left"></i> Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Summary -->
         <div class="row justify-content-end mt-5">
             <div class="col-md-6 col-lg-4">
-            <div class="bg-light rounded p-4 shadow-sm">
-                <h5 class="fw-bold mb-3">Summary</h5>
-                <ul class="list-unstyled mb-4">
-                <li class="d-flex justify-content-between mb-2">
-                    <span>Subtotal</span><span>₱ {{ sub_total|floatformat:2 }}</span>
-                </li>
-                <li class="d-flex justify-content-between mb-2">
-                    <span>Shipping</span><span>₱ {{ shipping|floatformat:2 }}</span>
-                </li>
-                <li class="d-flex justify-content-between border-top pt-2 fw-bold">
-                    <span>Total</span><span>₱ {{ to_pay|floatformat:2 }}</span>
-                </li>
-                </ul>
-                <div class="d-grid">
-                <a href="#" class="btn btn-primary btn-lg">
-                    <i class="fas fa-credit-card me-2"></i>Checkout
-                </a>
+                <div class="bg-light rounded p-4 shadow-sm shadow-hover">
+                    <h5 class="fw-bold mb-3">Summary</h5>
+                    <ul class="list-unstyled mb-4">
+                        <li class="d-flex justify-content-between mb-2">
+                            <span>Subtotal</span><span>₱ {{ sub_total|floatformat:2 }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between mb-2">
+                            <span>Shipping</span><span>₱ {{ shipping|floatformat:2 }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between border-top pt-2 fw-bold">
+                            <span>Total</span><span>₱ {{ to_pay|floatformat:2 }}</span>
+                        </li>
+                    </ul>
+                    <div class="d-grid">
+                        <a href="#" class="btn btn-primary btn-lg">
+                            <i class="fas fa-credit-card me-2"></i>Checkout
+                        </a>
+                    </div>
                 </div>
             </div>
-            </div>
         </div>
-    
-        <!-- Continue Shopping -->
-        <div class="text-center mt-4">
-            <a href="{% url 'products' %}" class="btn btn-link text-decoration-none">
-            <i class="fas fa-arrow-left me-1"></i>Continue Shopping
-            </a>
-        </div>
-        </div>
-    </section>
-    
+
+    </div>
+</section>
+
+<!-- Extra CSS -->
+<style>
+    .shadow-hover:hover {
+        box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.1) !important;
+    }
+</style>
 {% endblock %}
