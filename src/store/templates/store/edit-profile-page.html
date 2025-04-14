@@ -1,5 +1,4 @@
 {% extends 'store/index.html' %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 {% block content %}
 <!-- Breadcrumb -->
@@ -14,72 +13,148 @@
 </nav>
 
 <!-- Edit Profile Section -->
-<section class="edit-profile-section py-5">
+<section class="py-5">
     <div class="container">
-        <div class="text-center mb-5">
-            <h1 class="fw-bold"><i class="fas fa-user-edit"></i> Edit Your Profile</h1>
-            <p class="text-muted">Make changes to your personal details below.</p>
-        </div>
-
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <form method="post" enctype="multipart/form-data" action="{% url 'edit-profile-page' %}">
-                    {% csrf_token %}
-                    
-                    <!-- Profile Picture -->
-                    <div class="card mb-4 shadow-sm">
-                        <div class="card-header bg-primary text-white">
-                            <i class="fas fa-image"></i> Profile Picture
-                        </div>
-                        <div class="card-body text-center">
-                            <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="rounded-circle mb-3 shadow-sm" width="150">
-                            <div class="mb-3">
-                                <label for="profilePicture" class="form-label">Upload new photo</label>
-                                <input class="form-control" type="file" id="profilePicture" name="profile_picture" accept="image/*">
-                            </div>
-                        </div>
+                <div class="card mb-4 rounded-3 border-0 shadow">
+                    <div class="card-header py-3 bg-light">
+                        <h2 class="mb-0 text-center">
+                            <i class="fas fa-user-edit me-2"></i>Edit Your Profile
+                        </h2>
+                        <p class="text-muted text-center mb-0">Make changes to your personal details below.</p>
                     </div>
 
-                    <!-- Personal Info -->
-                    <div class="card mb-4 shadow-sm">
-                        <div class="card-header bg-primary text-white">
-                            <i class="fas fa-user-cog"></i> Personal Information
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label for="fullName" class="form-label"><i class="fas fa-user"></i> Full Name</label>
-                                <input type="text" class="form-control" id="fullName" name="full_name" value="{{ user.full_name }}" required>
-                            </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data" action="{% url 'edit-profile-page' %}">
+                            {% csrf_token %}
 
-                            <div class="mb-3">
-                                <label for="phone" class="form-label"><i class="fas fa-phone"></i> Phone</label>
-                                <input type="text" class="form-control" id="phone" name="phone">
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="address" class="form-label"><i class="fas fa-map-marker-alt"></i> Address</label>
-                                <textarea class="form-control" id="address" name="address" rows="3" required>{{ user.address }}</textarea>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="postalCode" class="form-label"><i class="fas fa-mail-bulk"></i> Postal Code</label>
-                                <input type="text" class="form-control" id="postalCode" name="postal_code" value="{{ user.postal_code }}" required>
-                            </div>
-
+                            <!-- Profile Picture Section -->
                             <div class="mb-4">
-                                <label for="country" class="form-label"><i class="fas fa-flag"></i> Country</label>
-                                <input type="text" class="form-control" id="country" name="country" value="{{ user.country }}" required>
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fas fa-image me-2"></i>Profile Picture
+                                </h5>
+                                <div class="text-center">
+                                    <div class="position-relative d-inline-block">
+                                        <img 
+                                        src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png{% endif %}" 
+                                        alt="Profile Picture"
+                                        class="rounded-circle mb-3 shadow-sm" 
+                                        style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #e9ecef;"
+                                    >
+                                    
+                                        <label for="profilePicture" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; cursor: pointer;">
+                                            <i class="fas fa-camera"></i>
+                                        </label>
+                                    </div>
+                                    <p class="text-muted mt-2">Upload new photo</p>
+                                    <input class="form-control d-none" type="file" id="profilePicture" name="profile_picture" accept="image/*">
+                                </div>
                             </div>
 
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <button type="submit" class="btn btn-success me-md-2"><i class="fas fa-save"></i> Save Changes</button>
-                                <a href="{% url 'profile-page' %}" class="btn btn-outline-secondary"><i class="fas fa-times"></i> Cancel</a>
+                            <hr class="my-4">
+
+                            <!-- Personal Information Section -->
+                            <div class="mb-4">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fas fa-user-cog me-2"></i>Personal Information
+                                </h5>
+
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label for="fullName" class="form-label fw-medium">Full Name</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                            <input type="text" class="form-control" id="fullName" name="full_name" value="{{ user.full_name|default:'' }}" required placeholder="Enter your full name">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label fw-medium">Phone</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.phone|default:'' }}" placeholder="Enter phone number">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label fw-medium">Email</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" readonly>
+                                        </div>
+                                        <small class="text-muted">Email cannot be changed</small>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="address" class="form-label fw-medium">Address</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                            <textarea class="form-control" id="address" name="address" rows="3" required placeholder="Enter your full address">{{ user.address|default:'' }}</textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="postalCode" class="form-label fw-medium">Postal Code</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-mail-bulk"></i></span>
+                                            <input type="text" class="form-control" id="postalCode" name="postal_code" value="{{ user.postal_code|default:'' }}" required placeholder="Enter postal code">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="country" class="form-label fw-medium">Country</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-flag"></i></span>
+                                            <select class="form-select" id="country" name="country" required>
+                                                <option value="" disabled {% if not user.country %}selected{% endif %}>Select your country</option>
+                                                <option value="US" {% if user.country == 'US' %}selected{% endif %}>United States</option>
+                                                <option value="CA" {% if user.country == 'CA' %}selected{% endif %}>Canada</option>
+                                                <option value="UK" {% if user.country == 'UK' %}selected{% endif %}>United Kingdom</option>
+                                                <option value="AU" {% if user.country == 'AU' %}selected{% endif %}>Australia</option>
+                                                <option value="Other" {% if user.country not in 'US,CA,UK,AU' %}selected{% endif %}>Other</option>
+                                            </select>                                            
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+
+                            <hr class="my-4">
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'profile-page' %}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times me-1"></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-1"></i>Save Changes
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 </section>
+
+<script>
+    document.getElementById('profilePicture').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            const profileImage = document.querySelector('img.rounded-circle');
+
+            reader.onload = function(e) {
+                profileImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Clicking camera icon opens file picker (in case browser doesn't auto-bind label)
+    document.querySelector('label[for="profilePicture"]').addEventListener('click', function() {
+        document.getElementById('profilePicture').click();
+    });
+</script>
 {% endblock %}
