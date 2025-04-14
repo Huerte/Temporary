@@ -37,11 +37,12 @@
                                 <div class="text-center">
                                     <div class="position-relative d-inline-block">
                                         <img 
-                                        src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png{% endif %}" 
-                                        alt="Profile Picture"
-                                        class="rounded-circle mb-3 shadow-sm" 
-                                        style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #e9ecef;"
-                                    >
+                                            src="{% if user_address.user_profile %}{{ user_address.user_profile.url }}{% else %}https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png{% endif %}" 
+                                            alt="Profile Picture"
+                                            class="rounded-circle mb-3 shadow-sm" 
+                                            style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #e9ecef;"
+                                        >
+
                                     
                                         <label for="profilePicture" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; cursor: pointer;">
                                             <i class="fas fa-camera"></i>
@@ -65,7 +66,7 @@
                                         <label for="fullName" class="form-label fw-medium">Full Name</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                            <input type="text" class="form-control" id="fullName" name="full_name" value="{{ user.full_name|default:'' }}" required placeholder="Enter your full name">
+                                            <input type="text" class="form-control" id="fullName" name="full_name" value="{{ user_address.full_name|default:'' }}" required placeholder="Enter your full name">
                                         </div>
                                     </div>
 
@@ -73,7 +74,7 @@
                                         <label for="phone" class="form-label fw-medium">Phone</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.phone|default:'' }}" placeholder="Enter phone number">
+                                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ user_address.phone|default:'' }}" placeholder="Enter phone number">
                                         </div>
                                     </div>
 
@@ -90,7 +91,7 @@
                                         <label for="address" class="form-label fw-medium">Address</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
-                                            <textarea class="form-control" id="address" name="address" rows="3" required placeholder="Enter your full address">{{ user.address|default:'' }}</textarea>
+                                            <textarea class="form-control" id="address" name="address" rows="3" required placeholder="Enter your full address">{{ user_address.address|default:'' }}</textarea>
                                         </div>
                                     </div>
 
@@ -98,7 +99,7 @@
                                         <label for="postalCode" class="form-label fw-medium">Postal Code</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-mail-bulk"></i></span>
-                                            <input type="text" class="form-control" id="postalCode" name="postal_code" value="{{ user.postal_code|default:'' }}" required placeholder="Enter postal code">
+                                            <input type="text" class="form-control" id="postalCode" name="postal_code" value="{{ user_address.postal_code|default:'' }}" required placeholder="Enter postal code">
                                         </div>
                                     </div>
 
@@ -107,15 +108,14 @@
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-flag"></i></span>
                                             <select class="form-select" id="country" name="country" required>
-                                                <option value="" disabled {% if not user.country %}selected{% endif %}>Select your country</option>
-                                                <option value="US" {% if user.country == 'US' %}selected{% endif %}>United States</option>
-                                                <option value="CA" {% if user.country == 'CA' %}selected{% endif %}>Canada</option>
-                                                <option value="UK" {% if user.country == 'UK' %}selected{% endif %}>United Kingdom</option>
-                                                <option value="AU" {% if user.country == 'AU' %}selected{% endif %}>Australia</option>
-                                                <option value="Other" {% if user.country not in 'US,CA,UK,AU' %}selected{% endif %}>Other</option>
-                                            </select>                                            
+                                                <option value="" disabled {% if not user_address.country %}selected{% endif %}>Select your country</option>
+                                                {% for code, name in countries %}
+                                                    <option value="{{ name }}" {% if user_address.country == name %}selected{% endif %}>{{ name }}</option>
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
+                                    
                                 </div>
                             </div>
 
@@ -150,11 +150,6 @@
             };
             reader.readAsDataURL(file);
         }
-    });
-
-    // Clicking camera icon opens file picker (in case browser doesn't auto-bind label)
-    document.querySelector('label[for="profilePicture"]').addEventListener('click', function() {
-        document.getElementById('profilePicture').click();
     });
 </script>
 {% endblock %}

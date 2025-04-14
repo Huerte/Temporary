@@ -16,6 +16,7 @@ from django.utils import timezone
 from django.urls import reverse
 from main import settings
 from . import models
+import pycountry
 
 
 def home(request):
@@ -73,7 +74,6 @@ def register_user(request):
 def logout_view(request):
     logout(request)
     return redirect('store_home')
-
 
 def forgot_password(request):
     if request.method == 'POST':
@@ -264,7 +264,32 @@ def profile_view(request):
 
 @login_required(login_url='/login')
 def change_password_view(request):
-    return notImplementedError("Change password functionality is not implemented yet.")
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        user = request.user
+        if user.check_password(current_password):
+            
+            password_have_error = False
+
+            if new_password != confirm_password:
+                password_have_error = True
+                messages.error(request, f"Password does not match")
+            if len(new_password) < 8:
+                password_have_error = True
+                messages.error(request, f"Password must atleast 8 characters")
+
+            if not password_have_error:
+                user.set_password(new_password)
+                user.save()
+                login(request, user)
+                return redirect('profile-page')
+        else:
+            messages.error(request, 'Incorrect password.')
+
+    return render(request, 'store/authentication-page/reset-password/change-password.html')
 
 @login_required(login_url='/login')
 def edit_profile_view(request):
@@ -283,8 +308,10 @@ def edit_profile_view(request):
 
         user_address.save()
         return redirect('profile-page')
+    
+    complete_countries = sorted([(c.alpha_2, c.name) for c in pycountry.countries], key=lambda x: x[1])
 
-    context = {'user_address': user_address}
+    context = {'user_address': user_address, 'countries': complete_countries}
 
     return render(request, 'store/edit-profile-page.html', context)
 
