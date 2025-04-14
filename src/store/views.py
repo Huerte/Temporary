@@ -263,6 +263,10 @@ def profile_view(request):
     return render(request, 'store/profile-page.html', {'user_address': user_address})
 
 @login_required(login_url='/login')
+def change_password_view(request):
+    return notImplementedError("Change password functionality is not implemented yet.")
+
+@login_required(login_url='/login')
 def edit_profile_view(request):
     user_address, created = models.ShippingAddress.objects.get_or_create(user=request.user)
 
