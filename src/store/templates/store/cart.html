@@ -31,46 +31,49 @@
         <!-- Cart Items -->
         <div class="row g-4">
             {% for item in cart_items %}
-            <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body d-flex flex-wrap align-items-center gap-3">
-                <!-- Product Image -->
-                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"
-                    class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
-        
-                <!-- Product Info -->
-                <div class="flex-grow-1">
-                    <h5 class="mb-1">{{ item.product.name }}</h5>
-                    <small class="text-muted d-block mb-1">
-                    Category: {{ item.product.category.name }}
-                    </small>
-                    <div class="d-flex align-items-center flex-wrap gap-2">
-                    <label class="mb-0 text-muted">Qty:</label>
-                    <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}"
-                            min="1" class="form-control form-control-sm w-auto text-center">
-                    <span class="text-muted">Price: ₱{{ item.product.price }}</span>
+                <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body d-flex flex-wrap align-items-center gap-3">
+                    <!-- Product Image -->
+                    <img src="{{ item.product.image }}" alt="{{ item.product.name }}"
+                        class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
+
+                    <!-- Product Info -->
+                    <div class="flex-grow-1">
+                        <h5 class="mb-1">{{ item.product.name }}</h5>
+                        <small class="text-muted d-block mb-1">
+                        Category: {{ item.product.category.name }}
+                        </small>
+
+                        <!-- Quantity Form -->
+                        <form method="POST" action="{% url 'update-cart' item.product.id %}" class="d-flex align-items-center flex-wrap gap-2">
+                        {% csrf_token %}
+                        <label class="mb-0 text-muted">Qty:</label>
+                        <div class="input-group input-group-sm w-auto">
+                            <input type="number" name="quantity" value="{{ item.quantity }}"
+                                min="1" class="form-control text-center">
+                            <button type="submit" class="btn btn-outline-secondary">
+                            <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <span class="text-muted ms-2">Price: ₱{{ item.product.price }}</span>
+                        </form>
+                    </div>
+
+                    <!-- Total + Remove -->
+                    <div class="text-end ms-auto">
+                        {% widthratio item.product.price 1 item.quantity as total %}
+                        <p class="mb-2 fw-semibold">Total: ₱ {{ total|floatformat:2 }}</p>
+                        <form method="post" action="{% url 'remove-from-cart' item.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash-alt me-1"></i>Remove
+                        </button>
+                        </form>
+                    </div>
                     </div>
                 </div>
-        
-                <!-- Total + Remove -->
-                <div class="text-end ms-auto">
-                    {% widthratio item.product.price 1 item.quantity as total %}
-                    <p class="mb-2 fw-semibold">Total: ₱ {{ total|floatformat:2 }}</p>
-                    <form method="post" action="{% url 'remove-from-cart' item.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                        <i class="fas fa-trash-alt me-1"></i>Remove
-                    </button>
-                    </form>
                 </div>
-                </div>
-            </div>
-            </div>
-            {% empty %}
-            <div class="col-12 text-center text-muted py-5">
-            <i class="fas fa-shopping-cart fa-2x mb-3"></i>
-            <p class="mb-0">Your cart is empty.</p>
-            </div>
             {% endfor %}
         </div>
   
