@@ -1,0 +1,55 @@
+{% extends 'store/index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="card shadow rounded-4 p-4 mx-auto" style="max-width: 600px;">
+    <h4 class="mb-4 text-center">Review for Order #{{ order.id }}</h4>
+
+    <form method="POST" novalidate>
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label for="rating" class="form-label fw-semibold">Rating</label>
+        <div id="star-rating" class="d-flex gap-1 fs-4">
+          {% for i in "12345" %}
+            <i class="fa-regular fa-star text-warning cursor-pointer" data-value="{{ i }}"></i>
+          {% endfor %}
+        </div>
+        <input type="hidden" name="rating" id="rating">
+      </div>
+
+      <div class="mb-3">
+        <label for="review" class="form-label fw-semibold">Your Review</label>
+        <textarea name="review" id="review" rows="4" class="form-control" placeholder="Share your experience..." required></textarea>
+      </div>
+
+      <div class="d-grid">
+        <button type="submit" class="btn btn-primary rounded-pill py-2">Submit Review</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+    const stars = document.querySelectorAll('#star-rating i');
+    const ratingInput = document.getElementById('rating');
+  
+    stars.forEach(star => {
+      star.addEventListener('click', () => {
+        const val = star.dataset.value;
+        ratingInput.value = val;
+  
+        stars.forEach(s => {
+          s.classList.remove('fa-solid');
+          s.classList.add('fa-regular');
+        });
+  
+        for (let i = 0; i < val; i++) {
+          stars[i].classList.remove('fa-regular');
+          stars[i].classList.add('fa-solid');
+        }
+      });
+    });
+</script>
+{% endblock %}

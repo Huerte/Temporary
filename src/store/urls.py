@@ -16,6 +16,10 @@ urlpatterns = [
     path('add-to-cart/<str:product_id>/', views.add_to_cart, name='add-to-cart'),
     path('update-cart/<str:product_id>/', views.update_cart, name='update-cart'),
     path('remove-from-cart/<str:product_id>/', views.remove_from_cart, name='remove-from-cart'),
+    path('checkout-view/', views.checkout_view, name='checkout-view'),
+    path('order-success-page/', views.order_success_page, name='order-success-page'),
+    path('order-details-view/<str:order_id>/', views.order_details_view, name='order-details-view'),
+    path('add-review/<str:order_id>/', views.add_review, name='add-review'),
 
     #Authentication Links
     path('login/', views.login_user, name='login-page'),

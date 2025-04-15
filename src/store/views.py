@@ -19,6 +19,7 @@ from . import models
 import pycountry
 
 
+##################################################################################
 def home(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -37,6 +38,14 @@ def home(request):
     # products = models.Product.objects.filter(is_featured=True)[:6]
     products = models.Product.objects.all()[:6]
     return render(request, 'store/home.html', {'products': products})
+
+@login_required(login_url='/login')
+def about_view(request):
+    return render(request, 'store/about.html')
+
+@login_required(login_url='/login')
+def contact_view(request):
+    return render(request, 'store/contact.html')
 
 ##################################################################################
 def login_user(request):
@@ -172,8 +181,72 @@ def reset_password(request, reset_id):
         return redirect('forgot-password')
     
     return render(request, 'store/authentication-page/reset-password/reset-password.html', {'reset_id': str(reset_entry.reset_id)})
-##################################################################################
 
+@login_required(login_url='/login')
+def change_password_view(request):
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        user = request.user
+        if user.check_password(current_password):
+            
+            password_have_error = False
+
+            if new_password != confirm_password:
+                password_have_error = True
+                messages.error(request, f"Password does not match")
+            if len(new_password) < 8:
+                password_have_error = True
+                messages.error(request, f"Password must atleast 8 characters")
+
+            if not password_have_error:
+                user.set_password(new_password)
+                user.save()
+                login(request, user)
+                return redirect('profile-page')
+        else:
+            messages.error(request, 'Incorrect password.')
+
+    return render(request, 'store/authentication-page/reset-password/change-password.html')
+
+##################################################################################
+@login_required(login_url='/login')
+def profile_view(request):
+    user_address, created = models.ShippingAddress.objects.get_or_create(user=request.user)
+    try:
+        orders = models.Order.objects.filter(user=request.user)
+    except models.Order.DoesNotExist:
+        orders = None
+    
+    return render(request, 'store/profile-page.html', {'user_address': user_address, 'orders': orders})
+
+@login_required(login_url='/login')
+def edit_profile_view(request):
+    user_address, created = models.ShippingAddress.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        user_address.full_name = request.POST.get('full_name')
+        user_address.phone = request.POST.get('phone')
+        user_address.address = request.POST.get('address')
+        user_address.postal_code = request.POST.get('postal_code')
+        user_address.country = request.POST.get('country')
+
+        profile = request.FILES.get('profile_picture')
+        if profile:
+            user_address.user_profile = profile
+
+        user_address.save()
+        return redirect('profile-page')
+    
+    complete_countries = sorted([(c.alpha_2, c.name) for c in pycountry.countries], key=lambda x: x[1])
+
+    context = {'user_address': user_address, 'countries': complete_countries}
+
+    return render(request, 'store/edit-profile-page.html', context)
+
+##################################################################################
 @login_required(login_url='/login')
 def product_view(request):
     category = models.Category.objects.all()
@@ -196,12 +269,133 @@ def product_view(request):
     return render(request, 'store/products.html', context)
 
 @login_required(login_url='/login')
-def about_view(request):
-    return render(request, 'store/about.html')
+def product_details(request, product_id):
+    product = models.Product.objects.get(id=product_id)
+    cart_item_exist = models.CartItem.objects.filter(user=request.user, product=product).exists()
+
+    context = {'product':product, 'cart_item_exist': cart_item_exist}
+    return render(request, 'store/product-detail.html', context)
+
+##################################################################################
+@login_required(login_url='/login')
+def cart_view(request):
+    cart_items = models.CartItem.objects.filter(user=request.user)
+    sub_total = 0
+    for item in cart_items:
+        sub_total += item.product.price * item.quantity
+    shipping = 120 
+    to_pay = sub_total + shipping
+
+    context = {'cart_items': cart_items, 'sub_total': sub_total, 'to_pay': to_pay, 'shipping': shipping}
+    return render(request, 'store/cart.html', context)
 
 @login_required(login_url='/login')
-def contact_view(request):
-    return render(request, 'store/contact.html')
+def add_to_cart(request, product_id):
+    if request.method == 'POST':
+        quantity = request.POST.get('quantity', 1)
+        product = models.Product.objects.get(id=product_id)
+        cart_item, created = models.CartItem.objects.get_or_create(
+            user=request.user,
+            product=product,
+            defaults={'quantity': quantity}
+        )
+
+        if not created:
+            cart_item.quantity += 1
+            cart_item.save()
+
+    return redirect('cart-view')
+
+@login_required(login_url='/login')
+def remove_from_cart(request, product_id):
+    if request.method == 'POST':
+        item = get_object_or_404(models.CartItem, id=product_id, user=request.user)
+        item.delete()
+    return redirect('cart-view')
+
+@login_required(login_url='/login')
+def update_cart(request, product_id):
+    if request.method == 'POST':
+        quantity = request.POST.get('quantity')
+
+        product = models.Product.objects.get(id=product_id)
+        cart_item = models.CartItem.objects.get(user=request.user, product=product)
+
+        try:
+            cart_item.quantity = quantity
+            cart_item.save()
+        except models.CartItem.DoesNotExist:
+            pass
+    return redirect('cart-view')
+
+##################################################################################
+@login_required(login_url='/login')
+def checkout_view(request):
+    cart_items = models.CartItem.objects.filter(user=request.user)
+    user_address, created = models.ShippingAddress.objects.get_or_create(user=request.user)
+    
+    sub_total = 0
+    for item in cart_items:
+        sub_total += item.product.price * item.quantity
+    shipping = 120 
+    to_pay = sub_total + shipping
+
+    if request.method == 'POST':
+        if not user_address.full_name or not user_address.address:
+            print('hello world')
+            messages.error(request, "Please add a shipping address before placing your order.")
+            return redirect('checkout-view')
+        
+        notes = request.POST.get('notes')
+        order = models.Order.objects.create(
+                user=request.user,
+                user_note=notes,
+        )
+
+        total_price = 0
+        for item in cart_items:
+            models.OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                quantity=item.quantity,
+                price=item.product.price,
+                total_price=item.quantity * item.product.price
+            )
+            total_price += item.product.price * item.quantity
+
+        order.total_price = total_price
+        order.save()
+
+        cart_items.delete()
+
+        return redirect('order-success-page')
+
+    context = {'cart_items': cart_items, 'user_address': user_address, 'sub_total': sub_total, 'shipping': shipping, 'to_pay': to_pay}
+    return render(request, 'store/checkout-page.html', context)
+
+@login_required(login_url='/login')
+def order_success_page(request):
+    order = models.Order.objects.filter(user=request.user).order_by('-created_at').first()
+    if not order:
+        return redirect('store_home')
+    
+    return render(request, 'store/order-success-page.html', {'order': order})
+
+@login_required(login_url='/login')
+def order_details_view(request, order_id):
+    order = get_object_or_404(models.Order, id=order_id, user=request.user)
+    
+    user_address = models.ShippingAddress.objects.get(user=request.user)
+    
+    context = {
+        'order': order,
+        'order_items': order.order_items.all(),
+        'user_address': user_address
+    }
+
+    return render(request, 'store/order-details.html', context)
+
+##################################################################################
 
 @login_required(login_url='/login')
 def contact(request):
@@ -237,120 +431,12 @@ def contact(request):
     return render(request, 'store/contact.html')
 
 @login_required(login_url='/login')
-def product_details(request, product_id):
-    product = models.Product.objects.get(id=product_id)
-    cart_item_exist = models.CartItem.objects.filter(user=request.user, product=product).exists()
-
-    context = {'product':product, 'cart_item_exist': cart_item_exist}
-    return render(request, 'store/product-detail.html', context)
-
-@login_required(login_url='/login')
-def cart_view(request):
-    cart_items = models.CartItem.objects.filter(user=request.user)
-    sub_total = 0
-    for item in cart_items:
-        sub_total += item.product.price * item.quantity
-    shipping = 120 
-    to_pay = sub_total + shipping
-
-    context = {'cart_items': cart_items, 'sub_total': sub_total, 'to_pay': to_pay, 'shipping': shipping}
-    return render(request, 'store/cart.html', context)
-
-@login_required(login_url='/login')
-def profile_view(request):
-    user_address, created = models.ShippingAddress.objects.get_or_create(user=request.user)
-    
-    return render(request, 'store/profile-page.html', {'user_address': user_address})
-
-@login_required(login_url='/login')
-def change_password_view(request):
+def add_review(request, order_id):
+    #ON WORK
+    order = get_object_or_404(models.Order, id=order_id)
     if request.method == 'POST':
-        current_password = request.POST.get('current_password')
-        new_password = request.POST.get('new_password')
-        confirm_password = request.POST.get('confirm_password')
-
-        user = request.user
-        if user.check_password(current_password):
-            
-            password_have_error = False
-
-            if new_password != confirm_password:
-                password_have_error = True
-                messages.error(request, f"Password does not match")
-            if len(new_password) < 8:
-                password_have_error = True
-                messages.error(request, f"Password must atleast 8 characters")
-
-            if not password_have_error:
-                user.set_password(new_password)
-                user.save()
-                login(request, user)
-                return redirect('profile-page')
-        else:
-            messages.error(request, 'Incorrect password.')
-
-    return render(request, 'store/authentication-page/reset-password/change-password.html')
-
-@login_required(login_url='/login')
-def edit_profile_view(request):
-    user_address, created = models.ShippingAddress.objects.get_or_create(user=request.user)
-
-    if request.method == 'POST':
-        user_address.full_name = request.POST.get('full_name')
-        user_address.phone = request.POST.get('phone')
-        user_address.address = request.POST.get('address')
-        user_address.postal_code = request.POST.get('postal_code')
-        user_address.country = request.POST.get('country')
-
-        profile = request.FILES.get('profile_picture')
-        if profile:
-            user_address.user_profile = profile
-
-        user_address.save()
-        return redirect('profile-page')
-    
-    complete_countries = sorted([(c.alpha_2, c.name) for c in pycountry.countries], key=lambda x: x[1])
-
-    context = {'user_address': user_address, 'countries': complete_countries}
-
-    return render(request, 'store/edit-profile-page.html', context)
-
-@login_required(login_url='/login')
-def add_to_cart(request, product_id):
-    if request.method == 'POST':
-        quantity = request.POST.get('quantity', 1)
-        product = models.Product.objects.get(id=product_id)
-        cart_item, created = models.CartItem.objects.get_or_create(
-            user=request.user,
-            product=product,
-            defaults={'quantity': quantity}
-        )
-
-        if not created:
-            cart_item.quantity += 1
-            cart_item.save()
-
-    return redirect('cart-view')
-
-@login_required(login_url='/login')
-def remove_from_cart(request, product_id):
-    if request.method == 'POST':
-        item = get_object_or_404(models.CartItem, id=product_id, user=request.user)
-        item.delete()
-    return redirect('cart-view')
-
-@login_required(login_url='/login')
-def update_cart(requests, product_id):
-    if requests.method == 'POST':
-        quantity = requests.POST.get('quantity')
-
-        product = models.Product.objects.get(id=product_id)
-        cart_item = models.CartItem.objects.get(user=requests.user, product=product)
-
-        try:
-            cart_item.quantity = quantity
-            cart_item.save()
-        except models.CartItem.DoesNotExist:
-            pass
-    return redirect('cart-view')
-    
+        review = request.POST.get('review')
+        rating = request.POST.get('rating')
+        
+        
+    return render(request, 'store/add-review-page.html', {'order': order})

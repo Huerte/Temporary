@@ -1,0 +1,78 @@
+{% extends 'store/index.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+        border: none;
+    }
+    
+    .table-striped tbody tr:nth-child(odd) {
+        background-color: #f9f9f9;
+    }
+    
+    .table th, .table td {
+        vertical-align: middle;
+    }
+    
+    h4.fw-bold {
+        margin-bottom: 20px;
+    }
+    
+    .text-center {
+        margin-bottom: 50px;
+    }    
+</style>
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">Order #{{ order.id }} Details</h1>
+        <p class="text-muted">Review the details of your order</p>
+    </div>
+
+    <!-- Order Information -->
+    <div class="card mb-4 p-4">
+        <h4 class="fw-bold">Order Information</h4>
+        <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+        <p><strong>Date:</strong> {{ order.created_at|date:"F j, Y" }}</p>
+        <p><strong>Total Price:</strong> ${{ order.total_price }}</p>
+    </div>
+
+    <!-- Order Items -->
+    <div class="card mb-4 p-4">
+        <h4 class="fw-bold">Order Items</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order_items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.price }}</td>
+                    <td>${{ item.total_price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Shipping Address -->
+    <div class="card p-4">
+        <h4 class="fw-bold">Shipping Address</h4>
+        <p><strong>Name:</strong> {{ user_address.full_name }}</p>
+        <p><strong>Address:</strong> {{ user_address.address }}</p>
+        <p><strong>Postal Code:</strong> {{ user_address.postal_code }}</p>
+        <p><strong>Phone:</strong> {{ user_address.phone }}</p>
+        <p><strong>Country:</strong> {{ user_address.country }}</p>
+    </div>
+</div>
+{% endblock %}

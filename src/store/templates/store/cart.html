@@ -16,16 +16,16 @@
     </div>
 </nav>
 
-<!-- Shopping Cart -->
-<section class="py-5 py-md-6">
+<!-- Cart Section -->
+<section class="py-5">
     <div class="container">
 
-        <!-- Title -->
+        <!-- Page Title -->
         <div class="text-center mb-5">
             <h1 class="fw-bold">
                 <i class="fas fa-shopping-cart me-2"></i>Your Cart
             </h1>
-            <p class="text-muted mb-0">Review items before checkout</p>
+            <p class="text-muted mb-0">Review your items before proceeding to checkout.</p>
         </div>
 
         <!-- Cart Items -->
@@ -33,44 +33,30 @@
             {% for item in cart_items %}
             <div class="col-12">
                 <div class="card border-0 shadow-sm shadow-hover">
-                    <div class="card-body d-flex flex-wrap align-items-center gap-3">
+                    <div class="card-body d-flex flex-wrap align-items-center gap-4">
                         <!-- Product Image -->
-                        <img src="{{ item.product.image }}" alt="{{ item.product.name }}"
-                             class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                        <img src="{{ item.product.image }}" alt="{{ item.product.name }}" class="rounded"
+                             style="width: 80px; height: 80px; object-fit: cover;">
 
                         <!-- Product Info -->
                         <div class="flex-grow-1">
                             <h5 class="mb-1">{{ item.product.name }}</h5>
-                            <small class="text-muted d-block mb-1">
-                                Category: {{ item.product.category.name }}
-                            </small>
-
-                            <!-- Quantity Form -->
-                            <form method="POST" action="{% url 'update-cart' item.product.id %}"
-                                  class="d-flex align-items-center flex-wrap gap-2">
-                                {% csrf_token %}
-                                <label class="mb-0 text-muted">Qty:</label>
-                                <div class="input-group input-group-sm w-auto">
-                                    <input type="number" name="quantity" value="{{ item.quantity }}"
-                                           min="1" class="form-control text-center">
-                                    <button type="submit" class="btn btn-outline-secondary">
-                                        <i class="fas fa-sync-alt"></i>
-                                    </button>
-                                </div>
-                                <span class="text-muted ms-2">Price: ₱{{ item.product.price }}</span>
-                            </form>
+                            <small class="text-muted d-block mb-2">Category: {{ item.product.category.name }}</small>
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <span class="text-muted">Qty:</span>
+                                <input type="number" value="{{ item.quantity }}" disabled
+                                       class="form-control form-control-sm w-auto bg-white text-center">
+                                <span class="text-muted ms-3">Price: ₱{{ item.product.price }}</span>
+                            </div>
                         </div>
 
-                        <!-- Total + Remove -->
+                        <!-- Item Total + Remove -->
                         <div class="text-end ms-auto">
                             {% widthratio item.product.price 1 item.quantity as total %}
-                            <p class="mb-2 fw-semibold">Total: ₱ {{ total|floatformat:2 }}</p>
-                            <form method="post" action="{% url 'remove-from-cart' item.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                    <i class="fas fa-trash-alt me-1"></i>Remove
-                                </button>
-                            </form>
+                            <p class="mb-2 fw-semibold">Total: ₱{{ total|floatformat:2 }}</p>
+                            <button type="button" class="btn btn-sm btn-outline-danger" disabled>
+                                <i class="fas fa-trash-alt me-1"></i>Remove
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -78,11 +64,9 @@
             {% empty %}
             <div class="col-12">
                 <div class="text-center py-5 px-3 bg-light rounded-3 shadow-sm animate__animated animate__fadeIn">
-                    <div class="mb-4">
-                        <i class="fas fa-shopping-cart fa-4x text-secondary mb-3"></i>
-                        <h4 class="fw-bold text-dark">Your cart is empty</h4>
-                        <p class="text-muted">Looks like you haven’t added anything yet.</p>
-                    </div>
+                    <i class="fas fa-shopping-cart fa-4x text-secondary mb-3"></i>
+                    <h4 class="fw-bold text-dark">Your cart is empty</h4>
+                    <p class="text-muted">Looks like you haven’t added anything yet.</p>
                     <a href="{% url 'products' %}" class="btn btn-outline-primary btn-lg px-4 shadow-sm">
                         <i class="fas fa-store me-2"></i>Browse Products
                     </a>
@@ -92,14 +76,14 @@
         </div>
 
         {% if cart_items %}
-        <!-- Continue Shopping -->
+        <!-- Continue Shopping CTA -->
         <div class="row mt-5 justify-content-center">
             <div class="col-md-8 text-center">
                 <div class="p-4 border rounded-3 bg-light animate__animated animate__fadeInUp shadow-sm shadow-hover">
                     <h5 class="fw-bold mb-3">
-                        <i class="fas fa-store me-2 text-primary"></i>Not done shopping?
+                        <i class="fas fa-store me-2 text-primary"></i>Still browsing?
                     </h5>
-                    <p class="text-muted mb-4">Explore more items and find what you love.</p>
+                    <p class="text-muted mb-4">Explore more items and find your perfect match.</p>
                     <a href="{% url 'products' %}" 
                        class="btn btn-primary btn-lg px-4 shadow-sm d-inline-flex align-items-center gap-2 animate__animated animate__pulse animate__infinite animate__slower">
                         <i class="fas fa-arrow-left"></i> Continue Shopping
@@ -109,26 +93,34 @@
         </div>
         {% endif %}
 
-        <!-- Summary -->
+        <!-- Summary Section -->
         <div class="row justify-content-end mt-5">
             <div class="col-md-6 col-lg-4">
-                <div class="bg-light rounded p-4 shadow-sm shadow-hover">
-                    <h5 class="fw-bold mb-3">Summary</h5>
+                <div class="bg-light p-4 rounded shadow-sm shadow-hover">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fas fa-receipt me-2 text-secondary"></i>Summary
+                    </h5>
                     <ul class="list-unstyled mb-4">
                         <li class="d-flex justify-content-between mb-2">
-                            <span>Subtotal</span><span>₱ {{ sub_total|floatformat:2 }}</span>
+                            <span>Subtotal</span><span>₱{{ sub_total|floatformat:2 }}</span>
                         </li>
                         <li class="d-flex justify-content-between mb-2">
-                            <span>Shipping</span><span>₱ {{ shipping|floatformat:2 }}</span>
+                            <span>Shipping</span><span>₱{{ shipping|floatformat:2 }}</span>
                         </li>
-                        <li class="d-flex justify-content-between border-top pt-2 fw-bold">
-                            <span>Total</span><span>₱ {{ to_pay|floatformat:2 }}</span>
+                        <li class="d-flex justify-content-between border-top pt-3 fw-bold">
+                            <span>Total</span><span>₱{{ to_pay|floatformat:2 }}</span>
                         </li>
                     </ul>
                     <div class="d-grid">
-                        <a href="#" class="btn btn-primary btn-lg">
+                        {% if sub_total == 0 %}
+                        <a href="#" class="btn btn-primary btn-lg disabled" tabindex="-1" aria-disabled="true">
                             <i class="fas fa-credit-card me-2"></i>Checkout
                         </a>
+                        {% else %}
+                        <a href="{% url 'checkout-view' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-credit-card me-2"></i>Checkout
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -137,7 +129,6 @@
     </div>
 </section>
 
-<!-- Extra CSS -->
 <style>
     .shadow-hover:hover {
         box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.1) !important;

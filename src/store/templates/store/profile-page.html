@@ -130,13 +130,20 @@
                         {% for order in orders %}
                         <tr>
                             <td>{{ order.id }}</td>
-                            <td>{{ order.date }}</td>
+                            <td>{{ order.created_at }}</td>
                             <td>{{ order.status }}</td>
-                            <td>${{ order.total }}</td>
+                            <td>${{ order.total_price }}</td>
                             <td class="text-end">
-                                <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-outline-info">
+                                
+                                <a href="{% url 'order-details-view' order.id %}" class="btn btn-sm btn-outline-info">
                                     <i class="bi bi-eye"></i> View
                                 </a>
+                                
+                                {% if order.status == "DELIVERED" %}
+                                    <a href="{% url 'add-review' order.id %}" class="btn btn-sm btn-outline-primary ms-2">
+                                        <i class="bi bi-pencil-square me-1"></i> Add Review
+                                    </a>
+                                {% endif %}
                             </td>
                         </tr>
                         {% empty %}
@@ -148,7 +155,7 @@
                             </td>
                         </tr>
                         {% endfor %}
-                    </tbody>
+                    </tbody>                    
                 </table>
             </div>
         </div>

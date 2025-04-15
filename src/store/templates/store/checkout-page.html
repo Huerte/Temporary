@@ -1,0 +1,144 @@
+{% extends 'store/index.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="bg-body-tertiary py-3 mb-4">
+    <div class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a href="{% url 'store_home' %}" class="text-decoration-none">
+                    <i class="fas fa-home me-1"></i>Home
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'cart-view' %}" class="text-decoration-none">Cart</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+        </ol>
+    </div>
+</nav>
+
+<!-- Checkout Page -->
+<section class="py-5">
+    {% if messages %}
+    <div class="container mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="container">
+        <div class="row g-5">
+            <!-- Billing Info -->
+            <div class="col-lg-7 order-2 order-lg-1">
+                <h2 class="fw-bold mb-4 d-flex align-items-center">
+                    <i class="fas fa-file-invoice text-primary me-2"></i>Billing Information
+                </h2>
+
+                {% if not user_address.full_name or not user_address.address %}
+                <div class="alert alert-warning d-flex align-items-center" role="alert" id="missing-address-alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <div>
+                        Please provide your shipping address before placing the order.
+                        <a href="{% url 'edit-profile-page' %}" class="alert-link ms-1">Click here to update.</a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <form method="POST" action="{% url 'checkout-view' %}" class="needs-validation" novalidate id="checkout-form">
+                    {% csrf_token %}
+
+                    <!-- Shipping Address Summary -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="fw-bold mb-0 d-flex align-items-center">
+                                <i class="bi bi-geo-alt text-danger me-2"></i>Shipping Address
+                            </h5>
+                            <a href="{% url 'edit-profile-page' %}" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-pencil-square me-1"></i>Edit
+                            </a>
+                        </div>
+                        <div class="p-3 border rounded shadow-sm bg-light-subtle">
+                            <p class="mb-1 fw-semibold text-dark">{{ user_address.full_name }}</p>
+                            <p class="mb-1 text-muted">{{ user_address.address }}</p>
+                            <p class="mb-1 text-muted">{{ user_address.postal_code }}, {{ user_address.country }}</p>
+                            <p class="mb-0 text-muted">{{ user_address.phone }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Order Notes -->
+                    <div class="mb-4">
+                        <label for="notes" class="form-label fw-semibold">Order Notes <span class="text-muted">(Optional)</span></label>
+                        <textarea class="form-control shadow-sm" id="notes" name="notes" rows="3" placeholder="Add any instructions or preferences here..."></textarea>
+                    </div>
+
+                    <!-- Place Order Button -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                            <i class="fas fa-lock me-2"></i>Place Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-5 order-1 order-lg-2">
+                <div class="bg-white p-4 rounded-4 shadow h-100 border">
+                    <h4 class="fw-bold mb-4 text-primary">
+                        <i class="fas fa-list me-2"></i>Order Summary
+                    </h4>
+                    <ul class="list-unstyled mb-4">
+                        {% for item in cart_items %}
+                            <li class="d-flex justify-content-between align-items-start mb-3 border-bottom pb-2">
+                                <div>
+                                    <span class="fw-semibold d-block">{{ item.product.name }}</span>
+                                    <small class="text-muted">Qty: {{ item.quantity }}</small>
+                                </div>
+                                <div class="text-end">
+                                    {% widthratio item.product.price 1 item.quantity as line_total %}
+                                    <span class="fw-semibold text-dark">₱ {{ line_total|floatformat:2 }}</span>
+                                </div>
+                            </li>
+                        {% endfor %}
+                        <li class="d-flex justify-content-between pt-3 border-top">
+                            <span class="text-muted">Subtotal</span>
+                            <span>₱ {{ sub_total|floatformat:2 }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between py-2">
+                            <span class="text-muted">Shipping</span>
+                            <span>₱ {{ shipping|floatformat:2 }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between pt-3 mt-2 border-top fw-bold fs-5 text-success">
+                            <span>Total</span>
+                            <span>₱ {{ to_pay|floatformat:2 }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Bootstrap Validation JS -->
+<script>
+    (() => {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock %}
