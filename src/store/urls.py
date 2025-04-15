@@ -20,6 +20,7 @@ urlpatterns = [
     path('order-success-page/', views.order_success_page, name='order-success-page'),
     path('order-details-view/<str:order_id>/', views.order_details_view, name='order-details-view'),
     path('add-review/<str:order_id>/', views.add_review, name='add-review'),
+    path('search-product', views.search_product, name='search-product'),
 
     #Authentication Links
     path('login/', views.login_user, name='login-page'),

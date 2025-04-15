@@ -437,6 +437,24 @@ def add_review(request, order_id):
     if request.method == 'POST':
         review = request.POST.get('review')
         rating = request.POST.get('rating')
-        
-        
+  
     return render(request, 'store/add-review-page.html', {'order': order})
+
+def search_product(request):
+    products = []
+    query = ''
+
+    if request.method == 'POST':
+        query = request.POST.get('query', '')
+
+        if query:
+            name_matches = models.Product.objects.filter(name__icontains=query)
+            if name_matches.exists():
+                products = name_matches
+            else:
+                category = models.Category.objects.filter(name__iexact=query).first()
+                if category:
+                    products = models.Product.objects.filter(category=category)
+
+    context = {'products': products, 'query': query}
+    return render(request, 'store/search-results.html', context)

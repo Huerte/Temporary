@@ -1,0 +1,186 @@
+{% extends 'store/index.html' %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+{% block content %}
+<style>
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-thumb { background-color: rgba(0, 0, 0, 0.2); border-radius: 3px; }
+
+  .view-toggle .btn.active {
+    background-color: #212529;
+    color: #fff;
+  }
+
+  .product-card-column {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    background-color: #fff;
+  }
+
+  .product-card-column img {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+  }
+
+  .product-info {
+    flex-grow: 1;
+  }
+
+  .product-actions {
+    min-width: 160px;
+    text-align: right;
+  }
+
+  .product-price {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .text-strike {
+    text-decoration: line-through;
+    font-size: 0.9rem;
+  }
+</style>
+
+<nav aria-label="breadcrumb" class="bg-light py-3 mb-4 border-bottom">
+  <div class="container">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="{% url 'store_home' %}"><i class="fas fa-home me-1"></i>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Search Results</li>
+    </ol>
+  </div>
+</nav>
+
+<section class="py-5">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+      <h4 class="fw-semibold mb-3 mb-md-0">Search Results for "{{ query }}"</h4>
+      <div class="btn-group view-toggle" role="group" aria-label="View Options">
+        <button type="button" class="btn btn-outline-dark active" data-view="grid"><i class="fas fa-th"></i></button>
+        <button type="button" class="btn btn-outline-dark" data-view="column"><i class="fas fa-bars"></i></button>
+      </div>
+    </div>
+
+    {% if products %}
+    <div id="product-grid" class="row g-4">
+      {% for product in products %}
+      <div class="col-12 col-sm-6 col-md-4 product-item">
+        <div class="card h-100 w-100 shadow-sm border-0 position-relative d-flex flex-column view-card product-card-grid">
+          {% if product.is_on_sale %}
+          <span class="badge bg-danger position-absolute top-0 start-0 m-2">Sale</span>
+          {% endif %}
+          <a href="{% url 'product-details' product.id %}" class="text-decoration-none text-dark">
+            <img src="{{ product.image }}" class="card-img-top rounded-top object-fit-cover" style="height: 200px;" alt="{{ product.name }}">
+            <div class="card-body px-3 pt-3 pb-2 d-flex flex-column">
+              <h6 class="fw-semibold mb-1 text-truncate">{{ product.name }}</h6>
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                {% if product.is_on_sale %}
+                <span class="text-danger fw-bold">${{ product.discounted_price|floatformat:2 }}</span>
+                <small class="text-muted text-strike">${{ product.price|floatformat:2 }}</small>
+                {% else %}
+                <span class="text-primary fw-bold">${{ product.price|floatformat:2 }}</span>
+                {% endif %}
+              </div>
+              <p class="text-muted small mb-0">{{ product.category }}</p>
+            </div>
+          </a>
+          <div class="card-footer bg-white border-0 px-3 pb-3 pt-0 mt-auto">
+            {% if product.id in products_in_cart %}
+            <button class="btn btn-outline-secondary w-100" disabled>
+              <i class="fas fa-check me-2"></i>Already in Cart
+            </button>
+            {% else %}
+            <form method="post" action="{% url 'add-to-cart' product.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-dark w-100">
+                <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+              </button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Column layout -->
+        <div class="product-card-column d-none">
+          <img src="{{ product.image }}" alt="{{ product.name }}">
+          <div class="product-info">
+            <a href="{% url 'product-details' product.id %}" class="text-decoration-none text-dark">
+              <h6 class="fw-semibold mb-1">{{ product.name }}</h6>
+            </a>
+            <p class="mb-1 text-muted small">{{ product.category }}</p>
+            {% if product.is_on_sale %}
+            <div class="text-danger product-price mb-1">${{ product.discounted_price|floatformat:2 }}
+              <span class="text-muted text-strike ms-2">${{ product.price|floatformat:2 }}</span>
+            </div>
+            {% else %}
+            <div class="text-primary product-price mb-1">${{ product.price|floatformat:2 }}</div>
+            {% endif %}
+          </div>
+          <div class="product-actions">
+            {% if product.id in products_in_cart %}
+            <button class="btn btn-outline-secondary w-100 mb-2" disabled>
+              <i class="fas fa-check me-2"></i>In Cart
+            </button>
+            {% else %}
+            <form method="post" action="{% url 'add-to-cart' product.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-dark w-100 mb-2">
+                <i class="fas fa-shopping-cart me-2"></i>Add
+              </button>
+            </form>
+            {% endif %}
+            <a href="{% url 'product-details' product.id %}" class="btn btn-outline-dark w-100">Details</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <i class="fas fa-search fa-3x text-muted mb-4"></i>
+      <h4 class="fw-bold text-muted">No products matched your search.</h4>
+      <p class="text-muted">Try different keywords or check back later.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const buttons = document.querySelectorAll(".view-toggle button");
+    const items = document.querySelectorAll(".product-item");
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const view = btn.dataset.view;
+
+        items.forEach(item => {
+          const gridCard = item.querySelector(".product-card-grid");
+          const columnCard = item.querySelector(".product-card-column");
+
+          if (view === "grid") {
+            item.classList.remove("col-12");
+            item.classList.add("col-sm-6", "col-md-4");
+            gridCard.classList.remove("d-none");
+            columnCard.classList.add("d-none");
+          } else {
+            item.classList.remove("col-sm-6", "col-md-4");
+            item.classList.add("col-12");
+            gridCard.classList.add("d-none");
+            columnCard.classList.remove("d-none");
+          }
+        });
+      });
+    });
+  });
+</script>
+{% endblock %}

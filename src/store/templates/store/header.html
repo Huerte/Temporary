@@ -27,7 +27,8 @@
       <!-- Search + User Actions -->
       <div class="d-flex align-items-center gap-3">
         <!-- Search Bar -->
-        <form class="d-none d-lg-block" role="search">
+        <form method='POST' class="d-none d-lg-block" role="search" action="{% url 'search-product' %}">
+          {% csrf_token %}
           <div class="position-relative">
             <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
             <input
@@ -36,6 +37,7 @@
               placeholder="Search products..."
               aria-label="Search"
               style="min-width: 240px;"
+              name = 'query'
             >
           </div>
         </form>
