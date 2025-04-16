@@ -131,9 +131,9 @@
                         {% for order in orders %}
                         <tr>
                             <td>{{ order.id }}</td>
-                            <td>{{ order.date }}</td>
+                            <td>{{ order.create_at }}</td>
                             <td>{{ order.status }}</td>
-                            <td>${{ order.total }}</td>
+                            <td>${{ order.total_price }}</td>
                             <td class="text-end">
                                 <a href="{% url 'order-details-view' order.id %}" class="btn btn-sm btn-outline-info">
                                     <i class="bi bi-eye"></i> View

@@ -65,11 +65,9 @@
           <!-- Cart Icon -->
           <a href="{% url 'cart-view' %}" class="btn btn-outline-secondary position-relative rounded-pill px-3 shadow-sm" title="Cart">
             <i class="fas fa-shopping-cart"></i>
-            {% if cart_item_quantity > 0 %}
-              <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" {% if cart_item_quantity == 0 %}style="display: none;"{% endif %}>
-                {{ cart_item_quantity }}
-              </span>
-            {% endif %}
+            <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" {% if cart_item_quantity == 0 %}style="display: none;"{% endif %}>
+              {{ cart_item_quantity }}
+            </span>
           </a>
         {% else %}
           <!-- Login & Register -->

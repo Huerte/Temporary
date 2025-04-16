@@ -11,9 +11,11 @@ from django.template.loader import render_to_string
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 from django.contrib import messages
 from decimal import Decimal
 from django.utils import timezone
+from django.db.models import Sum
 from django.urls import reverse
 from main import settings
 from . import models
@@ -40,7 +42,6 @@ def home(request):
     products = models.Product.objects.all()[:6]
     return render(request, 'store/home.html', {'products': products})
 
-@login_required(login_url='/login')
 def about_view(request):
     return render(request, 'store/about.html')
 
@@ -321,6 +322,14 @@ def add_to_cart(request, product_id):
             cart_item.quantity += 1
             cart_item.save()
 
+        # AJAX request: return JSON to prevent full page reload
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            total_quantity = models.CartItem.objects.filter(user=request.user).aggregate(
+                total=Sum('quantity')
+            )['total'] or 0
+            return JsonResponse({'success': True, 'quantity': cart_item.quantity, 'cart_total': total_quantity})
+
+
     return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
 
 def apply_promo(request):
@@ -497,5 +506,11 @@ def add_review(request, product_id):
         review = request.POST.get('review')
 
         product = models.Product.objects.get(id=product_id)
+
+        product_review = models.ProductReview.objects.create(
+            product=product, user = request.user,
+            rating=rating, review=review
+        )
+        product_review.save()
 
     return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))

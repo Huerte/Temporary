@@ -78,7 +78,11 @@
                     </a>
                 
                     <div class="card-footer bg-white border-0 px-3 pb-3 pt-0 mt-auto">
-                      {% if product.id in products_in_cart %}
+                      {% if not user.is_authenticated %}
+                        <a href="{% url 'login-page' %}?next={{ request.path }}" class="btn btn-dark w-100">
+                          <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                        </a>                      
+                      {% elif product.id in products_in_cart %}
                         <button class="btn btn-outline-secondary w-100" disabled>
                           <i class="fas fa-check me-2"></i>Already in Cart
                         </button>
@@ -173,59 +177,66 @@
 </section>
 
 <!-- Prevent full page reload when adding a product to cart thus resetting scroll -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      // Handle category toggle (existing)
-      const toggleBtn = document.getElementById("toggle-category");
-      const extraItems = document.querySelectorAll(".extra-cat");
-      let expanded = false;
-    
-      if (toggleBtn) {
-        toggleBtn.addEventListener("click", function () {
-          expanded = !expanded;
-          extraItems.forEach(el => el.classList.toggle("d-none"));
-          toggleBtn.innerHTML = expanded
-            ? '<span>See Less</span> <i class="fas fa-chevron-up small"></i>'
-            : '<span>See More</span> <i class="fas fa-chevron-down small"></i>';
-        });
-      }
-    
-      // Prevent scroll reset by intercepting form submit
-      document.querySelectorAll(".add-to-cart-form").forEach(form => {
-        form.addEventListener("submit", async function (e) {
-          e.preventDefault();
-    
-          const formData = new FormData(form);
-          const url = form.getAttribute("action");
-    
-          try {
-            const response = await fetch(url, {
-              method: "POST",
-              headers: {
-                "X-Requested-With": "XMLHttpRequest",
-                "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
-              },
-              body: formData,
-            });
-    
-            if (response.ok) {
-              // Disable the button, show "Already in Cart"
-              const button = form.querySelector("button");
-              button.outerHTML = `
-                <button class="btn btn-outline-secondary w-100" disabled>
-                  <i class="fas fa-check me-2"></i>Already in Cart
-                </button>
-              `;
-            } else {
-              console.error("Failed to add to cart");
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Category toggle (existing)
+    const toggleBtn = document.getElementById("toggle-category");
+    const extraItems = document.querySelectorAll(".extra-cat");
+    let expanded = false;
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener("click", function () {
+        expanded = !expanded;
+        extraItems.forEach(el => el.classList.toggle("d-none"));
+        toggleBtn.innerHTML = expanded
+          ? '<span>See Less</span> <i class="fas fa-chevron-up small"></i>'
+          : '<span>See More</span> <i class="fas fa-chevron-down small"></i>';
+      });
+    }
+
+    // Add to cart AJAX + badge update
+    document.querySelectorAll(".add-to-cart-form").forEach(form => {
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const url = form.getAttribute("action");
+
+        try {
+          const response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+              "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+            },
+            body: formData,
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+
+            // Button UI change
+            const button = form.querySelector("button");
+            button.outerHTML = `
+              <button class="btn btn-outline-secondary w-100" disabled>
+                <i class="fas fa-check me-2"></i>Already in Cart
+              </button>
+            `;
+
+            // Badge update
+            const badge = document.getElementById("cart-badge");
+            if (badge) {
+              badge.textContent = data.cart_total;
+              badge.style.display = data.cart_total > 0 ? "inline-block" : "none";
             }
-          } catch (error) {
-            console.error("AJAX error:", error);
+          } else {
+            console.error("Failed to add to cart");
           }
-        });
+        } catch (error) {
+          console.error("AJAX error:", error);
+        }
       });
     });
-    </script>
-  
-  
+  });
+</script>
+
 {% endblock %}
