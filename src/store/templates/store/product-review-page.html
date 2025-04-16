@@ -1,0 +1,77 @@
+{% extends 'store/index.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container py-5">
+  <nav aria-label="breadcrumb" class="bg-light py-3 mb-4 border-bottom">
+    <div class="container">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'profile-page' %}">Profile</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Review</li>
+      </ol>
+    </div>
+  </nav>
+  <h4 class="mb-4 text-center">Review Products from Order #{{ order.id }}</h4>
+
+  {% for item in order.order_items.all %}
+  <div class="card shadow rounded-4 p-4 mb-4">
+    <div class="row g-3">
+      <div class="col-md-3 text-center">
+        <img src="{{ item.product.image }}" alt="{{ item.product.name }}" class="img-fluid rounded">
+      </div>
+      <div class="col-md-9">
+        <h5 class="fw-bold">{{ item.product.name }}</h5>
+        <p class="mb-1">Quantity: {{ item.quantity }}</p>
+        <p class="mb-3">Price: ₱{{ item.price }}</p>
+
+        {% if item.product.id in reviewed_product_ids %}
+          <div class="alert alert-success mt-3">
+            <i class="bi bi-check-circle-fill me-2"></i>You have already reviewed this product.
+          </div>
+        {% else %}
+          <form method="POST" action="{% url 'add-review' item.product.id %}" class="review-form">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Rating</label>
+              <div class="star-rating d-flex gap-1 fs-4" data-input-id="rating-{{ forloop.counter }}">
+                {% for i in "12345" %}
+                <i class="fa-regular fa-star text-warning cursor-pointer" data-value="{{ i }}"></i>
+                {% endfor %}
+              </div>
+              <input type="hidden" name="rating" id="rating-{{ forloop.counter }}">
+            </div>
+
+            <div class="mb-3">
+              <label for="review-{{ forloop.counter }}" class="form-label fw-semibold">Your Review</label>
+              <textarea name="review" id="review-{{ forloop.counter }}" rows="3" class="form-control" placeholder="Share your thoughts..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary rounded-pill px-4">Submit Review</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+</div>
+
+<script>
+  document.querySelectorAll('.star-rating').forEach(starContainer => {
+    const inputId = starContainer.dataset.inputId;
+    const stars = starContainer.querySelectorAll('i');
+    const ratingInput = document.getElementById(inputId);
+
+    stars.forEach((star, index) => {
+      star.addEventListener('click', () => {
+        ratingInput.value = index + 1;
+        stars.forEach((s, i) => {
+          s.classList.toggle('fa-solid', i <= index);
+          s.classList.toggle('fa-regular', i > index);
+        });
+      });
+    });
+  });
+</script>
+{% endblock %}
