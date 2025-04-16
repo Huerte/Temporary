@@ -309,8 +309,9 @@ def add_to_cart(request, product_id):
 @login_required(login_url='/login')
 def remove_from_cart(request, product_id):
     if request.method == 'POST':
-        item = get_object_or_404(models.CartItem, id=product_id, user=request.user)
-        item.delete()
+        item = models.CartItem.objects.filter(id=product_id, user=request.user).first()
+        if item:
+            item.delete()
     return redirect('cart-view')
 
 @login_required(login_url='/login')

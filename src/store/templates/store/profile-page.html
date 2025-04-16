@@ -14,11 +14,12 @@
         <div class="col-lg-4">
             <div class="card h-100 p-4 text-center">
                 <!-- User Avatar -->
-                {% if user_address.user_profile %}
-                    <img src="{{ user_address.user_profile.url }}" alt="User Avatar" class="mx-auto d-block profile-img mb-3">
-                {% else %}
-                    <i class="bi bi-person-circle text-secondary" style="font-size: 140px;"></i>
-                {% endif %}
+                <img 
+                    src="{% if user_address.user_profile %}{{ user_address.user_profile.url }}{% else %}https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png{% endif %}" 
+                    alt="Profile Picture"
+                    class="rounded-circle mb-3 shadow-sm mx-auto d-block" 
+                    style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #e9ecef;"
+                >
 
                 <!-- Username -->
                 <h3 class="fw-bold mb-0">{{ user.username }}</h3>
@@ -130,20 +131,13 @@
                         {% for order in orders %}
                         <tr>
                             <td>{{ order.id }}</td>
-                            <td>{{ order.created_at }}</td>
+                            <td>{{ order.date }}</td>
                             <td>{{ order.status }}</td>
-                            <td>${{ order.total_price }}</td>
+                            <td>${{ order.total }}</td>
                             <td class="text-end">
-                                
-                                <a href="{% url 'order-details-view' order.id %}" class="btn btn-sm btn-outline-info">
+                                <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-outline-info">
                                     <i class="bi bi-eye"></i> View
                                 </a>
-                                
-                                {% if order.status == "DELIVERED" %}
-                                    <a href="{% url 'add-review' order.id %}" class="btn btn-sm btn-outline-primary ms-2">
-                                        <i class="bi bi-pencil-square me-1"></i> Add Review
-                                    </a>
-                                {% endif %}
                             </td>
                         </tr>
                         {% empty %}
@@ -155,7 +149,7 @@
                             </td>
                         </tr>
                         {% endfor %}
-                    </tbody>                    
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -177,7 +171,6 @@
         border-radius: 12px;
         box-shadow: 0 6px 15px rgba(0,0,0,0.05);
         border: none;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .card:hover {
         transform: translateY(-5px);

@@ -2,152 +2,219 @@
 {% load static %}
 
 {% block content %}
-<!-- Breadcrumb -->
-<nav aria-label="breadcrumb" class="bg-body-tertiary py-3 mb-4">
-    <div class="container">
-        <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item">
-                <a href="{% url 'store_home' %}" class="text-decoration-none">
-                    <i class="fas fa-home me-1"></i>Home
-                </a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
-        </ol>
-    </div>
-</nav>
+<div class="container py-5">
+  <div class="row">
+    <!-- Cart Items -->
+    <div class="col-lg-8 mb-4">
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="cart-header pb-3">
+            <h2 class="mb-1"><i class="fas fa-shopping-cart me-2"></i>Your Cart</h2>
+            <p class="text-muted">Review your items before proceeding to checkout.</p>
+          </div>
 
-<!-- Cart Section -->
-<section class="py-5">
-    <div class="container">
-
-        <!-- Page Title -->
-        <div class="text-center mb-5">
-            <h1 class="fw-bold">
-                <i class="fas fa-shopping-cart me-2"></i>Your Cart
-            </h1>
-            <p class="text-muted mb-0">Review your items before proceeding to checkout.</p>
-        </div>
-
-        <!-- Cart Items -->
-        <div class="row g-4">
+          <div class="cart-items">
             {% for item in cart_items %}
             <form method="POST" action="{% url 'update-cart' item.product.id %}">
-                {% csrf_token %}
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm shadow-hover position-relative">
-                        <div class="card-body d-flex flex-wrap align-items-center gap-4">
-                            <img src="{{ item.product.image }}" alt="{{ item.product.name }}" class="rounded"
-                                style="width: 80px; height: 80px; object-fit: cover;">
-                            
-                            <div class="flex-grow-1">
-                                <h5 class="mb-1 position-relative">
-                                    {{ item.product.name }}
-                                    <a href="{% url 'product-details' item.product.id %}" class="stretched-link"></a>
-                                </h5>
-                                <small class="text-muted d-block mb-2">Category: {{ item.product.category.name }}</small>
-                                <div class="d-flex flex-wrap align-items-center gap-2">
-                                    <span class="text-muted">Qty:</span>
-                                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
-                                        class="form-control form-control-sm w-auto bg-white text-center">
-                                    <span class="text-muted ms-3">Price: ₱{{ item.product.price }}</span>
-                                </div>
-                            </div>
-                
-                            <div class="text-end ms-auto">
-                                <div class="d-flex flex-column align-items-end ms-auto">
-                                    {% widthratio item.product.price 1 item.quantity as total %}
-                                    <p class="mb-2 fw-semibold">Total: ₱{{ total|floatformat:2 }}</p>
-                                    <div class="d-flex flex-column gap-2">
-                                        <button type="submit" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-sync-alt me-1"></i>Update
-                                        </button>
-                                        <button formaction="{% url 'remove-from-cart' item.product.id %}" 
-                                                formmethod="post"
-                                                class="btn btn-sm btn-outline-danger">
-                                            {% csrf_token %}
-                                            <i class="fas fa-trash-alt me-1"></i>Remove
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+              {% csrf_token %}
+              <div class="row mb-4 pb-3 border-bottom">
+                <div class="col-md-2 col-4 mb-2 mb-md-0">
+                  <img src="{{ item.product.image }}" alt="{{ item.product.name }}" class="cart-item-img">
+                </div>
+                <div class="col-md-10 col-8">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <h5 class="mb-1">{{ item.product.name }}</h5>
+                      <span class="category-badge">{{ item.product.category.name }}</span>
                     </div>
+                    <span class="price-tag">₱{{ item.product.price }}</span>
+                  </div>
+                  <div class="row align-items-center mt-3">
+                    <div class="col-md-4 col-6 mb-2 mb-md-0">
+                        <div class="input-group quantity-wrapper">
+                            <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn minus-btn">-</button>
+                            <input type="number" name="quantity" class="form-control text-center quantity-input" value="{{ item.quantity }}" min="1">
+                            <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn plus-btn">+</button>
+                          </div>                          
+                      </div>
+                      
+                    <div class="col-md-8 col-6 text-end">
+                      <button type="submit" class="btn btn-update btn-sm me-2"><i class="fas fa-sync-alt me-1"></i>Update</button>
+                        <button formaction="{% url 'remove-from-cart' item.id %}" formmethod="post" class="btn btn-remove btn-sm">
+                            {% csrf_token %}<i class="fas fa-trash me-1"></i>Remove
+                        </button>                    
+                    </div>
+                  </div>
                 </div>
-                
+              </div>
             </form>
-            
-            
             {% empty %}
-            <div class="col-12">
-                <div class="text-center py-5 px-3 bg-light rounded-3 shadow-sm animate__animated animate__fadeIn">
-                    <i class="fas fa-shopping-cart fa-4x text-secondary mb-3"></i>
-                    <h4 class="fw-bold text-dark">Your cart is empty</h4>
-                    <p class="text-muted">Looks like you haven’t added anything yet.</p>
-                    <a href="{% url 'products' %}" class="btn btn-outline-primary btn-lg px-4 shadow-sm">
-                        <i class="fas fa-store me-2"></i>Browse Products
-                    </a>
-                </div>
+            <div class="text-center py-5 px-3 bg-white rounded shadow-sm">
+              <i class="fas fa-shopping-cart fa-4x text-secondary mb-3"></i>
+              <h4 class="fw-bold text-dark">Your cart is empty</h4>
+              <p class="text-muted">Looks like you haven’t added anything yet.</p>
+              <a href="{% url 'products' %}" class="btn btn-outline-primary btn-sm px-4 shadow-sm">
+                <i class="fas fa-store me-2"></i>Browse Products
+              </a>
             </div>
             {% endfor %}
+          </div>
         </div>
+      </div>
 
-        {% if cart_items %}
-        <!-- Continue Shopping CTA -->
-        <div class="row mt-5 justify-content-center">
-            <div class="col-md-8 text-center">
-                <div class="p-4 border rounded-3 bg-light animate__animated animate__fadeInUp shadow-sm shadow-hover">
-                    <h5 class="fw-bold mb-3">
-                        <i class="fas fa-store me-2 text-primary"></i>Still browsing?
-                    </h5>
-                    <p class="text-muted mb-4">Explore more items and find your perfect match.</p>
-                    <a href="{% url 'products' %}" 
-                       class="btn btn-primary btn-lg px-4 shadow-sm d-inline-flex align-items-center gap-2 animate__animated animate__pulse animate__infinite animate__slower">
-                        <i class="fas fa-arrow-left"></i> Continue Shopping
-                    </a>
-                </div>
-            </div>
+      {% if cart_items %}
+      <div class="card">
+        <div class="card-body text-center py-4">
+          <i class="fas fa-search mb-3" style="font-size: 24px; color: #007bff;"></i>
+          <h5>Still browsing?</h5>
+          <p class="text-muted mb-3">Explore more items and find your perfect match.</p>
+          <a href="{% url 'products' %}" class="btn btn-continue text-white px-4 py-2">
+            <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+          </a>
         </div>
-        {% endif %}
-
-        <!-- Summary Section -->
-        <div class="row justify-content-end mt-5">
-            <div class="col-md-6 col-lg-4">
-                <div class="bg-light p-4 rounded shadow-sm shadow-hover">
-                    <h5 class="fw-bold mb-3">
-                        <i class="fas fa-receipt me-2 text-secondary"></i>Summary
-                    </h5>
-                    <ul class="list-unstyled mb-4">
-                        <li class="d-flex justify-content-between mb-2">
-                            <span>Subtotal</span><span>₱{{ sub_total|floatformat:2 }}</span>
-                        </li>
-                        <li class="d-flex justify-content-between mb-2">
-                            <span>Shipping</span><span>₱{{ shipping|floatformat:2 }}</span>
-                        </li>
-                        <li class="d-flex justify-content-between border-top pt-3 fw-bold">
-                            <span>Total</span><span>₱{{ to_pay|floatformat:2 }}</span>
-                        </li>
-                    </ul>
-                    <div class="d-grid">
-                        {% if sub_total == 0 %}
-                        <a href="#" class="btn btn-primary btn-lg disabled" tabindex="-1" aria-disabled="true">
-                            <i class="fas fa-credit-card me-2"></i>Checkout
-                        </a>
-                        {% else %}
-                        <a href="{% url 'checkout-view' %}" class="btn btn-primary btn-lg">
-                            <i class="fas fa-credit-card me-2"></i>Checkout
-                        </a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-
+      </div>
+      {% endif %}
     </div>
-</section>
+
+    <!-- Summary -->
+    <div class="col-lg-4">
+      <div class="card summary-card">
+        <div class="card-body">
+          <h4 class="mb-4"><i class="fas fa-receipt me-2"></i>Order Summary</h4>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal</span>
+            <span class="fw-bold">₱{{ sub_total|floatformat:2 }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Shipping</span>
+            <span class="fw-bold">₱{{ shipping|floatformat:2 }}</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between mb-4">
+            <span class="h5">Total</span>
+            <span class="h5">₱{{ to_pay|floatformat:2 }}</span>
+          </div>
+          {% if sub_total == 0 %}
+          <a href="#" class="btn btn-checkout text-white w-100 py-3 disabled">
+            <i class="fas fa-lock me-2"></i>Proceed to Checkout
+          </a>
+          {% else %}
+          <a href="{% url 'checkout-view' %}" class="btn btn-checkout text-white w-100 py-3">
+            <i class="fas fa-lock me-2"></i>Proceed to Checkout
+          </a>
+          {% endif %}
+          <div class="mt-3 text-center">
+            <small class="text-muted"><i class="fas fa-shield-alt me-1"></i>Secure checkout</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Promo -->
+      <div class="card mt-3">
+        <div class="card-body">
+          <h5 class="mb-3">Have a promo code?</h5>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Enter code">
+            <button class="btn btn-outline-secondary" type="button">Apply</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".quantity-wrapper").forEach(function (wrapper) {
+        const minusBtn = wrapper.querySelector(".minus-btn");
+        const plusBtn = wrapper.querySelector(".plus-btn");
+        const input = wrapper.querySelector(".quantity-input");
+  
+        minusBtn.addEventListener("click", function () {
+          let current = parseInt(input.value) || 1;
+          if (current > 1) input.value = current - 1;
+        });
+  
+        plusBtn.addEventListener("click", function () {
+          let current = parseInt(input.value) || 1;
+          input.value = current + 1;
+        });
+      });
+    });
+</script>
+  
 
 <style>
-    .shadow-hover:hover {
-        box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.1) !important;
-    }
+  .cart-item-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  .quantity-input {
+    max-width: 80px;
+  }
+  .card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: none;
+  }
+  .summary-card {
+    background-color: #f8f9fa;
+  }
+  .btn-update {
+    background-color: #e9ecef;
+    color: #495057;
+    border: none;
+  }
+  .btn-remove {
+    background-color: #fff;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+  }
+  .btn-continue {
+    background-color: #007bff;
+    border: none;
+  }
+  .btn-checkout {
+    background-color: #28a745;
+    border: none;
+    font-weight: 600;
+  }
+  .cart-header {
+    border-bottom: 2px solid #f1f1f1;
+    margin-bottom: 2rem;
+  }
+  .price-tag {
+    font-weight: 600;
+    color: #212529;
+  }
+  .category-badge {
+    background-color: #f1f1f1;
+    color: #6c757d;
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+  }
+  .quantity-input::-webkit-inner-spin-button,
+  .quantity-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .quantity-input {
+  width: 38px !important;
+  padding: 2px 4px;
+  font-size: 0.8rem;
+  text-align: center;
+  border-radius: 4px;
+  -moz-appearance: textfield;
+}
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
 </style>
 {% endblock %}
