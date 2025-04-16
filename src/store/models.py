@@ -1,6 +1,7 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.contrib.auth.models import User
+from django.db.models import Avg
 from django.conf import settings
 from django.db import models
 from decimal import Decimal, ROUND_HALF_UP
@@ -17,7 +18,6 @@ class Product(models.Model):
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=8, decimal_places=2)
     image = models.URLField(max_length=500, blank=True)
-    rating = models.PositiveIntegerField(default=0, null=True, blank=True)
 
     is_featured = models.BooleanField(default=False)
     discount_percentage = models.PositiveIntegerField(default=0)
@@ -131,7 +131,6 @@ class ProductReview(models.Model):
     )
     review = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ('user', 'product')

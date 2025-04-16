@@ -474,4 +474,10 @@ def add_review(request, product_id):
 
         product = models.Product.objects.get(id=product_id)
 
+        product_review = models.ProductReview.objects.create(
+            product=product, user = request.user,
+            rating=rating, review=review
+        )
+        product_review.save()
+
     return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
