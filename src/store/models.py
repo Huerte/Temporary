@@ -53,6 +53,18 @@ class Product(models.Model):
     def average_rating(self):
         return self.reviews.aggregate(Avg('rating'))['rating__avg'] or 0
 
+class PromoCode(models.Model):
+    code = models.CharField(max_length=50, unique=True)
+    discount_percentage = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
+    active = models.BooleanField(default=True)
+    expiration_date = models.DateTimeField(null=True, blank=True)
+
+    def is_valid(self):
+        return self.active and (self.expiration_date is None or self.expiration_date > timezone.now())
+
+    def __str__(self):
+        return self.code
+
 class CartItem(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -61,6 +73,10 @@ class CartItem(models.Model):
 
     class Meta:
         unique_together = ('user', 'product')
+
+    @property
+    def get_total(self):
+        return self.product.price * self.quantity
 
 class Order(models.Model):
     STATUS_CHOICES = [

@@ -4,62 +4,214 @@
 <section class="py-5 bg-light">
     <div class="container">
         <!-- Page Title and Description -->
-        <h1 class="text-center mb-4">Contact Us</h1>
-        <p class="text-center mb-5">Have a question or feedback? Reach out to us through the form below or via our contact information.</p>
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <h1 class="display-4 fw-bold mb-3">Contact Us</h1>
+                <p class="lead text-muted mb-0">Have a question or feedback? We'd love to hear from you.</p>
+                <div class="divider mx-auto my-4" style="width: 50px; height: 3px; background-color: #0d6efd;"></div>
+            </div>
+        </div>
 
         <!-- Display Messages -->
         {% if messages %}
-            <div class="container mt-4">
+            <div class="container mb-4">
                 {% for message in messages %}
-                    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
+                    <div class="alert {{ message.tags }} alert-dismissible fade show shadow-sm border-0" role="alert">
+                        <div class="d-flex align-items-center">
+                            {% if message.tags == 'success' %}
+                                <i class="fas fa-check-circle me-2"></i>
+                            {% elif message.tags == 'error' %}
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                            {% else %}
+                                <i class="fas fa-info-circle me-2"></i>
+                            {% endif %}
+                            <div>{{ message }}</div>
+                        </div>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 {% endfor %}
             </div>
         {% endif %}
 
-        <div class="row">
+        <div class="row g-5">
             <!-- Contact Form Section -->
-            <div class="col-md-7 mb-4">
-                <form method="post" action="{% url 'contact_us' %}">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Your Name</label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required>
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <h3 class="card-title mb-4">Send us a message</h3>
+                        <form method="post" action="{% url 'contact_us' %}" id="contactForm">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+                                        <label for="name">Your Name</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating">
+                                        <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
+                                        <label for="email">Your Email</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
+                                    <label for="subject">Subject</label>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="form-floating">
+                                    <textarea class="form-control" id="message" name="message" placeholder="Your Message" style="height: 150px" required></textarea>
+                                    <label for="message">Your Message</label>
+                                </div>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-m">
+                                    <i class="fas fa-paper-plane me-2"></i>Send Message
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Your Email</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="email@example.com" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="subject" class="form-label">Subject</label>
-                        <input type="text" class="form-control" id="subject" name="subject" placeholder="Question or feedback" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="message" class="form-label">Message</label>
-                        <textarea class="form-control" id="message" name="message" rows="5" placeholder="Write your message here..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary px-4">Send Message</button>
-                </form>
+                </div>
             </div>
 
             <!-- Contact Information Section -->
-            <div class="col-md-5">
-                <div class="bg-white p-4 shadow rounded">
-                    <h5>Project Contact Information</h5>
-                    <p><i class="fas fa-envelope me-2 text-primary"></i>softwaredesign@school.edu</p>
-                    <p><i class="fas fa-phone me-2 text-primary"></i>+63 912 345 6789</p>
-                    <p><i class="fas fa-map-marker-alt me-2 text-primary"></i>School of Information Technology, University Name, City, Philippines</p>
-
-                    <hr>
-                    <h6>Follow Us</h6>
-                    <a href="#" class="text-decoration-none me-3"><i class="fab fa-facebook fa-lg text-primary"></i></a>
-                    <a href="#" class="text-decoration-none me-3"><i class="fab fa-twitter fa-lg text-primary"></i></a>
-                    <a href="#" class="text-decoration-none"><i class="fab fa-github fa-lg text-primary"></i></a>
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4 p-md-5">
+                        <h3 class="card-title mb-4">Get in touch</h3>
+                        
+                        <div class="d-flex mb-4">
+                            <div class="contact-icon bg-primary bg-opacity-10 text-primary rounded-circle p-3 me-3">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Email</h6>
+                                <p class="text-muted mb-0">softwaredesign@school.edu</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex mb-4">
+                            <div class="contact-icon bg-primary bg-opacity-10 text-primary rounded-circle p-3 me-3">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Phone</h6>
+                                <p class="text-muted mb-0">+63 912 345 6789</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex mb-4">
+                            <div class="contact-icon bg-primary bg-opacity-10 text-primary rounded-circle p-3 me-3">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Address</h6>
+                                <p class="text-muted mb-0">Department of Computer Studies,<br>North Eastern Mindanao State University,<br> Cantilan Surigao del Sur, Philippines</p>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <h5 class="fw-bold mb-3">Follow Us</h5>
+                        <div class="d-flex gap-3">
+                            <a href="#" class="social-link bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-inline-flex align-items-center justify-content-center transition-all">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="social-link bg-info bg-opacity-10 text-info rounded-circle p-3 d-inline-flex align-items-center justify-content-center transition-all">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="social-link bg-dark bg-opacity-10 text-dark rounded-circle p-3 d-inline-flex align-items-center justify-content-center transition-all">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<style>
+    /* Custom styles for enhanced UI */
+    .contact-icon {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .social-link {
+        width: 45px;
+        height: 45px;
+        transition: all 0.3s ease;
+    }
+    
+    .social-link:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        border-color: #0d6efd;
+    }
+    
+    .btn-primary {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+    }
+    
+    /* Add form validation styles */
+    .form-control.is-invalid {
+        border-color: #dc3545;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 767.98px) {
+        .card-body {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<script>
+    // Form validation script
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('contactForm');
+        
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
+            form.classList.add('was-validated');
+        });
+        
+        // Add animation to form inputs
+        const formControls = document.querySelectorAll('.form-control');
+        formControls.forEach(control => {
+            control.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            control.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+    });
+</script>
 {% endblock %}

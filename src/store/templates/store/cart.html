@@ -3,146 +3,241 @@
 
 {% block content %}
 <div class="container py-5">
-  <div class="row">
-    <!-- Cart Items -->
-    <div class="col-lg-8 mb-4">
-      <div class="card mb-4">
-        <div class="card-body">
-          <div class="cart-header pb-3">
-            <h2 class="mb-1"><i class="fas fa-shopping-cart me-2"></i>Your Cart</h2>
-            <p class="text-muted">Review your items before proceeding to checkout.</p>
-          </div>
-
-          <div class="cart-items">
-            {% for item in cart_items %}
-            <form method="POST" action="{% url 'update-cart' item.product.id %}">
-              {% csrf_token %}
-              <div class="row mb-4 pb-3 border-bottom">
-                <div class="col-md-2 col-4 mb-2 mb-md-0">
-                  <img src="{{ item.product.image }}" alt="{{ item.product.name }}" class="cart-item-img">
-                </div>
-                <div class="col-md-10 col-8">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div>
-                      <h5 class="mb-1">{{ item.product.name }}</h5>
-                      <span class="category-badge">{{ item.product.category.name }}</span>
+    <div class="row">
+  
+      <!-- Cart Items (Left Column) -->
+      <div class="col-lg-8 mb-4">
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="cart-header pb-3">
+              <h2 class="mb-1"><i class="fas fa-shopping-cart me-2"></i>Your Cart</h2>
+              <p class="text-muted">Review your items before proceeding to checkout.</p>
+            </div>
+  
+            <div class="cart-items">
+              <!-- Table Headers -->
+              <div class="d-none d-md-flex row py-2 mb-3 bg-light rounded">
+                <div class="col-md-5"><span class="fw-bold">Product</span></div>
+                <div class="col-md-2 text-center"><span class="fw-bold">Unit Price</span></div>
+                <div class="col-md-2 text-center"><span class="fw-bold">Quantity</span></div>
+                <div class="col-md-2 text-center"><span class="fw-bold">Subtotal</span></div>
+                <div class="col-md-1 text-end"><span class="fw-bold">Actions</span></div>
+              </div>
+  
+              {% for item in cart_items %}
+              <form method="POST" action="{% url 'update-cart' item.product.id %}">
+                {% csrf_token %}
+                <div class="row mb-4 pb-3 border-bottom">
+                  <div class="col-md-5 mb-3 mb-md-0">
+                    <div class="d-flex">
+                      <div class="me-3">
+                        <img src="{{ item.product.image }}" alt="{{ item.product.name }}" class="cart-item-img">
+                      </div>
+                      <div>
+                        <h5 class="mb-1">{{ item.product.name }}</h5>
+                        <span class="category-badge">{{ item.product.category.name }}</span>
+                      </div>
                     </div>
+                  </div>
+  
+                  <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
                     <span class="price-tag">₱{{ item.product.price }}</span>
                   </div>
-                  <div class="row align-items-center mt-3">
-                    <div class="col-md-4 col-6 mb-2 mb-md-0">
-                        <div class="input-group quantity-wrapper">
-                            <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn minus-btn">-</button>
-                            <input type="number" name="quantity" class="form-control text-center quantity-input" value="{{ item.quantity }}" min="1">
-                            <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn plus-btn">+</button>
-                          </div>                          
-                      </div>
-                      
-                    <div class="col-md-8 col-6 text-end">
-                      <button type="submit" class="btn btn-update btn-sm me-2"><i class="fas fa-sync-alt me-1"></i>Update</button>
-                        <button formaction="{% url 'remove-from-cart' item.id %}" formmethod="post" class="btn btn-remove btn-sm">
-                            {% csrf_token %}<i class="fas fa-trash me-1"></i>Remove
-                        </button>                    
+  
+                  <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
+                    <div class="input-group quantity-wrapper">
+                      <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn minus-btn">-</button>
+                      <input type="number" name="quantity" class="form-control text-center quantity-input auto-submit-qty" value="{{ item.quantity }}" min="1">
+                      <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn plus-btn">+</button>
                     </div>
                   </div>
+  
+                  <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
+                    <span class="price-tag">₱{{ item.get_total }}</span>
+                  </div>
+  
+                  <div class="col-6 col-md-1 text-center d-flex align-items-center justify-content-center">
+                    <form action="{% url 'remove-from-cart' item.id %}" method="post">
+                      {% csrf_token %}
+                      <button type="submit" class="btn fw-bold btn-sm">Delete</button>
+                    </form>
+                  </div>
                 </div>
+              </form>
+              {% empty %}
+              <div class="text-center py-5 px-3 bg-white rounded shadow-sm">
+                <i class="fas fa-shopping-cart fa-4x text-secondary mb-3"></i>
+                <h4 class="fw-bold text-dark">Your cart is empty</h4>
+                <p class="text-muted">Looks like you haven't added anything yet.</p>
+                <a href="{% url 'products' %}" class="btn btn-outline-primary btn-sm px-4 shadow-sm">
+                  <i class="fas fa-store me-2"></i>Browse Products
+                </a>
               </div>
-            </form>
-            {% empty %}
-            <div class="text-center py-5 px-3 bg-white rounded shadow-sm">
-              <i class="fas fa-shopping-cart fa-4x text-secondary mb-3"></i>
-              <h4 class="fw-bold text-dark">Your cart is empty</h4>
-              <p class="text-muted">Looks like you haven’t added anything yet.</p>
-              <a href="{% url 'products' %}" class="btn btn-outline-primary btn-sm px-4 shadow-sm">
-                <i class="fas fa-store me-2"></i>Browse Products
-              </a>
+              {% endfor %}
             </div>
-            {% endfor %}
           </div>
         </div>
+  
+        {% if cart_items %}
+        <div class="card">
+          <div class="card-body text-center py-4">
+            <i class="fas fa-search mb-3" style="font-size: 24px; color: #007bff;"></i>
+            <h5>Still browsing?</h5>
+            <p class="text-muted mb-3">Explore more items and find your perfect match.</p>
+            <a href="{% url 'products' %}" class="btn btn-continue text-white px-4 py-2">
+              <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+            </a>
+          </div>
+        </div>
+        {% endif %}
       </div>
-
-      {% if cart_items %}
-      <div class="card">
-        <div class="card-body text-center py-4">
-          <i class="fas fa-search mb-3" style="font-size: 24px; color: #007bff;"></i>
-          <h5>Still browsing?</h5>
-          <p class="text-muted mb-3">Explore more items and find your perfect match.</p>
-          <a href="{% url 'products' %}" class="btn btn-continue text-white px-4 py-2">
-            <i class="fas fa-arrow-left me-2"></i>Continue Shopping
-          </a>
+  
+      <!-- Order Summary (Right Column) -->
+      <div class="col-lg-4 mb-4">
+        <div class="card p-3 shadow-sm">
+          <h5 class="mb-3"><i class="bi bi-receipt"></i> Order Summary</h5>
+  
+          <!-- Shipping Address -->
+          <div class="mb-3">
+            <h6><i class="bi bi-geo-alt-fill text-danger"></i> Shipping Address</h6>
+            {% if user_address %}
+            <p class="mb-1 fw-bold">{{ user_address.full_name }}</p>
+            <p class="mb-1">{{ user_address.address }}</p>
+            <p class="mb-1">{{ user_address.postal_code }}, {{ user_address.country }}</p>
+            <p class="mb-2">{{ user_address.phone }}</p>
+            <a href="{% url 'edit-profile-page' %}" class="btn btn-sm btn-outline-primary">
+              <i class="bi bi-pencil-fill"></i> Edit Address
+            </a>
+            {% else %}
+            <p class="text-muted">No address found.</p>
+            <a href="{% url 'edit-profile-page' %}" class="btn btn-sm btn-outline-primary">
+              <i class="bi bi-plus-circle"></i> Add Address
+            </a>
+            {% endif %}
+          </div>
+  
+            <!-- Price Summary -->
+            <div class="mb-3">
+              {% if discount %}
+              <div class="d-flex justify-content-between text-success mb-1">
+                <span>Discount Applied</span>
+                <span>-₱{{ discount|floatformat:2 }}</span>
+              </div>
+              {% endif %}
+              <div class="d-flex justify-content-between">
+                <span>Subtotal</span>
+                <span>₱{{ sub_total|floatformat:2 }}</span>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span>Shipping</span>
+                <span>₱{{ shipping|floatformat:2 }}</span>
+              </div>
+              <hr>
+              <div class="d-flex justify-content-between fw-bold text-success">
+                <span>Total</span>
+                <span>₱{{ to_pay|floatformat:2 }}</span>
+              </div>
+            </div>
+  
+            <!-- Checkout Button -->
+            {% if sub_total == 0 %}
+            <a href="#" class="btn btn-success w-100 disabled" tabindex="-1" aria-disabled="true">
+              <i class="bi bi-lock-fill"></i> Proceed to Checkout
+            </a>
+            {% else %}
+            <a href="{% url 'checkout-view' %}" class="btn btn-success w-100">
+              <i class="bi bi-lock-fill"></i> Proceed to Checkout
+            </a>
+            {% endif %}
+            
+            <div class="text-center mt-2 text-muted small">
+              <i class="bi bi-shield-check"></i> Secure checkout
+            </div>
+            
+  
+          <!-- Promo Code -->
+          <form class="mt-3" method="POST" action="{% url 'apply-promo' %}">
+            {% csrf_token %}
+            <label class="form-label fw-semibold">Have a promo code?</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="promo_code" placeholder="Enter code">
+              <button class="btn btn-outline-secondary" type="submit">Apply</button>
+            </div>
+          </form>
         </div>
       </div>
-      {% endif %}
+  
     </div>
-
-    <!-- Summary -->
-    <div class="col-lg-4">
-      <div class="card summary-card">
-        <div class="card-body">
-          <h4 class="mb-4"><i class="fas fa-receipt me-2"></i>Order Summary</h4>
-          <div class="d-flex justify-content-between mb-2">
-            <span>Subtotal</span>
-            <span class="fw-bold">₱{{ sub_total|floatformat:2 }}</span>
-          </div>
-          <div class="d-flex justify-content-between mb-2">
-            <span>Shipping</span>
-            <span class="fw-bold">₱{{ shipping|floatformat:2 }}</span>
-          </div>
-          <hr>
-          <div class="d-flex justify-content-between mb-4">
-            <span class="h5">Total</span>
-            <span class="h5">₱{{ to_pay|floatformat:2 }}</span>
-          </div>
-          {% if sub_total == 0 %}
-          <a href="#" class="btn btn-checkout text-white w-100 py-3 disabled">
-            <i class="fas fa-lock me-2"></i>Proceed to Checkout
-          </a>
-          {% else %}
-          <a href="{% url 'checkout-view' %}" class="btn btn-checkout text-white w-100 py-3">
-            <i class="fas fa-lock me-2"></i>Proceed to Checkout
-          </a>
-          {% endif %}
-          <div class="mt-3 text-center">
-            <small class="text-muted"><i class="fas fa-shield-alt me-1"></i>Secure checkout</small>
-          </div>
-        </div>
-      </div>
-
-      <!-- Promo -->
-      <div class="card mt-3">
-        <div class="card-body">
-          <h5 class="mb-3">Have a promo code?</h5>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Enter code">
-            <button class="btn btn-outline-secondary" type="button">Apply</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+  </div>  
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      document.querySelectorAll(".quantity-wrapper").forEach(function (wrapper) {
-        const minusBtn = wrapper.querySelector(".minus-btn");
-        const plusBtn = wrapper.querySelector(".plus-btn");
-        const input = wrapper.querySelector(".quantity-input");
-  
-        minusBtn.addEventListener("click", function () {
-          let current = parseInt(input.value) || 1;
-          if (current > 1) input.value = current - 1;
-        });
-  
-        plusBtn.addEventListener("click", function () {
-          let current = parseInt(input.value) || 1;
-          input.value = current + 1;
-        });
+  document.addEventListener("DOMContentLoaded", function () {
+    // Quantity buttons functionality
+    document.querySelectorAll(".quantity-wrapper").forEach(function (wrapper) {
+      const minusBtn = wrapper.querySelector(".minus-btn");
+      const plusBtn = wrapper.querySelector(".plus-btn");
+      const input = wrapper.querySelector(".quantity-input");
+
+      minusBtn.addEventListener("click", function () {
+        let current = parseInt(input.value) || 1;
+        if (current > 1) input.value = current - 1;
+      });
+
+      plusBtn.addEventListener("click", function () {
+        let current = parseInt(input.value) || 1;
+        input.value = current + 1;
       });
     });
+    
+    // Payment method selection styling
+    document.querySelectorAll('.form-check').forEach(function(check) {
+      check.addEventListener('click', function() {
+        // Find the radio input and select it
+        const radio = this.querySelector('input[type="radio"]');
+        radio.checked = true;
+        
+        // Add active class to selected payment method
+        document.querySelectorAll('.form-check').forEach(function(el) {
+          el.classList.remove('bg-light');
+        });
+        this.classList.add('bg-light');
+      });
+    });
+  });
+
+//   auto update subtotal
+function debounce(fn, delay) {
+    let timeout;
+    return function(...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => fn.apply(this, args), delay);
+    };
+  }
+
+  document.querySelectorAll('.auto-submit-qty').forEach(function(input) {
+    const submitForm = debounce(function() {
+      input.closest('form').submit();
+    }, 500); // 500ms delay
+
+    input.addEventListener('input', submitForm);
+
+    // Button handlers
+    input.closest('.quantity-wrapper').querySelectorAll('.quantity-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        let value = parseInt(input.value) || 1;
+        if (btn.classList.contains('plus-btn')) {
+          value++;
+        } else if (btn.classList.contains('minus-btn') && value > 1) {
+          value--;
+        }
+        input.value = value;
+        input.dispatchEvent(new Event('input')); // triggers debounce
+      });
+    });
+  });
 </script>
-  
+
+
 
 <style>
   .cart-item-img {
@@ -152,7 +247,17 @@
     border-radius: 8px;
   }
   .quantity-input {
-    max-width: 80px;
+    width: 38px !important;
+    padding: 2px 4px;
+    font-size: 0.8rem;
+    text-align: center;
+    border-radius: 4px;
+    -moz-appearance: textfield;
+  }
+  .quantity-input::-webkit-inner-spin-button,
+  .quantity-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
   .card {
     border-radius: 12px;
@@ -196,25 +301,15 @@
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
   }
-  .quantity-input::-webkit-inner-spin-button,
-  .quantity-input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  .quantity-wrapper {
+    width: fit-content;
   }
-  .quantity-input {
-  width: 38px !important;
-  padding: 2px 4px;
-  font-size: 0.8rem;
-  text-align: center;
-  border-radius: 4px;
-  -moz-appearance: textfield;
-}
-.quantity-input::-webkit-inner-spin-button,
-.quantity-input::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-
+  .form-check {
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  .form-check:hover {
+    background-color: #f8f9fa;
+  }
 </style>
 {% endblock %}

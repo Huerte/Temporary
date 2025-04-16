@@ -101,7 +101,7 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-end mt-3">
-                    <a href="{% url 'edit-profile-page' %}" class="btn btn-primary edit-btn">
+                    <a href="{% url 'edit-profile-page' %}" class="btn btn-m btn-primary">
                         <i class="bi bi-pencil-square me-2"></i>Update Address
                     </a>
                 </div>
@@ -135,7 +135,7 @@
                             <td>{{ order.status }}</td>
                             <td>${{ order.total }}</td>
                             <td class="text-end">
-                                <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-outline-info">
+                                <a href="{% url 'order-details-view' order.id %}" class="btn btn-sm btn-outline-info">
                                     <i class="bi bi-eye"></i> View
                                 </a>
                                 
@@ -201,11 +201,6 @@
     .info-value {
         font-weight: 600;
         color: #343a40;
-    }
-    .edit-btn {
-        border-radius: 50px;
-        padding: 8px 20px;
-        transition: all 0.3s ease;
     }
     .table-container {
         border-radius: 12px;

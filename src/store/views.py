@@ -12,6 +12,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.contrib import messages
+from decimal import Decimal
 from django.utils import timezone
 from django.urls import reverse
 from main import settings
@@ -19,7 +20,7 @@ from . import models
 import pycountry
 
 
-##################################################################################
+
 def home(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -47,7 +48,6 @@ def about_view(request):
 def contact_view(request):
     return render(request, 'store/contact.html')
 
-##################################################################################
 def login_user(request):
     
     if request.method == 'POST':
@@ -211,7 +211,6 @@ def change_password_view(request):
 
     return render(request, 'store/authentication-page/reset-password/change-password.html')
 
-##################################################################################
 @login_required(login_url='/login')
 def profile_view(request):
     user_address, created = models.ShippingAddress.objects.get_or_create(user=request.user)
@@ -246,7 +245,6 @@ def edit_profile_view(request):
 
     return render(request, 'store/edit-profile-page.html', context)
 
-##################################################################################
 def product_view(request):
     category = models.Category.objects.all()
     selected_category = request.GET.get('category')
@@ -268,23 +266,44 @@ def product_view(request):
     return render(request, 'store/products.html', context)
 
 def product_details(request, product_id):
-    product = models.Product.objects.get(id=product_id)
+    product = get_object_or_404(models.Product, id=product_id)
     cart_item_exist = models.CartItem.objects.filter(user=request.user, product=product).exists()
 
-    context = {'product':product, 'cart_item_exist': cart_item_exist}
+    # Savings = original price - discounted price
+    savings = product.price - product.discounted_price
+
+    context = {
+        'product': product,
+        'cart_item_exist': cart_item_exist,
+        'savings': savings,
+    }
     return render(request, 'store/product-detail.html', context)
 
-##################################################################################
 @login_required(login_url='/login')
 def cart_view(request):
     cart_items = models.CartItem.objects.filter(user=request.user)
-    sub_total = 0
-    for item in cart_items:
-        sub_total += item.product.price * item.quantity
-    shipping = 120 
+
+    sub_total = sum(item.product.price * item.quantity for item in cart_items)
+    shipping = 120
     to_pay = sub_total + shipping
 
-    context = {'cart_items': cart_items, 'sub_total': sub_total, 'to_pay': to_pay, 'shipping': shipping}
+    # Fetch user's shipping address
+    try:
+        user_address = models.ShippingAddress.objects.get(user=request.user)
+    except models.ShippingAddress.DoesNotExist:
+        user_address = None
+
+    discount = 0  # Set this dynamically later if needed
+
+    context = {
+        'cart_items': cart_items,
+        'sub_total': sub_total,
+        'to_pay': to_pay,
+        'shipping': shipping,
+        'discount': discount,
+        'user_address': user_address,
+    }
+
     return render(request, 'store/cart.html', context)
 
 @login_required(login_url='/login')
@@ -303,6 +322,22 @@ def add_to_cart(request, product_id):
             cart_item.save()
 
     return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
+
+def apply_promo(request):
+    if request.method == "POST":
+        code = request.POST.get("promo_code", "").strip()
+        try:
+            promo = models.PromoCode.objects.get(code__iexact=code)
+            if promo.is_valid():
+                request.session['promo_code'] = promo.code
+                request.session['promo_discount'] = promo.discount_percentage
+                messages.success(request, f"Promo code '{promo.code}' applied successfully!")
+            else:
+                messages.error(request, "This promo code is expired or inactive.")
+        except models.PromoCode.DoesNotExist:
+            messages.error(request, "Invalid promo code.")
+    return redirect('checkout-view')
+
 
 @login_required(login_url='/login')
 def remove_from_cart(request, product_id):
@@ -327,17 +362,17 @@ def update_cart(request, product_id):
             pass
     return redirect('cart-view')
 
-##################################################################################
 @login_required(login_url='/login')
 def checkout_view(request):
     cart_items = models.CartItem.objects.filter(user=request.user)
     user_address, created = models.ShippingAddress.objects.get_or_create(user=request.user)
-    
-    sub_total = 0
-    for item in cart_items:
-        sub_total += item.product.price * item.quantity
+    promo_discount = request.session.get('promo_discount', 0)
+
+    sub_total = sum(item.product.price * item.quantity for item in cart_items)
+    discounted_total = sub_total * (Decimal(1) - Decimal(promo_discount) / Decimal(100))
+
     shipping = 120 
-    to_pay = sub_total + shipping
+    to_pay = discounted_total + shipping
 
     if request.method == 'POST':
         if not user_address.full_name or not user_address.address:
@@ -393,8 +428,6 @@ def order_details_view(request, order_id):
     }
 
     return render(request, 'store/order-details.html', context)
-
-##################################################################################
 
 @login_required(login_url='/login')
 def contact(request):
