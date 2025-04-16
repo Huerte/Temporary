@@ -247,7 +247,6 @@ def edit_profile_view(request):
     return render(request, 'store/edit-profile-page.html', context)
 
 ##################################################################################
-@login_required(login_url='/login')
 def product_view(request):
     category = models.Category.objects.all()
     selected_category = request.GET.get('category')
@@ -268,7 +267,6 @@ def product_view(request):
 
     return render(request, 'store/products.html', context)
 
-@login_required(login_url='/login')
 def product_details(request, product_id):
     product = models.Product.objects.get(id=product_id)
     cart_item_exist = models.CartItem.objects.filter(user=request.user, product=product).exists()
@@ -430,16 +428,6 @@ def contact(request):
 
     return render(request, 'store/contact.html')
 
-@login_required(login_url='/login')
-def add_review(request, order_id):
-    #ON WORK
-    order = get_object_or_404(models.Order, id=order_id)
-    if request.method == 'POST':
-        review = request.POST.get('review')
-        rating = request.POST.get('rating')
-  
-    return render(request, 'store/add-review-page.html', {'order': order})
-
 def search_product(request):
     products = []
     query = ''
@@ -458,3 +446,22 @@ def search_product(request):
 
     context = {'products': products, 'query': query}
     return render(request, 'store/search-results.html', context)
+
+@login_required(login_url='/login')
+def product_review_view(request, order_id):
+    order = get_object_or_404(models.Order, id=order_id)
+    reviewed_products_id = models.ProductReview.objects.filter(
+        user=request.user, 
+        product__in=[item.product for item in order.order_items.all()]).values_list('product_id', flat=True)
+    
+    return render(request, 'store/product-review-page.html', {'order': order, 'reviewed_product_ids': reviewed_products_id})
+
+@login_required(login_url='/login')
+def add_review(request, product_id):
+    if request.method == 'POST':
+        rating = request.POST.get('rating')
+        review = request.POST.get('review')
+
+        product = models.Product.objects.get(id=product_id)
+
+    return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))

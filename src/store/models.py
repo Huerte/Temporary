@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -16,7 +17,8 @@ class Product(models.Model):
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=8, decimal_places=2)
     image = models.URLField(max_length=500, blank=True)
-    
+    rating = models.PositiveIntegerField(default=0, null=True, blank=True)
+
     is_featured = models.BooleanField(default=False)
     discount_percentage = models.PositiveIntegerField(default=0)
     buyers_count = models.PositiveIntegerField(default=0)
@@ -46,6 +48,10 @@ class Product(models.Model):
     
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+    @property
+    def average_rating(self):
+        return self.reviews.aggregate(Avg('rating'))['rating__avg'] or 0
 
 class CartItem(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -115,3 +121,20 @@ class ShippingAddress(models.Model):
 
     def __str__(self):
         return f'{self.address}, {self.country}'
+
+class ProductReview(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.PositiveSmallIntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    review = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'product')
+
+    def __str__(self):
+        return f"Review by {self.user.username} for {self.product.name}"
