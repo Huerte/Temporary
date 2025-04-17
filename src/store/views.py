@@ -347,29 +347,30 @@ def apply_promo(request):
             messages.error(request, "Invalid promo code.")
     return redirect('checkout-view')
 
-
 @login_required(login_url='/login')
 def remove_from_cart(request, product_id):
     if request.method == 'POST':
-        item = models.CartItem.objects.filter(id=product_id, user=request.user).first()
-        if item:
-            item.delete()
-    return redirect('cart-view')
+        try:
+            product = models.Product.objects.get(id=product_id)
+            cart_item = models.CartItem.objects.get(user=request.user, product=product)
+            cart_item.delete()
+        except models.CartItem.DoesNotExist:
+            pass
+
+    return JsonResponse({'success': True})
 
 @login_required(login_url='/login')
 def update_cart(request, product_id):
     if request.method == 'POST':
         quantity = request.POST.get('quantity')
-
-        product = models.Product.objects.get(id=product_id)
-        cart_item = models.CartItem.objects.get(user=request.user, product=product)
-
         try:
+            product = models.Product.objects.get(id=product_id)
+            cart_item = models.CartItem.objects.get(user=request.user, product=product)
             cart_item.quantity = quantity
             cart_item.save()
         except models.CartItem.DoesNotExist:
             pass
-    return redirect('cart-view')
+    return JsonResponse({'success': True})
 
 @login_required(login_url='/login')
 def checkout_view(request):
