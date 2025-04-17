@@ -39,7 +39,7 @@ def home(request):
 
         return redirect('login-page')
     # products = models.Product.objects.filter(is_featured=True)[:6]
-    products = models.Product.objects.all()[:6]
+    products = models.Product.objects.all()[:21]
     return render(request, 'store/home.html', {'products': products})
 
 def about_view(request):

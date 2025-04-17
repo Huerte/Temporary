@@ -50,11 +50,11 @@
                     <p class="text-muted mb-0">Discover our handpicked selection of premium products.</p>
                 </div>
                 {% if user.is_authenticated %}
-                    <a href="{% url 'products' %}" class="text-decoration-none fw-semibold">
+                    <a href="{% url 'products' %}" class="btn btn-outline-dark btn-sm">
                         View All Products <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 {% else %}
-                    <a href="#" class="text-decoration-none fw-semibold" data-bs-toggle="modal" data-bs-target="#loginModal">
+                    <a href="#" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal">
                         View All Products <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 {% endif %}
@@ -63,11 +63,11 @@
             <div class="row" id="product-catalog">
                 {% for product in products %}
                 <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100 border-0 shadow-sm hover-shadow transition" style="border-radius: 1rem; overflow: hidden;">
+                    <div class="card h-100 border-0 shadow-sm transition" style="border-radius: 1rem; overflow: hidden;">
                         <a href="{% url 'product-details' product.id %}" class="text-decoration-none text-dark">
                             <div class="position-relative bg-light d-flex align-items-center justify-content-center" style="height: 240px;">
                                 <img src="{{ product.image }}" class="img-fluid p-3" style="max-height: 100%; object-fit: contain;" alt="{{ product.name }}">
-                                <span class="badge bg-dark position-absolute top-0 start-0 m-2">{{ product.category.name }}</span>
+                                <span class="badge bg-dark position-absolute top-0 start-0 m-2 text-uppercase small">{{ product.category.name }}</span>
                                 {% if product.is_on_sale %}
                                     <span class="badge bg-danger position-absolute top-0 end-0 m-2">-{{ product.discount_percentage }}%</span>
                                 {% endif %}
@@ -87,18 +87,18 @@
                         <div class="px-3 pb-3">
                             {% if user.is_authenticated %}
                                 {% if product.id in products_in_cart %}
-                                    <button class="btn btn-outline-dark w-100 disabled">
-                                        <i class="fas fa-shopping-cart me-2"></i>Already in Cart
+                                    <button class="btn btn-outline-secondary w-100" disabled>
+                                        <i class="fas fa-check-circle me-2"></i>In Cart
                                     </button>
                                 {% else %}
                                 <form method="post"
-                                        action="{% url 'add-to-cart' product.id %}"
-                                        class="add-to-cart-form"
-                                        data-product-id="{{ product.id }}">
+                                    action="{% url 'add-to-cart' product.id %}"
+                                    class="add-to-cart-form"
+                                    data-product-id="{{ product.id }}">
                                     {% csrf_token %}
                                     <input type="hidden" name="quantity" value="1">
                                     <button type="submit" class="btn btn-dark w-100">
-                                    <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                                        <i class="fas fa-shopping-cart me-2"></i>Add to Cart
                                     </button>
                                 </form>
                                 {% endif %}
@@ -112,8 +112,25 @@
                 </div>
                 {% endfor %}
             </div>
+    
+            <!-- CTA Section -->
+            <div class="text-center mt-5">
+                <hr class="my-4">
+                <h5 class="fw-semibold mb-3">Looking for more?</h5>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'products' %}" class="btn btn-outline-dark">
+                        Explore More Products <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                {% else %}
+                    <a href="#" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        Explore More Products <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                {% endif %}
+            </div>
         </div>
     </section>
+    
+
     <script>
         document.addEventListener("DOMContentLoaded", () => {
           document.querySelectorAll(".add-to-cart-form").forEach(form => {
