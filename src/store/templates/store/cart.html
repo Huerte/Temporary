@@ -3,6 +3,15 @@
 
 {% block content %}
 <div class="container py-5">
+  {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+  {% endif %}
+
     <div class="row">
   
       <!-- Cart Items (Left Column) -->
@@ -38,9 +47,17 @@
                     </div>
                   </div>
 
-                  <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
-                    <span class="price-tag">₱{{ item.product.price }}</span>
+                  <div class="col-6 col-md-2 d-flex flex-column align-items-center justify-content-center text-center">
+                    <!-- Real Price -->
+                    <span class="price-tag original-price text-muted text-decoration-line-through mb-2" style="font-size: 1rem; color: #6c757d;">
+                        ₱{{ item.product.price }}
+                    </span>
+                    <!-- Discounted Price -->
+                    <span class="price-tag discounted-price text-danger" style="font-size: 1.25rem; font-weight: bold; color: #dc3545;">
+                        ₱{{ item.product.discounted_price }}
+                    </span>
                   </div>
+                
 
                   <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
                     <form class="update-cart-form" method="POST" action="{% url 'update-cart' item.product.id %}">
@@ -118,26 +135,26 @@
   
             <!-- Price Summary -->
             <div class="mb-3">
-              {% if discount %}
-              <div class="d-flex justify-content-between text-success mb-1">
-                <span>Discount Applied</span>
-                <span>-₱{{ discount|floatformat:2 }}</span>
-              </div>
-              {% endif %}
-              <div class="d-flex justify-content-between">
+              <div class="d-flex justify-content-between mb-1">
                 <span>Subtotal</span>
                 <span>₱{{ sub_total|floatformat:2 }}</span>
               </div>
-              <div class="d-flex justify-content-between">
-                <span>Shipping</span>
-                <span>₱{{ shipping|floatformat:2 }}</span>
-              </div>
-              <hr>
-              <div class="d-flex justify-content-between fw-bold text-success">
-                <span>Total</span>
+            
+              {% if voucher_discount %}
+                <div class="d-flex justify-content-between text-danger mb-1">
+                  <span>Promo Discount</span>
+                  <span>-₱{{ voucher_discount|floatformat:2 }}</span>
+                </div>
+              {% endif %}
+            
+              <hr class="my-2">
+            
+              <div class="d-flex justify-content-between fw-bold text-success fs-5">
+                <span>Total to Pay</span>
                 <span>₱{{ to_pay|floatformat:2 }}</span>
               </div>
             </div>
+            
   
             <!-- Checkout Button -->
             {% if sub_total == 0 %}

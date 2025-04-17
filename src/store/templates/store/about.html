@@ -1,4 +1,5 @@
 {% extends 'store/index.html' %}
+{% load static %}
 
 {% block content %}
 <!-- Header Section -->
@@ -85,8 +86,8 @@
             <div class="col-md-6 col-lg-4">
                 <div class="card h-100 text-center shadow-sm">
                     <div class="card-body">
-                        <img src="https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png" class="team-member-img mb-3" alt="Team Member 2">
-                        <h5 class="card-title">Team Member 2</h5>
+                        <img src="{% static 'meme-img/backendDev.png'%}" class="team-member-img mb-3" alt="Team Member 2">
+                        <h5 class="card-title">Jerald P. Huerte</h5>
                         <p class="card-text text-muted">Backend Developer</p>
                         <p class="card-text">Responsible for Django backend and database management.</p>
                         <div class="d-flex justify-content-center gap-2">

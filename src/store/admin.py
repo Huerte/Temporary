@@ -17,9 +17,17 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ['user__username']
     inlines = [OrderItemInline]
     readonly_fields = ['created_at']
-
     fields = ('user', 'status', 'is_paid', 'user_note', 'created_at')
 
+class PromoCodeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'discount_percentage', 'active', 'expiration_date', 'max_uses_per_user')
+    fields = ('code', 'discount_percentage', 'active', 'expiration_date', 'max_uses_per_user')
+    search_fields = ['code']
+
+class PromoCodeUsageAdmin(admin.ModelAdmin):
+    list_display = ('user', 'promo_code', 'used_at')
+    search_fields = ['user__username', 'promo_code__code']
+    readonly_fields = ('used_at',)
 
 admin.site.register(Category)
 admin.site.register(Product, ProductAdmin)
@@ -30,3 +38,5 @@ admin.site.register(ShippingAddress)
 admin.site.register(PaymentMethod)
 admin.site.register(PasswordReset)
 admin.site.register(ProductReview)
+admin.site.register(PromoCode, PromoCodeAdmin)
+admin.site.register(PromoCodeUsage, PromoCodeUsageAdmin)

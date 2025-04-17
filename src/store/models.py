@@ -1,12 +1,12 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.contrib.auth.models import User
-from django.db.models import Avg
+from decimal import Decimal, ROUND_HALF_UP
+from django.db.models import Avg, Count
+from django.utils import timezone
 from django.conf import settings
 from django.db import models
-from decimal import Decimal, ROUND_HALF_UP
 import uuid
-import time
 
 
 class Category(models.Model):
@@ -53,20 +53,41 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
     @property
+    def review_count(self):
+        return self.reviews.aggregate(count=Count('id'))['count'] or 0
+
+    @property
     def average_rating(self):
         return self.reviews.aggregate(Avg('rating'))['rating__avg'] or 0
+
+class PromoCodeUsage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    promo_code = models.ForeignKey('PromoCode', on_delete=models.CASCADE)
+    used_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'promo_code')
 
 class PromoCode(models.Model):
     code = models.CharField(max_length=50, unique=True)
     discount_percentage = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
     active = models.BooleanField(default=True)
     expiration_date = models.DateTimeField(null=True, blank=True)
+    max_uses_per_user = models.PositiveIntegerField(null=True, blank=True)  # Null = unlimited per user
 
-    def is_valid(self):
-        return self.active and (self.expiration_date is None or self.expiration_date > time.timezone.now())
+    def is_valid_for_user(self, user):
+        if self.expiration_date and self.expiration_date <= timezone.now():
+            if self.active:
+                self.active = False
+                self.save(update_fields=["active"])
+            return False
 
-    def __str__(self):
-        return self.code
+        # Count user uses
+        used_count = PromoCodeUsage.objects.filter(user=user, promo_code=self).count()
+        if self.max_uses_per_user is not None and used_count >= self.max_uses_per_user:
+            return False
+
+        return self.active
 
 class CartItem(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -79,7 +100,7 @@ class CartItem(models.Model):
 
     @property
     def get_total(self):
-        return self.product.price * self.quantity
+        return self.product.discounted_price * self.quantity
 
 class Order(models.Model):
     STATUS_CHOICES = [
@@ -153,6 +174,7 @@ class ProductReview(models.Model):
 
     class Meta:
         unique_together = ('user', 'product')
-
+    
     def __str__(self):
         return f"Review by {self.user.username} for {self.product.name}"
+    

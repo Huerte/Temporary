@@ -13,14 +13,13 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.contrib import messages
-from decimal import Decimal
 from django.utils import timezone
 from django.db.models import Sum
 from django.urls import reverse
+from decimal import Decimal
 from main import settings
 from . import models
 import pycountry
-
 
 
 def home(request):
@@ -256,6 +255,9 @@ def product_view(request):
     paginator = Paginator(products, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    
+    for product in products:
+        product.stars_range = range(1, 6)
 
     context = {
         'products': page_obj.object_list, 
@@ -300,9 +302,12 @@ def product_details(request, product_id):
 def cart_view(request):
     cart_items = models.CartItem.objects.filter(user=request.user)
 
-    sub_total = sum(item.product.price * item.quantity for item in cart_items)
-    shipping = 120
-    to_pay = sub_total + shipping
+    sub_total = sum(item.product.discounted_price * item.quantity for item in cart_items)
+
+    promo_discount = request.session.get('promo_discount', 0)
+    voucher_discount = (sub_total * promo_discount) // 100 if promo_discount else 0
+
+    to_pay = sub_total - voucher_discount
 
     # Fetch user's shipping address
     try:
@@ -310,14 +315,11 @@ def cart_view(request):
     except models.ShippingAddress.DoesNotExist:
         user_address = None
 
-    discount = 0  # Set this dynamically later if needed
-
     context = {
         'cart_items': cart_items if cart_items else [],
         'sub_total': sub_total,
         'to_pay': to_pay,
-        'shipping': shipping,
-        'discount': discount,
+        'voucher_discount': voucher_discount,
         'user_address': user_address,
     }
 
@@ -348,20 +350,27 @@ def add_to_cart(request, product_id):
 
     return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
 
+@login_required(login_url='/login')
 def apply_promo(request):
     if request.method == "POST":
         code = request.POST.get("promo_code", "").strip()
         try:
             promo = models.PromoCode.objects.get(code__iexact=code)
-            if promo.is_valid():
-                request.session['promo_code'] = promo.code
-                request.session['promo_discount'] = promo.discount_percentage
-                messages.success(request, f"Promo code '{promo.code}' applied successfully!")
+            # Check if the user has already used this promo code
+            if not models.PromoCodeUsage.objects.filter(user=request.user, promo_code=promo).exists():
+                if promo.is_valid_for_user(request.user):
+                    models.PromoCodeUsage.objects.create(user=request.user, promo_code=promo)
+                    request.session['promo_code'] = promo.code
+                    request.session['promo_discount'] = promo.discount_percentage
+                    messages.success(request, f"Promo code '{promo.code}' applied successfully!")
+                else:
+                    messages.error(request, "Promo code is expired, inactive, or already used the max allowed times.")
             else:
-                messages.error(request, "This promo code is expired or inactive.")
+                messages.error(request, "You have already used this promo code.")
         except models.PromoCode.DoesNotExist:
             messages.error(request, "Invalid promo code.")
-    return redirect('checkout-view')
+
+    return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
 
 @login_required(login_url='/login')
 def remove_from_cart(request, product_id):
@@ -398,11 +407,13 @@ def checkout_view(request):
     user_address, created = models.ShippingAddress.objects.get_or_create(user=request.user)
     promo_discount = request.session.get('promo_discount', 0)
 
-    sub_total = sum(item.product.price * item.quantity for item in cart_items)
-    discounted_total = sub_total * (Decimal(1) - Decimal(promo_discount) / Decimal(100))
+    sub_total = sum(item.product.discounted_price * item.quantity for item in cart_items)
 
     shipping = 120 
-    to_pay = discounted_total + shipping
+    promo_discount = request.session.get('promo_discount', 0)
+    voucher_discount = (sub_total * promo_discount) // 100 if promo_discount else 0
+
+    to_pay = sub_total - voucher_discount + shipping
 
     if request.method == 'POST':
         if not user_address.full_name or not user_address.address:
@@ -412,9 +423,13 @@ def checkout_view(request):
         
         notes = request.POST.get('notes')
         order = models.Order.objects.create(
-                user=request.user,
-                user_note=notes,
+            user=request.user,
+            user_note=notes,
+            shipping_price=shipping,
+            discount=voucher_discount,
+            total_price=to_pay
         )
+
 
         total_price = 0
         for item in cart_items:
@@ -423,27 +438,47 @@ def checkout_view(request):
                 product=item.product,
                 quantity=item.quantity,
                 price=item.product.price,
-                total_price=item.quantity * item.product.price
+                total_price=item.quantity * item.product.discounted_price
             )
-            total_price += item.product.price * item.quantity
 
-        order.total_price = total_price
         order.save()
 
         cart_items.delete()
 
+        request.session['last_order_data'] = {
+            'order_id': order.id,
+            'voucher_discount': float(voucher_discount),
+            'promo_code': request.session.get('promo_code'),
+            'shipping': float(shipping),
+            'to_pay': to_pay
+        }
+
+        request.session.pop('promo_discount', None)
+        request.session.pop('promo_code', None)
+
         return redirect('order-success-page')
 
-    context = {'cart_items': cart_items, 'user_address': user_address, 'sub_total': sub_total, 'shipping': shipping, 'to_pay': to_pay}
+    context = {
+        'cart_items': cart_items, 'user_address': user_address, 
+        'sub_total': sub_total, 'shipping': shipping, 'to_pay': to_pay,
+        'voucher_discount': voucher_discount
+    }
     return render(request, 'store/checkout-page.html', context)
 
 @login_required(login_url='/login')
 def order_success_page(request):
-    order = models.Order.objects.filter(user=request.user).order_by('-created_at').first()
-    if not order:
-        return redirect('store_home')
-    
-    return render(request, 'store/order-success-page.html', {'order': order})
+    order_data = request.session.get('last_order_data', {})
+    order = models.Order.objects.get(id=order_data.get('order_id'))
+
+    context = {
+        'order': order,
+        'order_items': order.order_items.all(),
+        'voucher_discount': order_data.get('voucher_discount', 0),
+        'promo_code': order_data.get('promo_code'),
+        'shipping': order_data.get('shipping', 0),
+        'total_price': order.total_price
+    }
+    return render(request, 'store/order-success-page.html', context)
 
 @login_required(login_url='/login')
 def order_details_view(request, order_id):
