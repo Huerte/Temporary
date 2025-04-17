@@ -170,7 +170,7 @@
     </div>
   </div>  
 
-<script>
+<script>  
   document.addEventListener("DOMContentLoaded", function () {
     // Quantity buttons functionality
     document.querySelectorAll(".quantity-wrapper").forEach(function (wrapper) {
@@ -181,6 +181,7 @@
       const action = form.action;
       const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
     
+      // Function to update the quantity
       function updateQuantity(newQty) {
         fetch(action, {
           method: "POST",
@@ -192,16 +193,20 @@
         })
           .then((res) => {
             if (!res.ok) throw new Error("Failed to update");
-            input.value = newQty; // keep synced
+            input.value = newQty; // Keep synced
+            // Store scroll position when the quantity is updated
+            sessionStorage.setItem("scrollPosition", window.scrollY);
           })
           .catch((err) => console.error(err));
       }
     
+      // Event listener for the minus button
       minusBtn.addEventListener("click", function () {
         let current = parseInt(input.value) || 1;
         if (current > 1) updateQuantity(current - 1);
       });
     
+      // Event listener for the plus button
       plusBtn.addEventListener("click", function () {
         let current = parseInt(input.value) || 1;
         updateQuantity(current + 1);

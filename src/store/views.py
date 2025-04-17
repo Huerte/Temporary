@@ -217,10 +217,11 @@ def profile_view(request):
     user_address, created = models.ShippingAddress.objects.get_or_create(user=request.user)
     try:
         orders = models.Order.objects.filter(user=request.user)
+        product_reviews = models.ProductReview.objects.filter(user=request.user)
     except models.Order.DoesNotExist:
         orders = None
     
-    return render(request, 'store/profile-page.html', {'user_address': user_address, 'orders': orders})
+    return render(request, 'store/profile-page.html', {'user_address': user_address, 'orders': orders, 'product_reviews': product_reviews})
 
 @login_required(login_url='/login')
 def edit_profile_view(request):
@@ -269,14 +270,29 @@ def product_view(request):
 def product_details(request, product_id):
     product = get_object_or_404(models.Product, id=product_id)
     cart_item_exist = models.CartItem.objects.filter(user=request.user, product=product).exists()
-
+    product_reviews = models.ProductReview.objects.filter(product=product)
     # Savings = original price - discounted price
     savings = product.price - product.discounted_price
 
+    rounded_rating = round(product.average_rating or 0, 1)
+    full_stars = int(rounded_rating)
+    half_star = 1 if (rounded_rating - full_stars) >= 0.5 else 0
+    empty_stars = 5 - full_stars - half_star
+
+    can_review = models.OrderItem.objects.filter(order__user=request.user, order__status='DELIVERED', product=product).exists()
+    related_products = models.Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
+
     context = {
         'product': product,
+        'product_reviews': product_reviews,
         'cart_item_exist': cart_item_exist,
         'savings': savings,
+        'rounded_rating': rounded_rating,
+        'full_stars': range(full_stars),
+        'half_star': half_star,
+        'empty_stars': range(empty_stars),
+        'can_review': can_review,
+        'related_products': related_products
     }
     return render(request, 'store/product-detail.html', context)
 
@@ -297,7 +313,7 @@ def cart_view(request):
     discount = 0  # Set this dynamically later if needed
 
     context = {
-        'cart_items': cart_items,
+        'cart_items': cart_items if cart_items else [],
         'sub_total': sub_total,
         'to_pay': to_pay,
         'shipping': shipping,
@@ -370,7 +386,11 @@ def update_cart(request, product_id):
             cart_item.save()
         except models.CartItem.DoesNotExist:
             pass
-    return JsonResponse({'success': True})
+
+    if 'HTTP_REFERER' in request.META:
+        request.session['last_page'] = request.META['HTTP_REFERER']
+    
+    return redirect(request.session.get('last_page', '/default-redirect-url'))
 
 @login_required(login_url='/login')
 def checkout_view(request):

@@ -21,13 +21,19 @@
                 <div class="position-relative">
                     <div id="productCarousel" class="carousel slide shadow-sm rounded overflow-hidden" data-bs-ride="carousel">
                         <div class="carousel-inner">
-                            <!-- Main Product Image -->
+                            {% if product.image %}
                             <div class="carousel-item active">
-                                <img src="{{ product.image }}" class="d-block w-100" alt="{{ product.name }}">
+                                <img src="{{ product.image }}" class="d-block w-100 zoomable-img" alt="{{ product.name }}">
                             </div>
+                            {% endif %}
+                            {% for img_url in product.additional_images %}
+                            <div class="carousel-item{% if not product.image and forloop.first %} active{% endif %}">
+                                <img src="{{ img_url }}" class="d-block w-100 zoomable-img" alt="{{ product.name }}">
+                            </div>
+                            {% endfor %}
                         </div>
-                        
-                        <!-- Carousel Controls - Only show if multiple images -->
+            
+                        {% if product.additional_images and product.additional_images|length > 0 %}
                         <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Previous</span>
@@ -36,21 +42,55 @@
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Next</span>
                         </button>
-                        
-                        <!-- Image Zoom Hint -->
+                        {% endif %}
+            
                         <div class="position-absolute bottom-0 end-0 p-3 text-white">
                             <i class="fas fa-search-plus me-1"></i> Hover to zoom
                         </div>
                     </div>
-                    
-                    <!-- Thumbnail Navigation - For future implementation -->
+            
+                    <!-- Thumbnails -->
                     <div class="d-flex mt-2 gap-2 overflow-auto pb-2">
-                        <div class="border border-primary rounded p-1" style="width: 70px; cursor: pointer;">
+                        {% if product.image %}
+                        <div class="border border-primary rounded p-1 thumb" data-bs-target="#productCarousel" data-bs-slide-to="0" style="width: 70px; cursor: pointer;">
                             <img src="{{ product.image }}" class="img-fluid" alt="Thumbnail">
                         </div>
+                        {% endif %}
+            
+                        {% for img_url in product.additional_images %}
+                        <div class="border rounded p-1 thumb" data-bs-target="#productCarousel" data-bs-slide-to="{{ forloop.counter }}" style="width: 70px; cursor: pointer;">
+                            <img src="{{ img_url }}" class="img-fluid" alt="Thumbnail">
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
+                
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const thumbs = document.querySelectorAll('.thumb');
+                    const carousel = document.querySelector('#productCarousel');
+                
+                    // Initial thumbnail border
+                    if (thumbs.length > 0) thumbs[0].classList.add('border-primary');
+                
+                    thumbs.forEach((thumb, index) => {
+                        thumb.addEventListener('click', function () {
+                            thumbs.forEach(t => t.classList.remove('border-primary'));
+                            this.classList.add('border-primary');
+                        });
+                    });
+                
+                    // Sync thumbnail border on carousel slide
+                    carousel.addEventListener('slid.bs.carousel', function (e) {
+                        const index = e.to;
+                        thumbs.forEach(t => t.classList.remove('border-primary'));
+                        if (thumbs[index]) thumbs[index].classList.add('border-primary');
+                    });
+                });
+            </script>
+                       
+
 
             <!-- Product Information -->
             <div class="col-lg-6">
@@ -84,19 +124,19 @@
 
                             </div>
                             
-                            <!-- Product Rating - Placeholder for future implementation -->
+                            <!-- Product Rating -->
                             <div class="mb-3">
                                 <div class="d-flex align-items-center">
                                     <div class="text-warning me-2">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star-half-alt"></i>
+                                        {% for _ in full_stars %}<i class="fas fa-star"></i>{% endfor %}
+                                        {% if half_star %}<i class="fas fa-star-half-alt"></i>{% endif %}
+                                        {% for _ in empty_stars %}<i class="far fa-star"></i>{% endfor %}
                                     </div>
-                                    <span class="text-muted small">4.5 (12 reviews)</span>
+                                    <span class="text-muted small">
+                                        {{ rounded_rating }} ({{ product_reviews.count }} reviews)
+                                    </span>
                                 </div>
-                            </div>
+                            </div>                            
                             
                             <!-- Product Description -->
                             <div class="mb-4">
@@ -271,26 +311,29 @@
                     <!-- Reviews Tab -->
                     <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
                         <!-- Review Form -->
+                        {% if can_review %}
                         <div class="mb-4 p-4 bg-light rounded">
                             <h5 class="mb-3">Write a Review</h5>
-                            <form>
+                            <form method="POST" action="{% url 'add-review' product.id %}">
+                                {% csrf_token %}
                                 <div class="mb-3">
                                     <label class="form-label">Rating</label>
                                     <div class="rating-stars mb-2">
-                                        <i class="far fa-star fs-4 me-1" style="cursor: pointer;"></i>
-                                        <i class="far fa-star fs-4 me-1" style="cursor: pointer;"></i>
-                                        <i class="far fa-star fs-4 me-1" style="cursor: pointer;"></i>
-                                        <i class="far fa-star fs-4 me-1" style="cursor: pointer;"></i>
-                                        <i class="far fa-star fs-4" style="cursor: pointer;"></i>
+                                        <input type="hidden" name="rating" id="ratingInput" required>
+                                        {% for i in "12345" %}
+                                        <i class="far fa-star fs-4 me-1 star" data-value="{{ i }}" style="cursor: pointer;"></i>
+                                        {% endfor %}
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="reviewComment" class="form-label">Your Review</label>
-                                    <textarea class="form-control" id="reviewComment" rows="3" placeholder="Share your experience with this product..."></textarea>
+                                    <textarea name="review" class="form-control" id="reviewComment" rows="3" placeholder="Share your experience with this product..."></textarea>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Submit Review</button>
                             </form>
                         </div>
+                        {% endif %}
+                        
                         
                         <!-- Reviews List -->
                         <div class="reviews-container">
@@ -308,14 +351,17 @@
                                         <span class="fw-bold text-capitalize">{{ review.user.username }}</span>
                                         <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
                                     </div>
+                                    <!-- Dynamic Rating -->
                                     <div class="text-warning mb-2">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="far fa-star"></i>
+                                        {% for _ in "12345" %}
+                                            {% if forloop.counter <= review.rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
                                     </div>
-                                    <p class="mb-0">{{ review.comment }}</p>
+                                    <p class="mb-0">{{ review.review }}</p>
                                 </div>
                             </div>
                             {% empty %}
@@ -326,6 +372,7 @@
                             </div>
                             {% endfor %}
                         </div>
+
                     </div>
                     
                     <!-- Shipping & Returns Tab -->
@@ -360,89 +407,89 @@
             <div class="col-12">
                 <h3 class="mb-4">You May Also Like</h3>
                 <div class="row row-cols-2 row-cols-md-4 g-4">
-                    <!-- Related Product 1 -->
-                    <div class="col">
-                        <div class="card h-100 border-0 shadow-sm product-card">
-                            <div class="position-relative">
-                                <img src="/placeholder.svg?height=300&width=300" class="card-img-top" alt="Related Product">
-                                <div class="position-absolute top-0 end-0 p-2">
-                                    <button class="btn btn-sm btn-outline-secondary rounded-circle">
-                                        <i class="far fa-heart"></i>
-                                    </button>
+                    <!-- Related Products -->
+                    {% for product in related_products %}
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <!-- Link wrapped around the card for clickability -->
+                        <a href="{% url 'product-details' product.id %}" class="text-decoration-none">
+                            <div class="card h-100 border-0 shadow-sm product-card">
+                                <div class="position-relative">
+                                    <!-- Sale label appears only if the product is on sale -->
+                                    {% if product.is_on_sale %}
+                                        <div class="position-absolute top-0 start-0 p-2 bg-danger text-white rounded-end" style="z-index: 10;">
+                                            <small>Sale</small>
+                                        </div>
+                                    {% endif %}
+                                    <img src="{{ product.image|default:'/placeholder.svg?height=300&width=300' }}" class="card-img-top rounded-3" alt="Related Product" style="object-fit: cover; height: 200px;">
+                                    <div class="position-absolute top-0 end-0 p-2">
+                                        <button class="btn btn-sm btn-outline-secondary rounded-circle">
+                                            <i class="far fa-heart"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="card-body">
-                                <h6 class="card-title">Forest Graphic T-Shirt</h6>
-                                <p class="card-text fw-bold">$39.99</p>
-                                <button class="btn btn-sm btn-primary w-100">Add to Cart</button>
-                            </div>
-                        </div>
-                    </div>
                     
-                    <!-- Related Product 2 -->
-                    <div class="col">
-                        <div class="card h-100 border-0 shadow-sm product-card">
-                            <div class="position-relative">
-                                <img src="/placeholder.svg?height=300&width=300" class="card-img-top" alt="Related Product">
-                                <div class="position-absolute top-0 end-0 p-2">
-                                    <button class="btn btn-sm btn-outline-secondary rounded-circle">
-                                        <i class="far fa-heart"></i>
-                                    </button>
+                                <div class="card-body d-flex flex-column justify-content-between">
+                                    <div>
+                                        <h6 class="card-title text-truncate" style="max-width: 100%;">{{ product.name }}</h6>
+                                        <p class="card-text fw-bold">
+                                            {% if product.is_on_sale %}
+                                                ₱{{ product.discounted_price }}
+                                                <small class="text-muted text-decoration-line-through">₱{{ product.price }}</small>
+                                            {% else %}
+                                                ₱{{ product.price }}
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    <button class="btn btn-sm btn-primary w-100 mt-3">Add to Cart</button>
                                 </div>
                             </div>
-                            <div class="card-body">
-                                <h6 class="card-title">Ocean Waves T-Shirt</h6>
-                                <p class="card-text fw-bold">$42.99</p>
-                                <button class="btn btn-sm btn-primary w-100">Add to Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Related Product 3 -->
-                    <div class="col">
-                        <div class="card h-100 border-0 shadow-sm product-card">
-                            <div class="position-relative">
-                                <img src="/placeholder.svg?height=300&width=300" class="card-img-top" alt="Related Product">
-                                <div class="position-absolute top-0 end-0 p-2">
-                                    <button class="btn btn-sm btn-outline-secondary rounded-circle">
-                                        <i class="far fa-heart"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <h6 class="card-title">Desert Sunset T-Shirt</h6>
-                                <p class="card-text fw-bold">$44.99</p>
-                                <button class="btn btn-sm btn-primary w-100">Add to Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Related Product 4 -->
-                    <div class="col">
-                        <div class="card h-100 border-0 shadow-sm product-card">
-                            <div class="position-relative">
-                                <img src="/placeholder.svg?height=300&width=300" class="card-img-top" alt="Related Product">
-                                <div class="position-absolute top-0 end-0 p-2">
-                                    <button class="btn btn-sm btn-outline-secondary rounded-circle">
-                                        <i class="far fa-heart"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <h6 class="card-title">Night Sky T-Shirt</h6>
-                                <p class="card-text fw-bold">$39.99</p>
-                                <button class="btn btn-sm btn-primary w-100">Add to Cart</button>
-                            </div>
-                        </div>
-                    </div>
+                        </a>
+                    </div>                                                       
+                    {% empty %}
+                        <p>No related products found.</p>
+                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Fullscreen Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content bg-dark">
+            <div class="modal-body p-0 d-flex justify-content-center align-items-center position-relative">
+    
+            <!-- Fullscreen Image -->
+            <img id="modalImage" src="" class="img-fluid" alt="Zoomed Image">
+    
+            <!-- Exit Button -->
+            <button type="button" class="btn btn-light position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill" data-bs-dismiss="modal" aria-label="Close">
+                <i class="fas fa-times me-1"></i> Exit
+            </button>
+    
+            </div>
+        </div>
+        </div>
+    </div>
+  
 </section>
 
 <!-- Add this JavaScript at the end of your template -->
 <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const zoomableImages = document.querySelectorAll('.zoomable-img');
+            const modalImage = document.getElementById('modalImage');
+            const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+        
+            zoomableImages.forEach(img => {
+                img.addEventListener('click', () => {
+                    modalImage.src = img.src;
+                    imageModal.show();
+                });
+            });
+        });
+
     function incrementQuantity() {
         const input = document.getElementById('productQuantity');
         input.value = parseInt(input.value) + 1;
@@ -454,8 +501,31 @@
             input.value = parseInt(input.value) - 1;
         }
     }
+
+    
     
     // Star rating functionality
+        document.addEventListener("DOMContentLoaded", function () {
+            const stars = document.querySelectorAll(".star");
+            const ratingInput = document.getElementById("ratingInput");
+        
+            stars.forEach((star, idx) => {
+                star.addEventListener("click", () => {
+                    const rating = parseInt(star.getAttribute("data-value"));
+                    ratingInput.value = rating;
+        
+                    stars.forEach((s, i) => {
+                        s.classList.remove("fas", "text-warning");
+                        s.classList.add("far");
+                        if (i < rating) {
+                            s.classList.remove("far");
+                            s.classList.add("fas", "text-warning");
+                        }
+                    });
+                });
+            });
+        });
+        
     document.addEventListener('DOMContentLoaded', function() {
         const stars = document.querySelectorAll('.rating-stars .fa-star');
         
@@ -474,4 +544,5 @@
         });
     });
 </script>
+
 {% endblock %}
