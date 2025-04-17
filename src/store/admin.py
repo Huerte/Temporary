@@ -3,7 +3,7 @@ from .models import *
 
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'price', 'discount_percentage', 'is_on_sale', 'buyers_count', 'is_featured')
-    fields = ('name', 'category', 'description', 'price', 'image', 'discount_percentage', 'buyers_count', 'is_featured')
+    fields = ('name', 'category', 'description', 'price', 'image', 'additional_images', 'discount_percentage', 'buyers_count', 'is_featured')
     search_fields = ['name', 'category__name']
 
 class OrderItemInline(admin.TabularInline):

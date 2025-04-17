@@ -6,6 +6,8 @@ from django.conf import settings
 from django.db import models
 from decimal import Decimal, ROUND_HALF_UP
 import uuid
+import time
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -17,7 +19,8 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=8, decimal_places=2)
-    image = models.URLField(max_length=500, blank=True)
+    image = models.URLField(max_length=500, blank=True, null=True)
+    additional_images = models.JSONField(blank=True, null=True)
 
     is_featured = models.BooleanField(default=False)
     discount_percentage = models.PositiveIntegerField(default=0)
@@ -60,7 +63,7 @@ class PromoCode(models.Model):
     expiration_date = models.DateTimeField(null=True, blank=True)
 
     def is_valid(self):
-        return self.active and (self.expiration_date is None or self.expiration_date > timezone.now())
+        return self.active and (self.expiration_date is None or self.expiration_date > time.timezone.now())
 
     def __str__(self):
         return self.code

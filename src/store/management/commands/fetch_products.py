@@ -19,20 +19,24 @@ def fetch_products():
         product_name = item['title']
         price = Decimal(item['price'])
         description = item.get('description', '')
-        image_url = item['images'][0] if item['images'] else None
+        image_urls = item['images'] if item['images'] else []
 
+        # Separate the first image as main image
+        main_image_url = image_urls[0] if image_urls else None
+        additional_image_urls = image_urls[1:] if len(image_urls) > 1 else []
+
+        # Create or get the product
         product, created = Product.objects.get_or_create(
             name=product_name,
             defaults={
                 'category': category,
                 'description': description,
                 'price': price,
-                'image': image_url,  # Store image URL
+                'image': main_image_url,
+                'additional_images': additional_image_urls,
             }
         )
 
-        if created:
-            print(f"Product created: {product_name} with image URL: {image_url}")
 
 class Command(BaseCommand):
     help = 'Fetch products from API and store in database'

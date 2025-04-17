@@ -25,8 +25,6 @@
               </div>
   
               {% for item in cart_items %}
-              <form method="POST" action="{% url 'update-cart' item.product.id %}">
-                {% csrf_token %}
                 <div class="row mb-4 pb-3 border-bottom">
                   <div class="col-md-5 mb-3 mb-md-0">
                     <div class="d-flex">
@@ -39,31 +37,33 @@
                       </div>
                     </div>
                   </div>
-  
+
                   <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
                     <span class="price-tag">₱{{ item.product.price }}</span>
                   </div>
-  
+
                   <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
-                    <div class="input-group quantity-wrapper">
-                      <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn minus-btn">-</button>
-                      <input type="number" name="quantity" class="form-control text-center quantity-input auto-submit-qty" value="{{ item.quantity }}" min="1">
-                      <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn plus-btn">+</button>
-                    </div>
+                    <form class="update-cart-form" method="POST" action="{% url 'update-cart' item.product.id %}">
+                      {% csrf_token %}
+                      <div class="input-group quantity-wrapper">
+                        <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn minus-btn">-</button>
+                        <input type="number" name="quantity" class="form-control text-center quantity-input" value="{{ item.quantity }}" min="1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn plus-btn">+</button>
+                      </div>
+                    </form>                    
                   </div>
-  
+
                   <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
                     <span class="price-tag">₱{{ item.get_total }}</span>
                   </div>
-  
+
                   <div class="col-6 col-md-1 text-center d-flex align-items-center justify-content-center">
-                    <form action="{% url 'remove-from-cart' item.id %}" method="post">
+                    <form class="remove-cart-form" data-product-id="{{ item.product.id }}" method="post" action="{% url 'remove-from-cart' item.product.id %}">
                       {% csrf_token %}
-                      <button type="submit" class="btn fw-bold btn-sm">Delete</button>
+                      <button type="button" class="btn fw-bold btn-sm delete-cart-btn">Delete</button>
                     </form>
-                  </div>
+                  </div>                  
                 </div>
-              </form>
               {% empty %}
               <div class="text-center py-5 px-3 bg-white rounded shadow-sm">
                 <i class="fas fa-shopping-cart fa-4x text-secondary mb-3"></i>
@@ -170,24 +170,70 @@
     </div>
   </div>  
 
-<script>
+<script>  
   document.addEventListener("DOMContentLoaded", function () {
     // Quantity buttons functionality
     document.querySelectorAll(".quantity-wrapper").forEach(function (wrapper) {
       const minusBtn = wrapper.querySelector(".minus-btn");
       const plusBtn = wrapper.querySelector(".plus-btn");
       const input = wrapper.querySelector(".quantity-input");
-
+      const form = wrapper.closest("form");
+      const action = form.action;
+      const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+      // Function to update the quantity
+      function updateQuantity(newQty) {
+        fetch(action, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": csrfToken,
+          },
+          body: `quantity=${newQty}`,
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("Failed to update");
+            input.value = newQty; // Keep synced
+            // Store scroll position when the quantity is updated
+            sessionStorage.setItem("scrollPosition", window.scrollY);
+          })
+          .catch((err) => console.error(err));
+      }
+    
+      // Event listener for the minus button
       minusBtn.addEventListener("click", function () {
         let current = parseInt(input.value) || 1;
-        if (current > 1) input.value = current - 1;
+        if (current > 1) updateQuantity(current - 1);
       });
-
+    
+      // Event listener for the plus button
       plusBtn.addEventListener("click", function () {
         let current = parseInt(input.value) || 1;
-        input.value = current + 1;
+        updateQuantity(current + 1);
       });
     });
+
+    // Product remove buttons functionality
+    document.querySelectorAll(".delete-cart-btn").forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const form = btn.closest("form");
+        const action = form.action;
+        const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+        fetch(action, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": csrfToken,
+          },
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("Failed to delete");
+            // Optionally: remove the item from DOM
+            form.closest(".row").remove();
+          })
+          .catch((err) => console.error(err));
+      });
+    });    
     
     // Payment method selection styling
     document.querySelectorAll('.form-check').forEach(function(check) {
