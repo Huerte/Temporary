@@ -3,8 +3,39 @@
 
 {% block content %}
 
+<style>
+    .hero-modern {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border-radius: 0 0 30px 30px;
+        padding: 80px 0;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero-modern::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(93, 95, 239, 0.1);
+    }
+    .hero-modern::after {
+        content: '';
+        position: absolute;
+        bottom: -80px;
+        left: -80px;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: rgba(255, 122, 80, 0.1);
+        pointer-events: none;
+    }
+</style>
+
 <!-- Hero Section (Modern Layout) -->
-<section class="hero-section py-5" style="background-color: #f9fafb; display: block;" id="content">
+<section class="hero-modern pb-5" id="content">
     <div class="container">
         <div class="row align-items-center">
             <!-- Left Text Content -->
@@ -15,12 +46,12 @@
                 </p>
                 <div class="d-flex gap-3">
                     {% if user.is_authenticated %}
-                        <a href="{% url 'products' %}" class="btn btn-dark btn-lg">Shop Now</a>
-                        {% else %}
+                        <a href="{% url 'products' %}" class="btn btn-primary btn-lg">Shop Now</a>
+                    {% else %}
                         <a href="#" class="btn btn-dark btn-lg" data-bs-toggle="modal" data-bs-target="#loginModal">Shop Now</a>
                     {% endif %}
                     {% if user.is_authenticated %}
-                        <a href="#categories" class="btn btn-outline-dark btn-lg">Browse Categories</a>
+                        <a href="#categories" class="btn btn-outline-primary btn-lg">Browse Categories</a>
                     {% else %}
                         <a href="#" class="btn btn-outline-dark btn-lg" data-bs-toggle="modal" data-bs-target="#loginModal">Browse Categories</a>
                     {% endif %}
@@ -35,151 +66,633 @@
     </div>
 </section>
 
-{% if products %}
-    <style>
-        #loading { display: none; }
-        #featured-products { display: block !important; }
-    </style>
+<style>
+    .category-card {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        overflow: hidden;
+        height: 100%;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .category-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    .category-card .card-body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem 1rem;
+    }
+    .category-title {
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    .explore-btn {
+        margin-top: auto;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .explore-btn:hover {
+        transform: scale(1.05);
+    }
+    .section-title {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 0.5rem;
+    }
+    .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(90deg, #6366F1, #8B5CF6);
+        border-radius: 3px;
+    }
+    .section-subtitle {
+        color: #6B7280;
+        max-width: 600px;
+        margin: 1rem auto 3rem;
+    }
+    /* Custom colors for each category */
+    .electronics { color: #3B82F6; background-color: #EFF6FF; }
+    .fashion { color: #EC4899; background-color: #FCE7F3; }
+    .furniture { color: #8B5CF6; background-color: #F5F3FF; }
+    .mobile { color: #10B981; background-color: #ECFDF5; }
+    .appliances { color: #F59E0B; background-color: #FEF3C7; }
+    .sports { color: #EF4444; background-color: #FEE2E2; }
+</style>
 
-    <!-- Featured Products Section -->
-    <section class="featured-products py-5" id="featured-products">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 class="fw-bold mb-1">Featured Products</h2>
-                    <p class="text-muted mb-0">Discover our handpicked selection of premium products.</p>
+<!-- Categories Section -->
+<section class="categories-section pt-5" id="categories">
+    <div class="container">
+        <div class="text-center mb-5 mt-5">
+            <h2 class="section-title fw-bold">Explore Categories</h2>
+            <p class="section-subtitle">Find products by category to suit your needs. Browse our curated collections for the best shopping experience.</p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <!-- Electronics -->
+        <div class="col">
+            <div class="card category-card">
+                <div class="card-body">
+                    <i class="fa-solid fa-laptop category-icon electronics"></i>
+                    <h5 class="category-title">Electronics</h5>
+                    <p class="text-muted text-center">Laptops, TVs, cameras and more tech gadgets</p>
+                    <a href="#" class="btn btn-outline-primary explore-btn w-75">Explore</a>
                 </div>
+            </div>
+        </div>
+
+        <!-- Fashion -->
+        <div class="col">
+            <div class="card category-card">
+                <div class="card-body">
+                    <i class="fa-solid fa-bag-shopping category-icon fashion"></i>
+                    <h5 class="category-title">Fashion</h5>
+                    <p class="text-muted text-center">Clothing, shoes, accessories for all styles</p>
+                    <a href="#" class="btn btn-outline-primary explore-btn w-75">Explore</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Furniture -->
+        <div class="col">
+            <div class="card category-card">
+                <div class="card-body">
+                    <i class="fa-solid fa-couch category-icon furniture"></i>
+                    <h5 class="category-title">Furniture</h5>
+                    <p class="text-muted text-center">Sofas, tables, chairs and home decor items</p>
+                    <a href="#" class="btn btn-outline-primary explore-btn w-75">Explore</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Phones -->
+        <div class="col">
+            <div class="card category-card">
+                <div class="card-body">
+                    <i class="fa-solid fa-mobile-screen-button category-icon mobile"></i>
+                    <h5 class="category-title">Mobile Phones</h5>
+                    <p class="text-muted text-center">Smartphones, accessories and wearables</p>
+                    <a href="#" class="btn btn-outline-primary explore-btn w-75">Explore</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Home Appliances -->
+        <div class="col">
+            <div class="card category-card">
+                <div class="card-body">
+                    <i class="fa-solid fa-tv category-icon appliances"></i>
+                    <h5 class="category-title">Home Appliances</h5>
+                    <p class="text-muted text-center">Refrigerators, washing machines and more</p>
+                    <a href="#" class="btn btn-outline-primary explore-btn w-75">Explore</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sports -->
+        <div class="col">
+            <div class="card category-card">
+                <div class="card-body">
+                    <i class="fa-solid fa-basketball category-icon sports"></i>
+                    <h5 class="category-title">Sports</h5>
+                    <p class="text-muted text-center">Equipment, clothing and accessories for sports</p>
+                    <a href="#" class="btn btn-outline-primary explore-btn w-75">Explore</a>
+                </div>
+            </div>
+        </div>
+
+        </div>
+    </div>
+</section>
+
+{% if products %}
+<style>
+    #loading { display: none; }
+    #featured-products { display: block !important; }
+</style>
+
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    
+    .featured-section {
+        padding: 5rem 0;
+        position: relative;
+    }
+    
+    .view-all {
+        display: inline-flex;
+        align-items: center;
+        font-weight: 600;
+        color: #6366F1;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .view-all i {
+        margin-left: 0.5rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .view-all:hover {
+        color: #4F46E5;
+    }
+    
+    .view-all:hover i {
+        transform: translateX(3px);
+    }
+    
+    .product-card {
+        background-color: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+        border: none;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+    
+    .product-image {
+        position: relative;
+        overflow: hidden;
+        height: 280px;
+        background-color: #f5f5f5;
+    }
+    
+    .product-image img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        object-position: top;
+        border-radius: 0.75rem;
+    }
+    
+    .product-card:hover .product-image img {
+        transform: scale(1.05);
+    }
+    
+    .product-category {
+        position: absolute;
+        left: 1rem;
+        bottom: 8rem;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        z-index: 2;
+    }
+    
+    .product-badge {
+        position: absolute;
+        right: 1rem;
+        background-color: #EF4444;
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        z-index: 2;
+    }
+    
+    .product-badge.new {
+        background-color: #10B981;
+    }
+    
+    .product-badge.bestseller {
+        background-color: #F59E0B;
+    }
+    
+    .product-content {
+        padding: 1.5rem;
+    }
+    
+    .product-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+        color: #1F2937;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 2.8em;
+    }
+    
+    .product-rating {
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .product-rating i {
+        color: #F59E0B;
+        font-size: 0.9rem;
+        margin-right: 0.1rem;
+    }
+    
+    .rating-count {
+        font-size: 0.8rem;
+        color: #6B7280;
+        margin-left: 0.5rem;
+    }
+    
+    .product-price {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .current-price {
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: #1F2937;
+    }
+    
+    .original-price {
+        font-size: 0.9rem;
+        color: #9CA3AF;
+        text-decoration: line-through;
+        margin-left: 0.75rem;
+    }
+    
+    .discount-percent {
+        font-size: 0.8rem;
+        color: #EF4444;
+        margin-left: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .btn-wishlist {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        
+        align-items: center;
+        justify-content: center;
+        background-color: #f3f4f6;
+        color: #6B7280;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-wishlist:hover {
+        background-color: #fee2e2;
+        color: #EF4444;
+    }
+    
+    .product-colors {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .color-option {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 1px #e5e7eb;
+        transition: all 0.3s ease;
+    }
+    
+    .color-option:hover, .color-option.active {
+        transform: scale(1.2);
+        box-shadow: 0 0 0 1px #6366F1;
+    }
+    
+    .color-black {
+        background-color: #000;
+    }
+    
+    .color-red {
+        background-color: #EF4444;
+    }
+    
+    .color-gray {
+        background-color: #9CA3AF;
+    }
+    
+    .color-blue {
+        background-color: #3B82F6;
+    }
+    
+    .product-availability {
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+    
+    .in-stock {
+        color: #10B981;
+        display: flex;
+        align-items: center;
+    }
+    
+    .in-stock i {
+        margin-right: 0.3rem;
+    }
+    
+    .low-stock {
+        color: #F59E0B;
+        display: flex;
+        align-items: center;
+    }
+    
+    .low-stock i {
+        margin-right: 0.3rem;
+    }
+    
+    .category-filters {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .category-filter {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: #fff;
+        color: #4B5563;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .category-filter:hover, .category-filter.active {
+        background-color: #6366F1;
+        color: #fff;
+        border-color: #6366F1;
+    }
+    
+    @media (max-width: 768px) {
+        .product-image {
+            height: 220px;
+        }
+    }
+</style>
+<!-- Featured Products Section -->
+<section class="featured-section">
+    <div class="container">
+        <div class="d-flex justify-content-center flex-wrap mb-4 w-100 mx-auto">
+            <div class="section-title text-center">
+                <h2 class="mb-1">Featured Products</h2>
+                <p class="section-subtitle mb-0">Discover our handpicked selection of premium products</p>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <button class="category-filter active">All</button>
+                <button class="category-filter">Hoodies</button>
+                <button class="category-filter">T-Shirts</button>
+                <button class="category-filter">Joggers</button>
+                <button class="category-filter">New Arrivals</button>
+                <button class="category-filter">Best Sellers</button>
+            </div>
+        
+            <div class="d-flex align-items-center ms-auto">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'products' %}" class="text-decoration-none fw-semibold">
-                        View All Products <i class="fas fa-arrow-right ms-1"></i>
+                    <a href="{% url 'products' %}" class="text-primary fw-semibold text-decoration-none">
+                        View All Products <i class="fa fa-arrow-right ms-1"></i>
                     </a>
                 {% else %}
-                    <a href="#" class="text-decoration-none fw-semibold" data-bs-toggle="modal" data-bs-target="#loginModal">
-                        View All Products <i class="fas fa-arrow-right ms-1"></i>
+                    <a href="#" class="text-primary fw-semibold text-decoration-none" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        View All Products <i class="fa fa-arrow-right ms-1"></i>
                     </a>
                 {% endif %}
             </div>
-    
-            <div class="row" id="product-catalog">
-                {% for product in products %}
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100 border-0 shadow-sm hover-shadow transition" style="border-radius: 1rem; overflow: hidden;">
-                        <a href="{% url 'product-details' product.id %}" class="text-decoration-none text-dark">
-                            <div class="position-relative bg-light d-flex align-items-center justify-content-center" style="height: 240px;">
-                                <img src="{{ product.image }}" class="img-fluid p-3" style="max-height: 100%; object-fit: contain;" alt="{{ product.name }}">
-                                <span class="badge bg-dark position-absolute top-0 start-0 m-2">{{ product.category.name }}</span>
-                                {% if product.is_on_sale %}
-                                    <span class="badge bg-danger position-absolute top-0 end-0 m-2">-{{ product.discount_percentage }}%</span>
-                                {% endif %}
-                            </div>
-                            <div class="card-body d-flex flex-column">
-                                <h6 class="fw-semibold text-truncate mb-1" title="{{ product.name }}">{{ product.name|truncatechars:30 }}</h6>
-                                <p class="mb-3">
-                                    {% if product.is_on_sale %}
-                                        <span class="text-muted text-decoration-line-through me-2">${{ product.price }}</span>
-                                        <span class="fw-bold text-danger fs-5">${{ product.discounted_price }}</span>
-                                    {% else %}
-                                        <span class="fw-bold text-dark fs-5">${{ product.price }}</span>
-                                    {% endif %}
-                                </p>
-                            </div>
-                        </a>
-                        <div class="px-3 pb-3">
-                            {% if user.is_authenticated %}
-                                {% if product.id in products_in_cart %}
-                                    <button class="btn btn-outline-dark w-100 disabled">
-                                        <i class="fas fa-shopping-cart me-2"></i>Already in Cart
-                                    </button>
+        </div>
+        
+
+        <div class="row g-4">
+            {% for product in products %}
+            <div class="col-lg-4 col-md-6">
+                <div class="product-card">
+                    <a href="{% url 'product-details' product.id %}" class="product-image">
+                        <img src="{{ product.image }}" alt="{{ product.name }}">
+                        <div class="product-category">{{ product.category.name }}</div>
+                        {% if product.is_bestseller %}
+                            <div class="product-badge bestseller">Bestseller</div>
+                        {% elif product.is_new %}
+                            <div class="product-badge new">New</div>
+                        {% elif product.is_on_sale %}
+                            <div class="product-badge">Sale</div>
+                        {% endif %}
+                    </a>
+                    <div class="product-content">
+                        <h3 class="product-title">{{ product.name|truncatechars:35 }}</h3>
+
+                        <div class="product-rating">
+                            {% for i in "12345" %}
+                                {% if product.rating|default:0 >= i|add:"0.5" %}
+                                    <i class="fa-solid fa-star"></i>
+                                {% elif product.rating|default:0 >= i|add:"-0.5" %}
+                                    <i class="fa-solid fa-star-half-stroke"></i>
                                 {% else %}
-                                <form method="post"
-                                        action="{% url 'add-to-cart' product.id %}"
-                                        class="add-to-cart-form"
-                                        data-product-id="{{ product.id }}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn btn-dark w-100">
-                                    <i class="fas fa-shopping-cart me-2"></i>Add to Cart
-                                    </button>
-                                </form>
+                                    <i class="fa-solid fa-star"></i>
                                 {% endif %}
+                            {% endfor %}
+                            <span class="rating-count">({{ product.review_count|default:"0" }})</span>
+                        </div>
+
+                        <div class="product-colors">
+                            {% for color in product.colors.all %}
+                                <div class="color-option color-{{ color.name|lower }}" title="{{ color.name }}"></div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="product-price">
+                            {% if product.is_on_sale %}
+                                <span class="current-price">${{ product.discounted_price }}</span>
+                                <span class="original-price">${{ product.price }}</span>
+                                <span class="discount-percent">-{{ product.discount_percentage }}%</span>
                             {% else %}
-                                <a href="#" class="btn btn-dark w-100" data-bs-toggle="modal" data-bs-target="#loginModal">
-                                    <i class="fas fa-shopping-cart me-2"></i>Add to Cart
-                                </a>
+                                <span class="current-price">${{ product.price }}</span>
                             {% endif %}
                         </div>
+
+                        <div class="product-availability {% if product.stock <= 5 %}low-stock{% else %}in-stock{% endif %}">
+                            {% if product.stock <= 0 %}
+                                <i class="bi bi-x-circle-fill"></i> Out of Stock
+                            {% elif product.stock <= 5 %}
+                                <i class="bi bi-exclamation-circle-fill"></i> Only {{ product.stock }} left
+                            {% else %}
+                                <i class="bi bi-check-circle-fill"></i> In Stock
+                            {% endif %}
+                        </div>
+
+                        <div class="product-actions container">
+                            <div class="d-flex gap-3">
+                                <div class="flex-grow-1">
+                                    {% if user.is_authenticated %}
+                                        {% if product.id in products_in_cart %}
+                                            <button class="btn btn-outline-secondary w-100" disabled>
+                                                <i class="bi bi-cart-check"></i> Already in Cart
+                                            </button>
+                                        {% else %}
+                                            <form method="post" action="{% url 'add-to-cart' product.id %}" class="add-to-cart-form" data-product-id="{{ product.id }}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" class="btn btn-primary w-100">
+                                                    <i class="fa fa-cart-plus"></i> Add to Cart
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    {% else %}
+                                        <a href="#" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#loginModal">
+                                            <i class="bi bi-cart-plus"></i> Add to Cart
+                                        </a>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Wishlist Button -->
+                                <div>
+                                    <button class="btn btn-light border rounded-circle shadow-sm">
+                                        <i class="fa fa-heart text-mute"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
-                {% endfor %}
             </div>
-        </div>
-    </section>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-          document.querySelectorAll(".add-to-cart-form").forEach(form => {
-            form.addEventListener("submit", async e => {
-              e.preventDefault();
-              const productId = form.dataset.productId;
-              const formData = new FormData(form);
-        
-              try {
-                const res = await fetch(form.action, {
-                  method: "POST",
-                  headers: {
-                    "X-Requested-With": "XMLHttpRequest",
-                    "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
-                  },
-                  body: formData,
-                });
-        
-                if (res.ok) {
-                  const data = await res.json();
-                  if (data.success) {
-                    // Update cart badge
-                    const badge = document.getElementById("cart-badge");
-                    badge.textContent = data.cart_total;
-                    badge.style.display = data.cart_total > 0 ? "inline-block" : "none";
-        
-                    // Replace button
-                    form.outerHTML = `
-                      <button class="btn btn-outline-dark w-100 disabled">
-                        <i class="fas fa-shopping-cart me-2"></i>Already in Cart
-                      </button>
-                    `;
-                  }
-                } else {
-                  console.error("Failed to add to cart");
-                }
-              } catch (err) {
-                console.error("Error:", err);
-              }
-            });
-          });
-        });
-        </script>        
-      
-
-    {% if products|length < 6 %}
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 text-center border-0 bg-light d-flex flex-column justify-content-center align-items-center" style="min-height: 400px;">
-            <div class="p-4">
-                <h5 class="fw-bold text-muted mb-3">Interested for more?</h5>
-                <a href="{% url 'products' %}" class="btn btn-outline-dark">View More Products</a>
-            </div>
+            {% endfor %}
         </div>
     </div>
+</section>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".add-to-cart-form").forEach(form => {
+        form.addEventListener("submit", async e => {
+          e.preventDefault();
+          const productId = form.dataset.productId;
+          const formData = new FormData(form);
+    
+          try {
+            const res = await fetch(form.action, {
+              method: "POST",
+              headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+              },
+              body: formData,
+            });
+    
+            if (res.ok) {
+              const data = await res.json();
+              if (data.success) {
+                // Update cart badge
+                const badge = document.getElementById("cart-badge");
+                badge.textContent = data.cart_total;
+                badge.style.display = data.cart_total > 0 ? "inline-block" : "none";
+    
+                // Replace button
+                form.outerHTML = `
+                  <button class="btn btn-outline-dark w-100 disabled">
+                    <i class="fas fa-shopping-cart me-2"></i>Already in Cart
+                  </button>
+                `;
+              }
+            } else {
+              console.error("Failed to add to cart");
+            }
+          } catch (err) {
+            console.error("Error:", err);
+          }
+        });
+      });
+    });
+</script>        
+
+{% if products|length < 6 %}
+<div class="col-md-4 mb-4">
+    <div class="card h-100 text-center border-0 bg-light d-flex flex-column justify-content-center align-items-center" style="min-height: 400px;">
+        <div class="p-4">
+            <h5 class="fw-bold text-muted mb-3">Interested for more?</h5>
+            <a href="{% url 'products' %}" class="btn btn-outline-dark">View More Products</a>
+        </div>
+    </div>
+</div>
 {% endif %}
 
 {% else %}
-    <!-- Loading Screen -->
-    <div id="loading" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); display: flex; justify-content: center; align-items: center; z-index: 9999;">
-        <div style="text-align: center;">
-            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <p class="mt-3" style="font-size: 1.25rem; color: #6c757d; font-weight: 500;">Please wait...</p>
+<!-- Loading Screen -->
+<div id="loading" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); display: flex; justify-content: center; align-items: center; z-index: 9999;">
+    <div style="text-align: center;">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
         </div>
+        <p class="mt-3" style="font-size: 1.25rem; color: #6c757d; font-weight: 500;">Please wait...</p>
     </div>
+</div>
 {% endif %}
 
 <script>
@@ -208,450 +721,799 @@
     }, 10000);  // 10 seconds timeout
 </script>
 
+<style>
+    .promo-banner {
+        background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #3B82F6 100%);
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 10px 30px rgba(107, 114, 255, 0.3);
+    }
+    
+    .promo-content {
+        padding: 3rem 2rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .promo-title {
+        font-weight: 800;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .promo-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        font-weight: 500;
+    }
+    
+    .promo-code {
+        background-color: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        display: inline-block;
+        margin-right: 10px;
+        border: 2px dashed rgba(255, 255, 255, 0.5);
+    }
+    
+    .promo-btn {
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        border-radius: 50px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border: none;
+    }
+    
+    .promo-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .promo-timer {
+        background-color: rgba(255, 255, 255, 0.15);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        margin-top: 1rem;
+    }
+    
+    .promo-timer i {
+        margin-right: 8px;
+    }
+    
+    .promo-decoration {
+        position: absolute;
+        right: -50px;
+        top: -50px;
+        width: 200px;
+        height: 200px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        z-index: 1;
+    }
+    
+    .promo-decoration:nth-child(2) {
+        left: -30px;
+        bottom: -80px;
+        top: auto;
+        right: auto;
+        width: 150px;
+        height: 150px;
+    }
+    
+    .promo-decoration:nth-child(3) {
+        left: 50%;
+        top: -100px;
+        width: 100px;
+        height: 100px;
+    }
+    
+    .copy-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center; 
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-left: 5px;
+    }
 
-<section class="promo-banner py-5 text-center text-white" style="background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);">
-    <div class="container">
-        <h2 class="fw-bold display-5 mb-3">Special Offer: 20% Off on All Items!</h2>
-        <p class="fs-5 mb-4">Use code <strong>SALE20</strong> at checkout. Offer valid until <span class="fw-semibold">April 30, 2025</span>.</p>
-        {% if user.is_authenticated %}
-            <a href="{% url 'products' %}" class="btn btn-light btn-sm px-5 py-3 shadow-sm">
-            <i class="fas fa-tags me-2"></i>Shop Now
-            </a>
-        {% else %}
-            <a href="{% url 'login-page' %}" class="btn btn-light btn-sm px-5 py-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#loginModal">
-            <i class="fas fa-tags me-2"></i>Shop Now
-            </a>
-        {% endif %}
+    
+    .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Animation */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .promo-title {
+            font-size: 2rem;
+        }
+        .promo-content {
+            padding: 2rem 1.5rem;
+        }
+    }
+</style>
+
+<section class="promo-banner container mb-5">
+    <div class="position-relative">
+        <!-- Decorative elements -->
+        <div class="promo-decoration"></div>
+        <div class="promo-decoration"></div>
+        <div class="promo-decoration"></div>
+
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="promo-content text-center text-lg-start">
+                    <h2 class="promo-title text-white">FLASH SALE: 20% OFF EVERYTHING!</h2>
+                    <p class="promo-subtitle text-white mb-4">Limited time offer on all products. Don't miss out!</p>
+
+                    <div class="d-flex flex-column flex-md-row align-items-center justify-content-center justify-content-lg-start gap-3 mb-3">
+                        <div class="d-flex align-items-center">
+                            <span class="promo-code text-white">SALE20</span>
+                            <button class="copy-btn my-auto" title="Copy code">
+                                <i class="fa-regular fa-clipboard text-white"></i>
+                            </button>
+                        </div>
+
+                        <a href="#" class="btn btn-light promo-btn pulse">
+                            <i class="fas fa-bag-shopping me-2"></i>Shop Now
+                        </a>
+                    </div>
+
+                    <div class="promo-timer text-white mt-2">
+                        <i class="fas fa-clock me-2"></i>
+                        <span>Offer ends: April 30, 2025</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 d-none d-lg-block">
+                <div class="text-center p-4">
+                    <div class="position-relative">
+                        <div class="position-absolute top-0 start-50 translate-middle-x" style="z-index: 3;">
+                            <div class="bg-warning text-dark fw-bold px-3 py-1 rounded-pill" style="transform: rotate(-5deg);">
+                                HURRY!
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center mx-auto mt-4" style="width: 180px; height: 180px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                            <div class="text-center">
+                                <div class="text-danger fw-bold" style="font-size: 3.5rem; line-height: 1;">20%</div>
+                                <div class="text-dark fw-bold">OFF</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
-<!-- Categories Section -->
-<section class="categories-section py-5" id="categories">
-    <div class="container">
-        <div class="text-center mb-4">
-            <h2 class="fw-bold">Explore Categories</h2>
-            <p class="text-muted">Find products by category to suit your needs.</p>
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Simple script to handle the copy button functionality
+    document.querySelector('.copy-btn').addEventListener('click', function() {
+        navigator.clipboard.writeText('SALE20').then(function() {
+            alert('Promo code copied to clipboard!');
+        });
+    });
+</script>
+
+<style>
+    .testimonial-section {
+        background-color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .section-title {
+        position: relative;
+        margin-bottom: 3rem;
+    }
+    
+    .section-title h2 {
+        font-weight: 700;
+        position: relative;
+        display: inline-block;
+        margin-bottom: 0.5rem;
+    }
+    
+    .section-title h2::after {
+        content: "";
+        position: absolute;
+        bottom: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 70px;
+        height: 3px;
+        background: linear-gradient(90deg, #6366F1, #8B5CF6);
+        border-radius: 3px;
+    }
+    
+    .section-subtitle {
+        color: #6B7280;
+        max-width: 600px;
+        margin: 1rem auto;
+    }
+    
+    .testimonial-card {
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .testimonial-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+    
+    .testimonial-quote {
+        font-size: 1.1rem;
+        font-style: italic;
+        color: #4B5563;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-left: 1.5rem;
+    }
+    
+    .testimonial-quote::before {
+        content: "";
+        font-size: 4rem;
+        font-family: Georgia, serif;
+        color: #6366F1;
+        opacity: 0.2;
+        position: absolute;
+        top: -2rem;
+        left: -1rem;
+        line-height: 1;
+    }
+    
+    .customer-info {
+        display: flex;
+        align-items: center;
+    }
+    
+    .customer-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 1rem;
+        border: 3px solid #f0f0f0;
+    }
+    
+    .customer-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .customer-details h5 {
+        margin-bottom: 0.2rem;
+        font-weight: 600;
+        color: #1F2937;
+    }
+    
+    .verified-badge {
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.8rem;
+        color: #10B981;
+        background-color: rgba(16, 185, 129, 0.1);
+        padding: 0.2rem 0.5rem;
+        border-radius: 20px;
+        margin-top: 0.2rem;
+    }
+    
+    .verified-badge i {
+        margin-right: 0.3rem;
+    }
+    
+    .rating {
+        margin-bottom: 0.5rem;
+    }
+    
+    .rating i {
+        color: #F59E0B;
+        font-size: 0.9rem;
+    }
+    
+    .purchase-info {
+        font-size: 0.8rem;
+        color: #6B7280;
+        margin-top: 0.3rem;
+    }
+    
+    .testimonial-date {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        font-size: 0.8rem;
+        color: #9CA3AF;
+    }
+    
+    .testimonial-controls {
+        margin-top: 2rem;
+    }
+    
+    .control-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #fff;
+        border: 1px solid #e5e7eb;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 0.3rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: #4B5563;
+    }
+    
+    .control-btn:hover {
+        background-color: #6366F1;
+        color: #fff;
+        border-color: #6366F1;
+    }
+    
+    .testimonial-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #e5e7eb;
+        margin: 0 0.3rem;
+        cursor: pointer;
+    }
+    
+    .testimonial-indicator.active {
+        background-color: #6366F1;
+        width: 24px;
+        border-radius: 4px;
+    }
+    
+    .bg-shape {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background-color: rgba(99, 102, 241, 0.05);
+        z-index: 0;
+    }
+    
+    .bg-shape-1 {
+        top: -150px;
+        right: -150px;
+    }
+    
+    .bg-shape-2 {
+        bottom: -150px;
+        left: -150px;
+    }
+    
+    @media (max-width: 768px) {
+        .testimonial-card {
+            padding: 1.5rem;
+        }
+        
+        .testimonial-date {
+            position: static;
+            margin-bottom: 1rem;
+            display: block;
+        }
+    }
+</style>
+
+<section class="testimonial-section py-5 align-items-center">
+    <!-- Background shapes -->
+    <div class="bg-shape bg-shape-1"></div>
+    <div class="bg-shape bg-shape-2"></div>
+    
+    <div class="container d-block ">
+        <div class="d-flex justify-content-center flex-wrap mb-4 w-100 mx-auto">
+            <div class="section-title text-center">
+                <h2 class="mb-1">What Our Customers Say</h2>
+                <p class="section-subtitle mb-0">See why thousands of customers love shopping with us and keep coming back for more.</p>
+            </div>
         </div>
+        
         <div class="row">
-            <!-- Electronics -->
-            <div class="col-md-2 mb-4">
-                <div class="card h-100 text-center hover-up">
-                    <div class="bg-light rounded-top" style="height: 200px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-laptop fa-3x text-muted"></i>
+            <!-- Testimonial 1 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="testimonial-card">
+                    <div class="testimonial-date">June 15, 2023</div>
+                    <div class="rating">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star-half-stroke"></i>
                     </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="fw-bold">Electronics</h6>
-                        <a href="#" class="btn btn-outline-dark mt-auto w-100">Explore</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Fashion -->
-            <div class="col-md-2 mb-4">
-                <div class="card h-100 text-center hover-up">
-                    <div class="bg-light rounded-top" style="height: 200px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-tshirt fa-3x text-muted"></i>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="fw-bold">Fashion</h6>
-                        <a href="#" class="btn btn-outline-dark mt-auto w-100">Explore</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Furniture -->
-            <div class="col-md-2 mb-4">
-                <div class="card h-100 text-center hover-up">
-                    <div class="bg-light rounded-top" style="height: 200px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-chair fa-3x text-muted"></i>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="fw-bold">Furniture</h6>
-                        <a href="#" class="btn btn-outline-dark mt-auto w-100">Explore</a>
+                    
+                    <p class="testimonial-quote">The best online shopping experience I've ever had. Thank you for the amazing service! The products arrived earlier than expected and in perfect condition.</p>
+                    <div class="customer-info">
+                        <div class="customer-avatar">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Emily Johnson">
+                        </div>
+                        <div class="customer-details">
+                            <h5>Emily Johnson</h5>
+                            <div class="verified-badge">
+                                <i class="bi bi-patch-check-fill"></i> Verified Buyer
+                            </div>
+                            <div class="purchase-info">Purchased: Classic Black Hoodie</div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <!-- Mobile Phones -->
-            <div class="col-md-2 mb-4">
-                <div class="card h-100 text-center hover-up">
-                    <div class="bg-light rounded-top" style="height: 200px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-mobile-alt fa-3x text-muted"></i>
+            
+            <!-- Testimonial 2 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="testimonial-card">
+                    <div class="testimonial-date">May 28, 2023</div>
+                    <div class="rating">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
                     </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="fw-bold">Mobile Phones</h6>
-                        <a href="#" class="btn btn-outline-dark mt-auto w-100">Explore</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Home Appliances -->
-            <div class="col-md-2 mb-4">
-                <div class="card h-100 text-center hover-up">
-                    <div class="bg-light rounded-top" style="height: 200px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-blender fa-3x text-muted"></i>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="fw-bold">Home Appliances</h6>
-                        <a href="#" class="btn btn-outline-dark mt-auto w-100">Explore</a>
-                    </div>
-                </div>
-            </div>
-           <!-- Sports -->
-            <div class="col-md-2 mb-4">
-                <div class="card h-100 text-center hover-up">
-                    <div class="bg-light rounded-top" style="height: 200px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-football-ball fa-3x text-muted"></i>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="fw-bold">Sports</h6>
-                        <a href="#" class="btn btn-outline-dark mt-auto w-100">Explore</a>
+                    
+                    <p class="testimonial-quote">Customer service was exceptional! When I had an issue with my order, they resolved it immediately. Will definitely shop here again.</p>
+                    <div class="customer-info">
+                        <div class="customer-avatar">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Michael Rodriguez">
+                        </div>
+                        <div class="customer-details">
+                            <h5>Michael Rodriguez</h5>
+                            <div class="verified-badge">
+                                <i class="bi bi-patch-check-fill"></i> Verified Buyer
+                            </div>
+                            <div class="purchase-info">Purchased: Comfort Fit Joggers</div>
+                        </div>
                     </div>
                 </div>
             </div>
+            
+            <!-- Testimonial 3 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="testimonial-card">
+                    <div class="testimonial-date">July 3, 2023</div>
+                    <div class="rating">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star-half-stroke"></i>
+                    </div>
+                    
+                    <p class="testimonial-quote">The quality of the products exceeded my expectations. The materials are premium and the fit is perfect. I've already recommended this store to all my friends!</p>
+                    <div class="customer-info">
+                        <div class="customer-avatar">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Sarah Williams">
+                        </div>
+                        <div class="customer-details">
+                            <h5>Sarah Williams</h5>
+                            <div class="verified-badge">
+                                <i class="bi bi-patch-check-fill"></i> Verified Buyer
+                            </div>
+                            <div class="purchase-info">Purchased: Grey Hooded Sweatshirt</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Testimonial Controls -->
+        <div class="text-center testimonial-controls">
+            <button class="control-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div class="d-inline-block mx-3">
+                <span class="testimonial-indicator active"></span>
+                <span class="testimonial-indicator"></span>
+                <span class="testimonial-indicator"></span>
+            </div>
+            <button class="control-btn">
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+        
+        <!-- View All Testimonials Button -->
+        <div class="text-center mt-4">
+            <a href="#" class="btn btn-outline-primary px-4 py-2 rounded-pill">
+                View All Reviews <i class="bi bi-arrow-right ms-2"></i>
+            </a>
         </div>
     </div>
 </section>
 
 <style>
-    .hover-up {
-        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    }
-    .hover-up:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
+
+        .newsletter-section {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            padding: 5rem 0;
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+        
+        .newsletter-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .newsletter-title {
+            font-weight: 800;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .newsletter-subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .newsletter-form {
+            max-width: 550px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .newsletter-input {
+            height: 40px;
+            padding-left: 1.5rem;
+            padding-right: 8rem;
+            font-size: 1rem;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .newsletter-input:focus {
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .newsletter-btn {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            height: 30px;
+            padding: 0 1.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        
+        .newsletter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background-color: #0b5ed7;
+            border-color: #0b5ed7;
+        }
+        
+        .newsletter-features {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .newsletter-feature {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .newsletter-feature i {
+            margin-right: 0.5rem;
+        }
+        
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            border-radius: 50%;
+            background-color: white;
+        }
+        
+        .shape-1 {
+            width: 150px;
+            height: 150px;
+            top: -50px;
+            left: 10%;
+        }
+        
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -80px;
+            right: 10%;
+        }
+        
+        .shape-3 {
+            width: 100px;
+            height: 100px;
+            top: 50%;
+            left: 20%;
+        }
+
+    @media (max-width: 768px) {
+            .newsletter-title {
+                font-size: 2rem;
+            }
+            
+            .newsletter-input {
+                padding-right: 1.5rem;
+            }
+            
+            .newsletter-btn {
+                position: static;
+                width: 100%;
+                margin-top: 1rem;
+            }
+            
+            .newsletter-features {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+        }
 </style>
 
-<!-- Testimonials Section -->
-<section class="testimonials-section py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-4">
-            <h2 class="fw-bold">What Our Customers Say</h2>
-            <p class="text-muted">See why our customers love shopping with us.</p>
-        </div>
-        <div id="testimonialCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <!-- Testimonial 1 -->
-                <div class="carousel-item active">
-                    <div class="card h-200 shadow-sm border-0">
-                        <div class="card-body text-center">
-                            <p class="text-muted fst-italic">"The quality is outstanding, and the delivery was super fast. Highly recommend!"</p>
-                            <h6 class="fw-bold mt-3">John Doe</h6>
-                            <p class="text-muted">Verified Buyer</p>
-                        </div>
+    <!-- Newsletter Section -->
+    <section class="newsletter-section">
+        <!-- Decorative shapes -->
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        
+        <div class="container">
+            <div class="newsletter-content text-center">
+                <h2 class="newsletter-title">Stay Updated & Get Exclusive Offers</h2>
+                <p class="newsletter-subtitle">Subscribe to our newsletter for the latest product updates, special promotions, and style inspiration delivered straight to your inbox.</p>
+                
+                <form class="newsletter-form">
+                    <div class="position-relative">
+                        <input type="email" class="form-control newsletter-input" placeholder="Enter your email address" required>
+                        <button type="submit" class="btn btn-primary newsletter-btn">Subscribe</button>
                     </div>
-                </div>
-                <!-- Testimonial 2 -->
-                <div class="carousel-item">
-                    <div class="card h-200 shadow-sm border-0">
-                        <div class="card-body text-center">
-                            <p class="text-muted fst-italic">"Exceptional customer service and top-notch products. Will definitely shop again!"</p>
-                            <h6 class="fw-bold mt-3">Jane Smith</h6>
-                            <p class="text-muted">Verified Buyer</p>
-                        </div>
+                </form>
+                
+                <div class="newsletter-features">
+                    <div class="newsletter-feature">
+                        <i class="bi bi-check-circle"></i>
+                        <span>No spam, we promise</span>
                     </div>
-                </div>
-                <!-- Testimonial 3 -->
-                <div class="carousel-item">
-                    <div class="card h-200 shadow-sm border-0"></div>
-                        <div class="card-body text-center">
-                            <p class="text-muted fst-italic">"The best online shopping experience I've ever had. Thank you for the amazing service!"</p>
-                            <h6 class="fw-bold mt-3">Emily Johnson</h6>
-                            <p class="text-muted">Verified Buyer</p>
-                        </div>
+                    <div class="newsletter-feature">
+                        <i class="bi bi-gift"></i>
+                        <span>Exclusive subscriber discounts</span>
                     </div>
-                </div>
-                <!-- Testimonial 4 -->
-                <div class="carousel-item">
-                    <div class="card h-200 shadow-sm border-0">
-                        <div class="card-body text-center">
-                            <p class="text-muted fst-italic">"Great prices and excellent quality. I'm beyond satisfied with my purchase!"</p>
-                            <h6 class="fw-bold mt-3">Michael Brown</h6>
-                            <p class="text-muted">Verified Buyer</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Testimonial 5 -->
-                <div class="carousel-item">
-                    <div class="card h-200 shadow-sm border-0"></div>
-                        <div class="card-body text-center">
-                            <p class="text-muted fst-italic">"Fast delivery and outstanding support. I highly recommend this store to everyone!"</p>
-                            <h6 class="fw-bold mt-3">Sarah Wilson</h6>
-                            <p class="text-muted">Verified Buyer</p>
-                        </div>
+                    <div class="newsletter-feature">
+                        <i class="bi bi-arrow-return-left"></i>
+                        <span>Unsubscribe anytime</span>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const carousel = new bootstrap.Carousel(document.getElementById('testimonialCarousel'), {
-            interval: 3000,
-            ride: 'carousel',
-            wrap: true
-        });
-    });
-</script>
-
-<!-- Newsletter Subscription Section -->
-<section class="newsletter-section py-5 text-center text-white" style="background-color: #007bff;">
-    <div class="container">
-        <h2 class="fw-bold">Stay Updated</h2>
-        <p class="mb-4">Subscribe to our newsletter for the latest updates and exclusive offers.</p>
-        <form class="d-flex justify-content-center">
-            <input type="email" class="form-control w-50 me-2" placeholder="Enter your email" required>
-            <button type="submit" class="btn btn-light">Subscribe</button>
-        </form>
-    </div>
-</section>
-
-<!-- Blog Section -->
-<section class="blog-section py-5" style="background-color: #f8f9fa;">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold display-6">Latest from Our Blog</h2>
-            <p class="text-muted fs-5">Stay informed with our latest news and articles.</p>
-        </div>
-        <div class="row g-4">
-            <!-- Blog Post 1 -->
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm hover-shadow transition">
-                    <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80" class="card-img-top rounded-top" alt="Top 10 Gadgets for 2023" style="height: 220px; object-fit: cover;">
-                    <div class="card-body">
-                        <h5 class="card-title fw-semibold">Top 10 Gadgets for 2023</h5>
-                        <p class="card-text text-muted">Discover the must-have gadgets to enhance your lifestyle this year.</p>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 pb-3 px-3">
-                        <a href="#" class="btn btn-sm btn-outline-dark">Read More</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Blog Post 2 -->
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm hover-shadow transition">
-                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80" class="card-img-top rounded-top" alt="How to Choose the Perfect Furniture" style="height: 220px; object-fit: cover;">
-                    <div class="card-body">
-                        <h5 class="card-title fw-semibold">How to Choose the Perfect Furniture</h5>
-                        <p class="card-text text-muted">Tips and tricks for selecting furniture that fits your style and needs.</p>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 pb-3 px-3">
-                        <a href="#" class="btn btn-sm btn-outline-dark">Read More</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Blog Post 3 -->
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm hover-shadow transition">
-                    <img src="https://cdn.mos.cms.futurecdn.net/jwrSBpoqnwfnJAX5yRmWNj-450-80.jpg.webp" class="card-img-top rounded-top" alt="Fashion Trends to Watch" style="height: 220px; object-fit: cover;">
-                    <div class="card-body">
-                        <h5 class="card-title fw-semibold">Fashion Trends to Watch</h5>
-                        <p class="card-text text-muted">Stay ahead of the curve with the latest fashion trends for the season.</p>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 pb-3 px-3">
-                        <a href="#" class="btn btn-sm btn-outline-dark">Read More</a>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<!-- FAQ Section -->
-<section class="faq-section py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-4">
-            <h2 class="fw-bold">Frequently Asked Questions</h2>
-            <p class="text-muted">Find answers to common questions about our store and services.</p>
-        </div>
-        <div class="accordion" id="faqAccordion">
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="faqHeadingOne">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseOne" aria-expanded="true" aria-controls="faqCollapseOne">
-                        What is your return policy?
-                    </button>
-                </h2>
-                <div id="faqCollapseOne" class="accordion-collapse collapse show" aria-labelledby="faqHeadingOne" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body text-primary">
-                        We offer a 30-day return policy for all items. Please ensure the product is in its original condition.
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="faqHeadingTwo">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseTwo" aria-expanded="false" aria-controls="faqCollapseTwo">
-                        Do you offer international shipping?
-                    </button>
-                </h2>
-                <div id="faqCollapseTwo" class="accordion-collapse collapse" aria-labelledby="faqHeadingTwo" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body text-primary">
-                        Yes, we ship to over 50 countries worldwide. Shipping fees and delivery times vary by location.
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="faqHeadingThree">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseThree" aria-expanded="false" aria-controls="faqCollapseThree">
-                        How can I track my order?
-                    </button>
-                </h2>
-                <div id="faqCollapseThree" class="accordion-collapse collapse" aria-labelledby="faqHeadingThree" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body text-primary">
-                        Once your order is shipped, you will receive a tracking number via email to monitor its progress.
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="faqHeadingFour">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseFour" aria-expanded="false" aria-controls="faqCollapseFour">
-                        What payment methods do you accept?
-                    </button>
-                </h2>
-                <div id="faqCollapseFour" class="accordion-collapse collapse" aria-labelledby="faqHeadingFour" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body text-primary">
-                        We accept major credit cards, PayPal, and other secure payment options.
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="faqHeadingFive">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseFive" aria-expanded="false" aria-controls="faqCollapseFive">
-                        Can I cancel my order?
-                    </button>
-                </h2>
-                <div id="faqCollapseFive" class="accordion-collapse collapse" aria-labelledby="faqHeadingFive" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body text-primary">
-                        Yes, you can cancel your order before it is shipped. Please contact our support team for assistance.
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="faqHeadingSix">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseSix" aria-expanded="false" aria-controls="faqCollapseSix">
-                        Do you offer gift wrapping services?
-                    </button>
-                </h2>
-                <div id="faqCollapseSix" class="accordion-collapse collapse" aria-labelledby="faqHeadingSix" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body text-primary">
-                        Yes, we offer gift wrapping for an additional fee. You can select this option during checkout.
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="faqHeadingSeven">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseSeven" aria-expanded="false" aria-controls="faqCollapseSeven">
-                        How do I contact customer support?
-                    </button>
-                </h2>
-                <div id="faqCollapseSeven" class="accordion-collapse collapse" aria-labelledby="faqHeadingSeven" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body text-primary">
-                        You can reach our customer support team via email, phone, or live chat on our website.
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="faqHeadingEight">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseEight" aria-expanded="false" aria-controls="faqCollapseEight">
-                        Are your products covered by warranty?
-                    </button>
-                </h2>
-                <div id="faqCollapseEight" class="accordion-collapse collapse" aria-labelledby="faqHeadingEight" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body text-primary">
-                        Yes, most of our products come with a manufacturer’s warranty. Please check the product details for more information.
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="faqHeadingNine">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseNine" aria-expanded="false" aria-controls="faqCollapseNine">
-                        Do you have a loyalty program?
-                    </button>
-                </h2>
-                <div id="faqCollapseNine" class="accordion-collapse collapse" aria-labelledby="faqHeadingNine" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body text-primary">
-                        Yes, we offer a loyalty program where you can earn points for every purchase and redeem them for discounts.
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="faqHeadingTen">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseTen" aria-expanded="false" aria-controls="faqCollapseTen">
-                        Can I change my shipping address after placing an order?
-                    </button>
-                </h2>
-                <div id="faqCollapseTen" class="accordion-collapse collapse" aria-labelledby="faqHeadingTen" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body text-primary">
-                        Yes, you can update your shipping address before the order is shipped. Contact our support team for help.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
 
 {% if not user.is_authenticated %}
 <!-- Login Modal -->
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content shadow-lg border-0 rounded-4">
-            <div class="modal-header border-0 pb-0 text-center">
-                <h3 class="modal-title fw-bold w-100" id="loginModalLabel">Log in</h3>
-                <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+
+    <button type="button" class="btn-close position-absolute end-0 top-0 mt-3 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+        
+      <div class="row g-0">
+        <!-- Form Side -->
+        <div class="col-md-6 bg-white p-5">
+          <div class="text-center mb-4">
+            <h3 class="fw-bold mb-1">Welcome back</h3>
+            <p class="text-muted small">Login to your ShopNow account</p>
+          </div>
+
+          <form id="loginForm" action="{% url 'store_home' %}" method="POST">
+            {% csrf_token %}
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="email" class="form-label fw-semibold">Email</label>
+              <input type="email" name="email" id="email" class="form-control" placeholder="m@example.com" required>
             </div>
-            <div class="modal-body pt-0">
-                <div class="container py-4">
-                    <div class="row align-items-center">
-                        <!-- Image Section -->
-                        <div class="col-md-6 text-center mb-4 mb-md-0">
-                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg"
-                                class="img-fluid" alt="Login Illustration">
-                        </div>
-                        <!-- Form Section -->
-                        <div class="col-md-6">
-                            <form id="loginForm" action="{% url 'store_home' %}" method="POST">
-                                {% csrf_token %}
-                                <!-- Email Input -->
-                                <div class="form-outline mb-4">
-                                    <label class="form-label" for="form1Example13">Email Address</label>
-                                    <input type="email" id="form1Example13" name="email" class="form-control form-control-lg" required />
-                                </div>
-                                <!-- Password Input -->
-                                <div class="form-outline mb-4">
-                                    <label class="form-label" for="form1Example23">Password</label>
-                                    <input type="password" id="form1Example23" name="password" class="form-control form-control-lg" required />
-                                </div>
-                                <!-- Remember Me and Forgot Password -->
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="form1Example3" />
-                                        <label class="form-check-label" for="form1Example3">Remember me</label>
-                                    </div>
-                                    <a href="{% url 'forgot-password' %}">Forgot password?</a>
-                                </div>
-                                <!-- Submit Button -->
-                                <button type="submit" class="btn text-white btn-lg w-100" style="background: linear-gradient(to right, #5f4dee, #3a3aff); border: none;">Sign In</button>
-                                <!-- Divider -->
-                                <div class="divider d-flex align-items-center justify-content-center my-4">
-                                    <p class="text-center fw-bold mx-3 mb-0 text-muted">OR</p>
-                                </div>
-                                <!-- Social Login Buttons -->
-                                <div class="d-grid gap-3">
-                                    <a class="btn btn-outline-dark btn-lg w-100" href="#!" role="button">
-                                        <i class="fab fa-facebook-f me-2"></i>Continue with Facebook
-                                    </a>
-                                    <a class="btn btn-outline-dark btn-lg w-100" href="#!" role="button">
-                                        <i class="fab fa-google me-2"></i>Continue with Google
-                                    </a>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <label for="password" class="form-label fw-semibold mb-0">Password</label>
+                <a href="{% url 'forgot-password' %}" class="text-decoration-underline small">Forgot your password?</a>
+              </div>
+              <input type="password" name="password" id="password" class="form-control" required>
             </div>
+
+            <!-- Login -->
+            <div class="d-grid mb-3">
+              <button type="submit" class="btn btn-dark">Login</button>
+            </div>
+
+            <!-- Divider -->
+            <div class="text-center my-3">
+              <span class="text-muted small">Or continue with</span>
+            </div>
+
+            <!-- Social Buttons -->
+            <div class="d-flex justify-content-between gap-2 mb-3">
+                <a href="#" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center">
+                <i class="fab fa-facebook-f me-2"></i> <span class="d-none d-sm-inline">Facebook</span>
+                </a>
+                <a href="#" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center">
+                <i class="fab fa-google me-2"></i> <span class="d-none d-sm-inline">Google</span>
+                </a>
+            </div>
+
+            <!-- Signup -->
+            <div class="text-center mt-4">
+              <p class="small mb-1">
+                Don't have an account?
+                <a href="#" class="text-decoration-underline">Sign up</a>
+              </p>
+              <p class="text-muted small">
+                By clicking continue, you agree to our
+                <a href="#" class="text-decoration-underline">Terms of Service</a> and
+                <a href="#" class="text-decoration-underline">Privacy Policy</a>.
+              </p>
+            </div>
+          </form>
         </div>
+
+        <!-- Illustration Side -->
+        <div class="col-md-6 d-none d-md-flex align-items-center justify-content-center bg-light">
+          <div class="text-center">
+            <img src="media/images/login-modal-img.png"
+                 alt="Login Illustration" class="img-fluid" style="max-width: 100%;">
+          </div>
+        </div>
+      </div>
+
     </div>
+  </div>
 </div>
 {% endif %}
 
