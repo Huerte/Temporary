@@ -314,6 +314,17 @@
                         {% if can_review %}
                         <div class="mb-4 p-4 bg-light rounded">
                             <h5 class="mb-3">Write a Review</h5>
+                            {% if messages %}
+                                <div class="mb-3">
+                                    {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
                             <form method="POST" action="{% url 'add-review' product.id %}">
                                 {% csrf_token %}
                                 <div class="mb-3">
@@ -476,6 +487,12 @@
 
 <!-- Add this JavaScript at the end of your template -->
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (window.location.hash === "#reviews") {
+          const tab = new bootstrap.Tab(document.querySelector('#reviews-tab'));
+          tab.show();
+        }
+      });
 
         document.addEventListener('DOMContentLoaded', function () {
             const zoomableImages = document.querySelectorAll('.zoomable-img');

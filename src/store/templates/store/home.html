@@ -548,15 +548,17 @@
                         <h3 class="product-title">{{ product.name|truncatechars:35 }}</h3>
 
                         <div class="product-rating">
-                            {% for i in "12345" %}
-                                {% if product.rating|default:0 >= i|add:"0.5" %}
-                                    <i class="fa-solid fa-star"></i>
-                                {% elif product.rating|default:0 >= i|add:"-0.5" %}
-                                    <i class="fa-solid fa-star-half-stroke"></i>
+                            {% with rating=product.average_rating|default:0 %}
+                            {% for _ in "12345" %}
+                                {% if rating >= forloop.counter %}
+                                <i class="fa-solid fa-star"></i>
+                                {% elif rating >= forloop.counter0|add:"0.5" %}
+                                <i class="fa-solid fa-star-half-stroke"></i>
                                 {% else %}
-                                    <i class="fa-solid fa-star"></i>
+                                <i class="fa-regular fa-star"></i>
                                 {% endif %}
                             {% endfor %}
+                            {% endwith %}
                             <span class="rating-count">({{ product.review_count|default:"0" }})</span>
                         </div>
 

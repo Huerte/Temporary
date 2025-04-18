@@ -351,28 +351,6 @@ def add_to_cart(request, product_id):
     return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
 
 @login_required(login_url='/login')
-def apply_promo(request):
-    if request.method == "POST":
-        code = request.POST.get("promo_code", "").strip()
-        try:
-            promo = models.PromoCode.objects.get(code__iexact=code)
-            # Check if the user has already used this promo code
-            if not models.PromoCodeUsage.objects.filter(user=request.user, promo_code=promo).exists():
-                if promo.is_valid_for_user(request.user):
-                    models.PromoCodeUsage.objects.create(user=request.user, promo_code=promo)
-                    request.session['promo_code'] = promo.code
-                    request.session['promo_discount'] = promo.discount_percentage
-                    messages.success(request, f"Promo code '{promo.code}' applied successfully!")
-                else:
-                    messages.error(request, "Promo code is expired, inactive, or already used the max allowed times.")
-            else:
-                messages.error(request, "You have already used this promo code.")
-        except models.PromoCode.DoesNotExist:
-            messages.error(request, "Invalid promo code.")
-
-    return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
-
-@login_required(login_url='/login')
 def remove_from_cart(request, product_id):
     if request.method == 'POST':
         try:
@@ -450,7 +428,7 @@ def checkout_view(request):
             'voucher_discount': float(voucher_discount),
             'promo_code': request.session.get('promo_code'),
             'shipping': float(shipping),
-            'to_pay': to_pay
+            'to_pay': float(to_pay)
         }
 
         request.session.pop('promo_discount', None)
@@ -493,6 +471,28 @@ def order_details_view(request, order_id):
     }
 
     return render(request, 'store/order-details.html', context)
+
+@login_required(login_url='/login')
+def apply_promo(request):
+    if request.method == "POST":
+        code = request.POST.get("promo_code", "").strip()
+        try:
+            promo = models.PromoCode.objects.get(code__iexact=code)
+            # Check if the user has already used this promo code
+            if not models.PromoCodeUsage.objects.filter(user=request.user, promo_code=promo).exists():
+                if promo.is_valid_for_user(request.user):
+                    models.PromoCodeUsage.objects.create(user=request.user, promo_code=promo)
+                    request.session['promo_code'] = promo.code
+                    request.session['promo_discount'] = promo.discount_percentage
+                    messages.success(request, f"Promo code '{promo.code}' applied successfully!")
+                else:
+                    messages.error(request, "Promo code is expired, inactive, or already used the max allowed times.")
+            else:
+                messages.error(request, "You have already used this promo code.")
+        except models.PromoCode.DoesNotExist:
+            messages.error(request, "Invalid promo code.")
+
+    return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
 
 @login_required(login_url='/login')
 def contact(request):
