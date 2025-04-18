@@ -306,7 +306,6 @@ def cart_view(request):
 
     promo_discount = request.session.get('promo_discount', 0)
     voucher_discount = (sub_total * promo_discount) // 100 if promo_discount else 0
-
     to_pay = sub_total - voucher_discount
 
     # Fetch user's shipping address
@@ -499,12 +498,17 @@ def order_details_view(request, order_id):
     order = get_object_or_404(models.Order, id=order_id, user=request.user)
     
     user_address = models.ShippingAddress.objects.get(user=request.user)
-    paymemt_method = models.PaymentMethod.objects.get(order=order)
+    payment_method = models.PaymentMethod.objects.get(order=order)
+
+    promo_code_usage = models.PromoCodeUsage.objects.filter(order=order).first()
+    promo_code = promo_code_usage.promo_code if promo_code_usage else None
+
     context = {
         'order': order,
         'order_items': order.order_items.all(),
         'user_address': user_address,
-        'payment': paymemt_method
+        'payment': payment_method,
+        'promo_code': promo_code
     }
 
     return render(request, 'store/order-details.html', context)
@@ -513,6 +517,13 @@ def order_details_view(request, order_id):
 def apply_promo(request):
     if request.method == "POST":
         code = request.POST.get("promo_code", "").strip()
+
+        if not code:
+            request.session.pop('promo_code', None)
+            request.session.pop('promo_discount', None)
+            messages.info(request, "Promo code cleared.")
+            return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
+
         try:
             promo = models.PromoCode.objects.get(code__iexact=code)
             

@@ -2,6 +2,15 @@
 
 {% block content %}
 <div class="container py-5">
+  {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+  {% endif %}
+
     <div class="row">
       <!-- Cart Items (Left Column) -->
       <div class="col-lg-8 mb-4">
@@ -126,10 +135,13 @@
                 <span>Subtotal</span>
                 <span>₱{{ sub_total|floatformat:2 }}</span>
               </div>
-              <div class="d-flex justify-content-between">
-                <span>Shipping</span>
-                <span>₱{{ shipping|floatformat:2 }}</span>
-              </div>
+              {% if voucher_discount > 0 %}
+                <div class="d-flex justify-content-between text-danger mb-1">
+                  <span>Promo Discount</span>
+                  <span>-₱{{ voucher_discount|floatformat:2 }}</span>
+                </div>
+              {% endif %}
+
               <hr>
               <div class="d-flex justify-content-between fw-bold text-success">
                 <span>Total</span>

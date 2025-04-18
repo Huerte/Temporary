@@ -57,21 +57,23 @@
                 <span class="text-muted">Subtotal</span>
                 <span class="fw-semibold">${{ order.subtotal }}</span>
             </li>
-            {% if order.promo_code %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span class="text-muted">Promo Code</span>
-                    <span class="fw-semibold">{{ order.promo_code.code }}</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span class="text-muted">Promo Discount</span>
-                    <div class="d-flex align-items-center">
-                        <span class="badge bg-danger text-light me-2">
-                            {{ order.promo_code.discount_percentage }}%
-                        </span>
-                        <span class="fw-semibold text-danger">- ${{ order.discount }}</span>
-                    </div>
-                </li>
-            {% endif %}
+            {% if promo_code %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="text-muted">Promo Code</span>
+                <span class="fw-semibold">{{ promo_code.code }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="text-muted">Promo Discount</span>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-danger text-light me-2">
+                        {{ promo_code.discount_percentage }}%
+                    </span>
+                    <span class="fw-semibold text-danger">- ${{ order.discount }}</span>
+                </div>
+            </li>
+          {% endif %}
+          
+
         
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 <span class="text-muted">Shipping</span>
