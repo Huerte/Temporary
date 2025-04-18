@@ -431,6 +431,7 @@ def checkout_view(request):
             'to_pay': float(to_pay)
         }
 
+
         request.session.pop('promo_discount', None)
         request.session.pop('promo_code', None)
 

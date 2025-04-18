@@ -1,19 +1,8 @@
 {% extends 'store/index.html' %}
-{% load static %}
 
 {% block content %}
 <div class="container py-5">
-  {% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    {% endfor %}
-  {% endif %}
-
     <div class="row">
-  
       <!-- Cart Items (Left Column) -->
       <div class="col-lg-8 mb-4">
         <div class="card mb-4">
@@ -47,40 +36,21 @@
                     </div>
                   </div>
 
-                  {% if item.product.is_on_sale %}
-                  <!-- On Sale -->
-                  <div class="col-12 col-md-2 d-flex flex-column align-items-center justify-content-center text-center">
-                    <div class="d-flex flex-row align-items-center gap-2">
-                      <!-- Original Price -->
-                      <span class="text-muted text-decoration-line-through" style="font-size: 0.95rem;">
-                        ₱{{ item.product.price }}
-                      </span>
-                      <!-- Discounted Price -->
-                      <span class="text-danger fw-bold" style="font-size: 1.2rem;">
-                        ₱{{ item.product.discounted_price }}
-                      </span>
-                    </div>
+                  <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
+                    <span class="price-tag">₱{{ item.product.price }}</span>
                   </div>
-                  {% else %}
-                  <!-- Regular Price Only -->
-                  <div class="col-12 col-md-2 d-flex flex-column align-items-center justify-content-center text-center">
-                    <span class="fw-semibold text-dark" style="font-size: 1.2rem;">
-                      ₱{{ item.product.price }}
-                    </span>
-                  </div>
-                  {% endif %}                  
-                
 
                   <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
                     <form class="update-cart-form" method="POST" action="{% url 'update-cart' item.product.id %}">
                       {% csrf_token %}
                       <div class="input-group quantity-wrapper">
                         <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn minus-btn">-</button>
-                        <input type="number" name="quantity" class="form-control text-center quantity-input" value="{{ item.quantity }}" min="1">
+                        <input type="number" name="quantity" class="form-control text-center quantity-input auto-submit-qty" value="{{ item.quantity }}" min="1">
                         <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn plus-btn">+</button>
                       </div>
-                    </form>                    
+                    </form>
                   </div>
+                  
 
                   <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
                     <span class="price-tag">₱{{ item.get_total }}</span>
@@ -147,26 +117,26 @@
   
             <!-- Price Summary -->
             <div class="mb-3">
-              <div class="d-flex justify-content-between mb-1">
+              {% if discount %}
+              <div class="d-flex justify-content-between text-success mb-1">
+                <span>Discount Applied</span>
+                <span>-₱{{ discount|floatformat:2 }}</span>
+              </div>
+              {% endif %}
+              <div class="d-flex justify-content-between">
                 <span>Subtotal</span>
                 <span>₱{{ sub_total|floatformat:2 }}</span>
               </div>
-            
-              {% if voucher_discount %}
-                <div class="d-flex justify-content-between text-danger mb-1">
-                  <span>Promo Discount</span>
-                  <span>-₱{{ voucher_discount|floatformat:2 }}</span>
-                </div>
-              {% endif %}
-            
-              <hr class="my-2">
-            
-              <div class="d-flex justify-content-between fw-bold text-success fs-5">
-                <span>Total to Pay</span>
+              <div class="d-flex justify-content-between">
+                <span>Shipping</span>
+                <span>₱{{ shipping|floatformat:2 }}</span>
+              </div>
+              <hr>
+              <div class="d-flex justify-content-between fw-bold text-success">
+                <span>Total</span>
                 <span>₱{{ to_pay|floatformat:2 }}</span>
               </div>
             </div>
-            
   
             <!-- Checkout Button -->
             {% if sub_total == 0 %}
@@ -198,193 +168,4 @@
   
     </div>
   </div>  
-
-<script>  
-  document.addEventListener("DOMContentLoaded", function () {
-    // Quantity buttons functionality
-    document.querySelectorAll(".quantity-wrapper").forEach(function (wrapper) {
-      const minusBtn = wrapper.querySelector(".minus-btn");
-      const plusBtn = wrapper.querySelector(".plus-btn");
-      const input = wrapper.querySelector(".quantity-input");
-      const form = wrapper.closest("form");
-      const action = form.action;
-      const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
-    
-      // Function to update the quantity
-      function updateQuantity(newQty) {
-        fetch(action, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-CSRFToken": csrfToken,
-          },
-          body: `quantity=${newQty}`,
-        })
-          .then((res) => {
-            if (!res.ok) throw new Error("Failed to update");
-            input.value = newQty; // Keep synced
-            // Store scroll position when the quantity is updated
-            sessionStorage.setItem("scrollPosition", window.scrollY);
-          })
-          .catch((err) => console.error(err));
-      }
-    
-      // Event listener for the minus button
-      minusBtn.addEventListener("click", function () {
-        let current = parseInt(input.value) || 1;
-        if (current > 1) updateQuantity(current - 1);
-      });
-    
-      // Event listener for the plus button
-      plusBtn.addEventListener("click", function () {
-        let current = parseInt(input.value) || 1;
-        updateQuantity(current + 1);
-      });
-    });
-
-    // Product remove buttons functionality
-    document.querySelectorAll(".delete-cart-btn").forEach((btn) => {
-      btn.addEventListener("click", function () {
-        const form = btn.closest("form");
-        const action = form.action;
-        const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
-    
-        fetch(action, {
-          method: "POST",
-          headers: {
-            "X-CSRFToken": csrfToken,
-          },
-        })
-          .then((res) => {
-            if (!res.ok) throw new Error("Failed to delete");
-            // Optionally: remove the item from DOM
-            form.closest(".row").remove();
-          })
-          .catch((err) => console.error(err));
-      });
-    });    
-    
-    // Payment method selection styling
-    document.querySelectorAll('.form-check').forEach(function(check) {
-      check.addEventListener('click', function() {
-        // Find the radio input and select it
-        const radio = this.querySelector('input[type="radio"]');
-        radio.checked = true;
-        
-        // Add active class to selected payment method
-        document.querySelectorAll('.form-check').forEach(function(el) {
-          el.classList.remove('bg-light');
-        });
-        this.classList.add('bg-light');
-      });
-    });
-  });
-
-//   auto update subtotal
-function debounce(fn, delay) {
-    let timeout;
-    return function(...args) {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => fn.apply(this, args), delay);
-    };
-  }
-
-  document.querySelectorAll('.auto-submit-qty').forEach(function(input) {
-    const submitForm = debounce(function() {
-      input.closest('form').submit();
-    }, 500); // 500ms delay
-
-    input.addEventListener('input', submitForm);
-
-    // Button handlers
-    input.closest('.quantity-wrapper').querySelectorAll('.quantity-btn').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        let value = parseInt(input.value) || 1;
-        if (btn.classList.contains('plus-btn')) {
-          value++;
-        } else if (btn.classList.contains('minus-btn') && value > 1) {
-          value--;
-        }
-        input.value = value;
-        input.dispatchEvent(new Event('input')); // triggers debounce
-      });
-    });
-  });
-</script>
-
-
-
-<style>
-  .cart-item-img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 8px;
-  }
-  .quantity-input {
-    width: 38px !important;
-    padding: 2px 4px;
-    font-size: 0.8rem;
-    text-align: center;
-    border-radius: 4px;
-    -moz-appearance: textfield;
-  }
-  .quantity-input::-webkit-inner-spin-button,
-  .quantity-input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  .card {
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    border: none;
-  }
-  .summary-card {
-    background-color: #f8f9fa;
-  }
-  .btn-update {
-    background-color: #e9ecef;
-    color: #495057;
-    border: none;
-  }
-  .btn-remove {
-    background-color: #fff;
-    color: #dc3545;
-    border: 1px solid #dc3545;
-  }
-  .btn-continue {
-    background-color: #007bff;
-    border: none;
-  }
-  .btn-checkout {
-    background-color: #28a745;
-    border: none;
-    font-weight: 600;
-  }
-  .cart-header {
-    border-bottom: 2px solid #f1f1f1;
-    margin-bottom: 2rem;
-  }
-  .price-tag {
-    font-weight: 600;
-    color: #212529;
-  }
-  .category-badge {
-    background-color: #f1f1f1;
-    color: #6c757d;
-    font-size: 0.8rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-  }
-  .quantity-wrapper {
-    width: fit-content;
-  }
-  .form-check {
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-  .form-check:hover {
-    background-color: #f8f9fa;
-  }
-</style>
 {% endblock %}
