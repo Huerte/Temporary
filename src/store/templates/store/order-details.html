@@ -8,55 +8,127 @@
         box-shadow: 0 6px 15px rgba(0,0,0,0.05);
         border: none;
     }
-    
+
     .table-striped tbody tr:nth-child(odd) {
         background-color: #f9f9f9;
     }
-    
+
     .table th, .table td {
         vertical-align: middle;
     }
-    
+
     h4.fw-bold {
         margin-bottom: 20px;
     }
-    
-    .text-center {
-        margin-bottom: 50px;
-    }    
 </style>
 
 <div class="container py-5">
     <nav aria-label="breadcrumb" class="bg-light py-3 mb-4 border-bottom">
         <div class="container">
-          <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a href="{% url 'profile-page' %}">Profile</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Order Details</li>
-          </ol>
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'profile-page' %}">Profile</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Order Details</li>
+            </ol>
         </div>
     </nav>
+
     <div class="text-center mb-5">
-        <h1 class="display-5 fw-bold">Order #{{ order.id }} Details</h1>
+        <h1 class="display-5 fw-bold">Order #{{ order.id }}</h1>
         <p class="text-muted">Review the details of your order</p>
     </div>
 
-    <!-- Order Information -->
+    <!-- Order Summary -->
     <div class="card mb-4 p-4">
-        <h4 class="fw-bold">Order Information</h4>
-        <p><strong>Status:</strong> {{ order.get_status_display }}</p>
-        <p><strong>Date:</strong> {{ order.created_at|date:"F j, Y" }}</p>
-        <p><strong>Total Price:</strong> ${{ order.total_price }}</p>
+        <h4 class="fw-bold">Order Summary</h4>
+        <ul class="list-group list-group-flush rounded shadow-sm mb-4">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="text-muted">Status</span>
+                {% if order.status == 'Delivered' %}
+                    <span class="badge bg-success px-3 py-2">{{ order.get_status_display }}</span>
+                {% else %}
+                    <span class="badge bg-primary px-3 py-2">{{ order.get_status_display }}</span>
+                {% endif %}
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="text-muted">Order Date</span>
+                <span class="fw-semibold">{{ order.created_at|date:"F j, Y - H:i" }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="text-muted">Subtotal</span>
+                <span class="fw-semibold">${{ order.subtotal }}</span>
+            </li>
+            {% if order.promo_code %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="text-muted">Promo Code</span>
+                    <span class="fw-semibold">{{ order.promo_code.code }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="text-muted">Promo Discount</span>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-danger text-light me-2">
+                            {{ order.promo_code.discount_percentage }}%
+                        </span>
+                        <span class="fw-semibold text-danger">- ${{ order.discount }}</span>
+                    </div>
+                </li>
+            {% endif %}
+        
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="text-muted">Shipping</span>
+                <span class="fw-semibold text-success">${{ order.shipping_price }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                <span class="fw-bold">Total</span>
+                <span class="fw-bold fs-5">${{ order.total_price }}</span>
+            </li>
+        </ul>              
+    </div>
+    
+
+    <!-- Payment and Shipping Info -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card h-100 p-4">
+                <h4 class="fw-bold">Payment Details</h4>
+                <ul class="list-unstyled">
+                    <li class="mb-2 d-flex justify-content-between">
+                        <span class="text-muted">Method:</span>
+                        <span class="fw-semibold text-capitalize">{{ payment.get_payment_method_display }}</span>
+                    </li>
+                    <li class="mb-2 d-flex justify-content-between">
+                        <span class="text-muted">Transaction ID:</span>
+                        <span class="fw-semibold">{{ payment.payment_id }}</span>
+                    </li>
+                    <li class="mb-2 d-flex justify-content-between">
+                        <span class="text-muted">Paid on:</span>
+                        <span class="fw-semibold">{{ payment.created_at|date:"M d, Y - H:i" }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100 p-4">
+                <h4 class="fw-bold">Shipping Address</h4>
+                <ul class="list-unstyled mb-0">
+                    <li><strong>Name:</strong> {{ user_address.full_name }}</li>
+                    <li><strong>Address:</strong> {{ user_address.address }}</li>
+                    <li><strong>Postal Code:</strong> {{ user_address.postal_code }}</li>
+                    <li><strong>Phone:</strong> {{ user_address.phone }}</li>
+                    <li><strong>Country:</strong> {{ user_address.country }}</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <!-- Order Items -->
-    <div class="card mb-4 p-4">
-        <h4 class="fw-bold">Order Items</h4>
+    <div class="card p-4">
+        <h4 class="fw-bold mb-3">Items</h4>
         <table class="table table-striped">
-            <thead>
+            <thead class="table-light">
                 <tr>
                     <th>Product</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Unit Price</th>
                     <th>Total</th>
                 </tr>
             </thead>
@@ -71,16 +143,6 @@
                 {% endfor %}
             </tbody>
         </table>
-    </div>
-
-    <!-- Shipping Address -->
-    <div class="card p-4">
-        <h4 class="fw-bold">Shipping Address</h4>
-        <p><strong>Name:</strong> {{ user_address.full_name }}</p>
-        <p><strong>Address:</strong> {{ user_address.address }}</p>
-        <p><strong>Postal Code:</strong> {{ user_address.postal_code }}</p>
-        <p><strong>Phone:</strong> {{ user_address.phone }}</p>
-        <p><strong>Country:</strong> {{ user_address.country }}</p>
     </div>
 </div>
 {% endblock %}

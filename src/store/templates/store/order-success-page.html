@@ -23,6 +23,18 @@
                     <span class="text-muted">Date:</span>
                     <span>{{ order.created_at|date:"M d, Y - H:i" }}</span>
                 </li>
+                <li class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Payment Method:</span>
+                    <span class="fw-semibold text-capitalize">{{ payment.get_payment_method_display }}</span>
+                </li>
+                <li class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Transaction ID:</span>
+                    <span class="fw-semibold">{{ payment.payment_id }}</span>
+                </li>
+                <li class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Paid on:</span>
+                    <span>{{ payment.created_at|date:"M d, Y - H:i" }}</span>
+                </li>                                 
                 {% if voucher_discount %}
                 <li class="d-flex justify-content-between mb-2 text-danger">
                     <span class="text-muted">Promo Discount{% if promo_code %} ({{ promo_code }}){% endif %}:</span>

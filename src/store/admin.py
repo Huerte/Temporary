@@ -29,14 +29,21 @@ class PromoCodeUsageAdmin(admin.ModelAdmin):
     search_fields = ['user__username', 'promo_code__code']
     readonly_fields = ('used_at',)
 
+class PaymentMethodAdmin(admin.ModelAdmin):
+    list_display = ('payment_id', 'user', 'order', 'payment_method', 'amount', 'created_at', 'updated_at')
+    search_fields = ('payment_id', 'user__username', 'order__id')
+    list_filter = ('payment_method', 'created_at')
+    ordering = ['-created_at']
+
+
 admin.site.register(Category)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(CartItem)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderItem)
 admin.site.register(ShippingAddress)
-admin.site.register(PaymentMethod)
 admin.site.register(PasswordReset)
 admin.site.register(ProductReview)
 admin.site.register(PromoCode, PromoCodeAdmin)
 admin.site.register(PromoCodeUsage, PromoCodeUsageAdmin)
+admin.site.register(PaymentMethod, PaymentMethodAdmin)

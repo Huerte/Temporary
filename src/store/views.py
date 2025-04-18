@@ -400,6 +400,17 @@ def checkout_view(request):
             return redirect('checkout-view')
         
         notes = request.POST.get('notes')
+
+        promo_code_str = request.session.get('promo_code')
+        promo_code = None
+
+        if promo_code_str:
+            try:
+                promo_code = models.PromoCode.objects.get(code=promo_code_str, active=True)
+            except models.PromoCode.DoesNotExist:
+                promo_code = None
+
+
         order = models.Order.objects.create(
             user=request.user,
             user_note=notes,
@@ -408,8 +419,21 @@ def checkout_view(request):
             total_price=to_pay
         )
 
+        if promo_code:
+            models.PromoCodeUsage.objects.create(
+                user=request.user,
+                promo_code=promo_code,
+                order=order
+            )
 
-        total_price = 0
+
+        choosen_payment_method = request.POST.get('selected_payment')
+        payment_method = models.PaymentMethod.objects.create(
+            user=request.user, order=order,
+            payment_method=choosen_payment_method,
+            amount=to_pay, 
+        )
+
         for item in cart_items:
             models.OrderItem.objects.create(
                 order=order,
@@ -428,7 +452,8 @@ def checkout_view(request):
             'voucher_discount': float(voucher_discount),
             'promo_code': request.session.get('promo_code'),
             'shipping': float(shipping),
-            'to_pay': float(to_pay)
+            'to_pay': float(to_pay),
+            'payment_method': payment_method.payment_method
         }
 
 
@@ -447,7 +472,15 @@ def checkout_view(request):
 @login_required(login_url='/login')
 def order_success_page(request):
     order_data = request.session.get('last_order_data', {})
-    order = models.Order.objects.get(id=order_data.get('order_id'))
+
+    if not order_data:
+        return redirect('store')
+
+    order = get_object_or_404(models.Order, id=order_data.get('order_id'))
+
+    order = get_object_or_404(models.Order, id=order_data.get('order_id'))
+
+    payment = models.PaymentMethod.objects.filter(order=order).first()
 
     context = {
         'order': order,
@@ -455,8 +488,10 @@ def order_success_page(request):
         'voucher_discount': order_data.get('voucher_discount', 0),
         'promo_code': order_data.get('promo_code'),
         'shipping': order_data.get('shipping', 0),
-        'total_price': order.total_price
+        'total_price': order.total_price,
+        'payment': payment,
     }
+
     return render(request, 'store/order-success-page.html', context)
 
 @login_required(login_url='/login')
@@ -464,11 +499,12 @@ def order_details_view(request, order_id):
     order = get_object_or_404(models.Order, id=order_id, user=request.user)
     
     user_address = models.ShippingAddress.objects.get(user=request.user)
-    
+    paymemt_method = models.PaymentMethod.objects.get(order=order)
     context = {
         'order': order,
         'order_items': order.order_items.all(),
-        'user_address': user_address
+        'user_address': user_address,
+        'payment': paymemt_method
     }
 
     return render(request, 'store/order-details.html', context)
@@ -479,20 +515,18 @@ def apply_promo(request):
         code = request.POST.get("promo_code", "").strip()
         try:
             promo = models.PromoCode.objects.get(code__iexact=code)
-            # Check if the user has already used this promo code
-            if not models.PromoCodeUsage.objects.filter(user=request.user, promo_code=promo).exists():
-                if promo.is_valid_for_user(request.user):
-                    models.PromoCodeUsage.objects.create(user=request.user, promo_code=promo)
-                    request.session['promo_code'] = promo.code
-                    request.session['promo_discount'] = promo.discount_percentage
-                    messages.success(request, f"Promo code '{promo.code}' applied successfully!")
-                else:
-                    messages.error(request, "Promo code is expired, inactive, or already used the max allowed times.")
+            
+            # Check if promo code is valid
+            if promo.is_valid_for_user(request.user):
+                # Store promo code and discount percentage in session for cart view
+                request.session['promo_code'] = promo.code
+                request.session['promo_discount'] = promo.discount_percentage
+                messages.success(request, f"Promo code '{promo.code}' applied successfully! You get a {promo.discount_percentage}% discount.")
             else:
-                messages.error(request, "You have already used this promo code.")
+                messages.error(request, "Promo code is expired, inactive, or you've exceeded the usage limit.")
         except models.PromoCode.DoesNotExist:
             messages.error(request, "Invalid promo code.")
-
+    
     return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
 
 @login_required(login_url='/login')

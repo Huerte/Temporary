@@ -6,8 +6,12 @@ from django.db.models import Avg, Count
 from django.utils import timezone
 from django.conf import settings
 from django.db import models
+import secrets
 import uuid
 
+
+def generate_payment_id():
+    return secrets.token_hex(16)
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -63,10 +67,11 @@ class Product(models.Model):
 class PromoCodeUsage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     promo_code = models.ForeignKey('PromoCode', on_delete=models.CASCADE)
+    order = models.ForeignKey('Order', null=True, blank=True, on_delete=models.CASCADE)
     used_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'promo_code')
+        unique_together = ('user', 'promo_code', 'order')
 
 class PromoCode(models.Model):
     code = models.CharField(max_length=50, unique=True)
@@ -77,13 +82,17 @@ class PromoCode(models.Model):
 
     def is_valid_for_user(self, user):
         if self.expiration_date and self.expiration_date <= timezone.now():
-            if self.active:
-                self.active = False
-                self.save(update_fields=["active"])
+            self.active = False
+            self.save(update_fields=["active"])
             return False
-
+        
         # Count user uses
-        used_count = PromoCodeUsage.objects.filter(user=user, promo_code=self).count()
+        used_count = PromoCodeUsage.objects.filter(
+            user=user,
+            promo_code=self,
+            order__isnull=False
+        ).count()
+
         if self.max_uses_per_user is not None and used_count >= self.max_uses_per_user:
             return False
 
@@ -119,9 +128,14 @@ class Order(models.Model):
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     shipping_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    
+    promo_code = models.ForeignKey(PromoCode, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
+
     def __str__(self):
         return f"Order #{self.id} - {self.user.username} - {self.status}"
+    
+    @property
+    def subtotal(self):
+        return self.total_price - self.shipping_price + self.discount
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
@@ -134,16 +148,44 @@ class OrderItem(models.Model):
         return f"{self.product.name} x{self.quantity} for Order #{self.order.id}"
 
 class PaymentMethod(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    payment_id = models.CharField(max_length=100)
-    payment_method = models.CharField(max_length=50)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=20, default='Pending')
-    timestamp = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='payment_methods'
+    )
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name='payments'
+    )
+    payment_id = models.CharField(
+        max_length=100, 
+        unique=True, 
+        default=generate_payment_id,
+        primary_key=True,
+        editable=False
+    )
+
+    payment_method = models.CharField(
+        max_length=20,
+        choices=[
+            ('gcash', 'GCash'),
+            ('paypal', 'PayPal'),
+        ]
+    )
+
+    amount = models.DecimalField(max_digits=10, decimal_places=2) #Not in used
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Payment Method'
+        verbose_name_plural = 'Payment Methods'
 
     def __str__(self):
-        return f"{self.payment_method} - {self.payment_id}"
+        return f"{self.get_payment_method_display()} ({self.payment_id})"
 
 class PasswordReset(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
