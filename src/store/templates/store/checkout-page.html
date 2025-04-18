@@ -186,23 +186,24 @@
                     </div>
 
                     <!-- Promo Code -->
-                    {% if voucher_discount > 0 %}
+                    {% if not voucher_discount or voucher_discount == 0 %}
                         <form class="mt-3" method="POST" action="{% url 'apply-promo' %}">
                             {% csrf_token %}
                             <label class="form-label fw-semibold">Have a promo code?</label>
                             <div class="input-group">
-                            <input type="text" class="form-control" name="promo_code" placeholder="Enter code">
-                            <button class="btn btn-outline-secondary" type="submit">Apply</button>
+                                <input type="text" class="form-control" name="promo_code" placeholder="Enter code">
+                                <button class="btn btn-outline-secondary" type="submit">Apply</button>
                             </div>
                         </form>
                     {% endif %}
+                
                     
                     <!-- Checkout Form -->
                     <form method="POST" action="{% url 'checkout-view' %}" class="needs-validation" novalidate id="checkout-form">
                         {% csrf_token %}
                         
                         <!-- Hidden field for payment method -->
-                        <input type="hidden" name="selected_payment" id="selected_payment" value="gcash">
+                        <input type="hidden" name="selected_payment" id="selected_payment" value="gcash" required>
                         
                         <!-- Order Notes -->
                         <div class="mb-3">
