@@ -162,17 +162,20 @@
             {% for product in products %}
             <div class="col-lg-4 col-md-6">
                 <div class="product-card">
-                    <a href="{% url 'product-details' product.id %}" class="product-image">
+                    <a href="{% url 'product-details' product.id %}" class="product-image position-relative d-block">
                         <img src="{{ product.image }}" alt="{{ product.name }}">
-                        <div class="product-category">{{ product.category.name }}</div>
+                        <div class="product-category position-absolute top-0 start-0 m-2 badge rounded-pill">
+                            {{ product.category.name }}
+                        </div>
                         {% if product.is_bestseller %}
-                            <div class="product-badge bestseller">Bestseller</div>
+                            <div class="product-badge bestseller position-absolute top-0 end-0 m-2 badge bg-warning text-dark">Bestseller</div>
                         {% elif product.is_new %}
-                            <div class="product-badge new">New</div>
+                            <div class="product-badge new position-absolute top-0 end-0 m-2 badge bg-success">New</div>
                         {% elif product.is_on_sale %}
-                            <div class="product-badge">Sale</div>
+                            <div class="product-badge position-absolute top-0 end-0 m-2 badge bg-danger">Sale</div>
                         {% endif %}
                     </a>
+                    
                     <div class="product-content">
                         <h3 class="product-title">{{ product.name|truncatechars:35 }}</h3>
 
@@ -189,12 +192,6 @@
                             {% endfor %}
                             {% endwith %}
                             <span class="rating-count">({{ product.review_count|default:"0" }})</span>
-                        </div>
-
-                        <div class="product-colors">
-                            {% for color in product.colors.all %}
-                                <div class="color-option color-{{ color.name|lower }}" title="{{ color.name }}"></div>
-                            {% endfor %}
                         </div>
 
                         <div class="product-price">
