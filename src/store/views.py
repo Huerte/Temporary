@@ -1,3 +1,4 @@
+from django.db.models import Sum, Avg, Q, F, Value, ExpressionWrapper, DecimalField
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.tokens import default_token_generator
@@ -14,7 +15,6 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.contrib import messages
 from django.utils import timezone
-from django.db.models import Sum
 from django.urls import reverse
 from decimal import Decimal
 from main import settings
@@ -247,11 +247,70 @@ def edit_profile_view(request):
     return render(request, 'store/edit-profile-page.html', context)
 
 def product_view(request):
+    products = models.Product.objects.all()
     category = models.Category.objects.all()
-    selected_category = request.GET.get('category')
-    products = models.Product.objects.filter(category__name=selected_category) if selected_category else models.Product.objects.all()
 
-    #page view
+    selected_category = request.GET.get('category')
+    if selected_category:
+        products = models.Product.objects.filter(category__name=selected_category)
+    
+    # Handle min_price and max_price from range
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    
+    # Default to 0 and 1000 if not set
+    min_price = Decimal(min_price) if min_price else Decimal(0)
+    max_price = Decimal(max_price) if max_price else Decimal(1000)
+    
+    discount_expr = ExpressionWrapper(
+        F('price') * (Value(100) - F('discount_percentage')) / Value(100),
+        output_field=DecimalField(max_digits=8, decimal_places=2)
+    )
+    products = products.annotate(discounted_price_db=discount_expr)
+
+    # Filter by annotated discounted price
+    products = products.filter(
+        discounted_price_db__gte=min_price,
+        discounted_price_db__lte=max_price
+    )
+
+    # Rating Filters
+    rating_filters = []
+    if 'five_star' in request.GET:
+        rating_filters.append(Q(reviews__rating__gte=5))
+    if 'four_star' in request.GET:
+        rating_filters.append(Q(reviews__rating__gte=4))
+    if 'three_star' in request.GET:
+        rating_filters.append(Q(reviews__rating__gte=3))
+
+    if rating_filters:
+        combine_filters = rating_filters.pop()
+        for rating_filter in rating_filters:
+            combine_filters |= rating_filter
+        products = products.annotate(avg__rating=Avg('reviews__rating')).filter(combine_filters)
+
+    # Sorting Logic
+    sort_option = request.GET.get('sort', 'featured')
+    if sort_option == 'featured':
+        products = products.order_by('is_featured')
+        sort_label = "Featured"
+    elif sort_option == 'price-asc':
+        products = products.order_by('price')
+        sort_label = "Price: Low to High"
+    elif sort_option == 'price-desc':
+        products = products.order_by('-price')
+        sort_label = "Price: High to Low"
+    elif sort_option == 'rating':
+        products = products.annotate(average_rating=Avg('reviews__rating')).order_by('-average_rating')
+        sort_label = "Rating"
+    elif sort_option == 'newest':
+        products = products.order_by('-created_at')
+        sort_label = "Newest"
+    else:
+        products = products.order_by('name')
+        sort_label = "Featured"
+
+    # Pagination
     paginator = Paginator(products, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -265,6 +324,9 @@ def product_view(request):
         'selected_category': selected_category, 
         'page_obj': page_obj,
         'show_pagination': paginator.num_pages > 1,
+        'min_price': min_price,
+        'max_price': max_price,
+        'sort_label': sort_label,
     }
 
     return render(request, 'store/products.html', context)
@@ -276,7 +338,7 @@ def product_details(request, product_id):
     # Savings = original price - discounted price
     savings = product.price - product.discounted_price
 
-    rounded_rating = round(product.average_rating or 0, 1)
+    rounded_rating = round(product.average_ratings or 0, 1)
     full_stars = int(rounded_rating)
     half_star = 1 if (rounded_rating - full_stars) >= 0.5 else 0
     empty_stars = 5 - full_stars - half_star

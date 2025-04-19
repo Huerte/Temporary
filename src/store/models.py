@@ -30,6 +30,8 @@ class Product(models.Model):
     discount_percentage = models.PositiveIntegerField(default=0)
     buyers_count = models.PositiveIntegerField(default=0)
 
+    created_at = models.DateTimeField(default=timezone.now)
+
     def __str__(self):
         return self.name
 
@@ -61,7 +63,7 @@ class Product(models.Model):
         return self.reviews.aggregate(count=Count('id'))['count'] or 0
 
     @property
-    def average_rating(self):
+    def average_ratings(self):
         return self.reviews.aggregate(Avg('rating'))['rating__avg'] or 0
 
 class PromoCodeUsage(models.Model):

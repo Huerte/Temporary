@@ -180,7 +180,7 @@
                         <h3 class="product-title">{{ product.name|truncatechars:35 }}</h3>
 
                         <div class="product-rating">
-                            {% with rating=product.average_rating|default:0 %}
+                            {% with rating=product.average_ratings|default:0 %}
                             {% for _ in "12345" %}
                                 {% if rating >= forloop.counter %}
                                 <i class="fa-solid fa-star"></i>

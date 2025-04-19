@@ -36,51 +36,70 @@
           </div>
 
           <!-- Price Range -->
-          <h6 class="fw-bold mb-2">Price Range</h6>
-          <p class="small text-muted">$0 - $1000</p>
-          <input type="range" class="form-range mb-2" min="0" max="1000" step="10" id="priceRange">
-          <div class="d-flex gap-2 mb-3">
-            <input type="number" class="form-control form-control-sm" placeholder="Min">
-            <input type="number" class="form-control form-control-sm" placeholder="Max">
-          </div>
+          <form action="{% url 'products' %}" method="GET" id="priceRangeForm">
+            {% csrf_token %}
+            <h6 class="fw-bold mb-2">Price Range</h6>
+            <p class="small text-muted">$<span id="rangeMinLabel">{{ min_price }}</span> - $<span id="rangeMaxLabel">{{ max_price }}</span></p>
 
-          <!-- Ratings -->
-          <h6 class="fw-bold mb-2">Ratings</h6>
-          <div class="form-check mb-1">
-            <input class="form-check-input" type="checkbox" id="star5">
-            <label class="form-check-label" for="star5">
-              <i class="fas fa-star text-warning"></i>
-              <i class="fas fa-star text-warning"></i>
-              <i class="fas fa-star text-warning"></i>
-              <i class="fas fa-star text-warning"></i>
-              <i class="fas fa-star text-warning"></i>
-            </label>
-          </div>
-          <div class="form-check mb-1">
-            <input class="form-check-input" type="checkbox" id="star4">
-            <label class="form-check-label" for="star4">
-              <i class="fas fa-star text-warning"></i>
-              <i class="fas fa-star text-warning"></i>
-              <i class="fas fa-star text-warning"></i>
-              <i class="fas fa-star text-warning"></i>
-              &nbsp;&amp; Up
-            </label>
-          </div>
-          <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" id="star3">
-            <label class="form-check-label" for="star3">
-              <i class="fas fa-star text-warning"></i>
-              <i class="fas fa-star text-warning"></i>
-              <i class="fas fa-star text-warning"></i>
-              &nbsp;&amp; Up
-            </label>
-          </div>
+            <!-- Range Slider -->
+            <input
+            type="range"
+            class="form-range mb-2"
+            id="priceRange"
+            name="price_range"
+            min="{{ min_price }}"
+            max="{{ max_price }}"
+            step="1"
+            value="{{ max_price }}">
 
-          <!-- Buttons -->
-          <div class="d-grid gap-2">
-            <button class="btn btn-primary">Apply Filters</button>
-            <button class="btn btn-outline-secondary">Reset</button>
-          </div>
+            <div class="d-flex gap-2 mb-3">
+              <!-- Min Price Input -->
+              <input type="number" class="form-control form-control-sm" placeholder="Min" name="min_price" 
+                    value="{{ min_price }}" id="minPrice" min=0>
+              <!-- Max Price Input -->
+              <input type="number" class="form-control form-control-sm" placeholder="Max" name="max_price" 
+                    value="{{ max_price }}" id="maxPrice" min=0>
+            </div>
+
+             <!-- Ratings -->
+             <h6 class="fw-bold mb-2">Ratings</h6>
+             <div class="form-check mb-1">
+               <input class="form-check-input" type="checkbox" id="star5" name='five_star'>
+               <label class="form-check-label" for="star5">
+                 <i class="fas fa-star text-warning"></i>
+                 <i class="fas fa-star text-warning"></i>
+                 <i class="fas fa-star text-warning"></i>
+                 <i class="fas fa-star text-warning"></i>
+                 <i class="fas fa-star text-warning"></i>
+               </label>
+             </div>
+             <div class="form-check mb-1">
+               <input class="form-check-input" type="checkbox" id="star4" name='four_star'>
+               <label class="form-check-label" for="star4">
+                 <i class="fas fa-star text-warning"></i>
+                 <i class="fas fa-star text-warning"></i>
+                 <i class="fas fa-star text-warning"></i>
+                 <i class="fas fa-star text-warning"></i>
+                 &nbsp;&amp; Up
+               </label>
+             </div>
+             <div class="form-check mb-3">
+               <input class="form-check-input" type="checkbox" id="star3" name='three_star'>
+               <label class="form-check-label" for="star3">
+                 <i class="fas fa-star text-warning"></i>
+                 <i class="fas fa-star text-warning"></i>
+                 <i class="fas fa-star text-warning"></i>
+                 &nbsp;&amp; Up
+               </label>
+             </div>
+           
+            <!-- Buttons -->
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">Apply Filters</button>
+              <button type="button" class="btn btn-outline-secondary" onclick="resetFilters()">Reset</button>
+            </div>
+          </form>
+
         </div>
       </aside>
 
@@ -90,27 +109,28 @@
         <!-- Top Bar: Sort + View Toggle -->
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
           <div class="text-muted small">
-            Showing {{ products.start_index }}-{{ products.end_index }} of {{ products.paginator.count }} products
+              Showing {{ products.start_index }}-{{ products.end_index }} of {{ products.paginator.count }} products
           </div>
           <div class="d-flex align-items-center gap-2">
-            <div class="dropdown">
-              <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown">
-                Sort By: {{ sort_label|default:"Featured" }}
-              </button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="?sort=featured">Featured</a></li>
-                <li><a class="dropdown-item" href="?sort=price-asc">Price: Low to High</a></li>
-                <li><a class="dropdown-item" href="?sort=price-desc">Price: High to Low</a></li>
-                <li><a class="dropdown-item" href="?sort=rating">Rating</a></li>
-                <li><a class="dropdown-item" href="?sort=newest">Newest</a></li>
-              </ul>
-            </div>
-            <div class="btn-group" role="group">
-              <a href="?view=grid" class="btn btn-outline-secondary btn-sm {% if view == 'grid' %}active{% endif %}"><i class="fas fa-th"></i></a>
-              <a href="?view=list" class="btn btn-outline-secondary btn-sm {% if view == 'list' %}active{% endif %}"><i class="fas fa-list"></i></a>
-            </div>
+              <div class="dropdown">
+                  <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown">
+                      Sort By: {{ sort_label|default:"Featured" }}
+                  </button>
+                  <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="?sort=featured">Featured</a></li>
+                      <li><a class="dropdown-item" href="?sort=price-asc">Price: Low to High</a></li>
+                      <li><a class="dropdown-item" href="?sort=price-desc">Price: High to Low</a></li>
+                      <li><a class="dropdown-item" href="?sort=rating">Rating</a></li>
+                      <li><a class="dropdown-item" href="?sort=newest">Newest</a></li>
+                  </ul>
+              </div>
+              <div class="btn-group" role="group">
+                  <a href="?view=grid" class="btn btn-outline-secondary btn-sm {% if view == 'grid' %}active{% endif %}"><i class="fas fa-th"></i></a>
+                  <a href="?view=list" class="btn btn-outline-secondary btn-sm {% if view == 'list' %}active{% endif %}"><i class="fas fa-list"></i></a>
+              </div>
           </div>
-        </div>
+      </div>
+      
 
         <!-- Product Cards -->
         {% if products %}
@@ -134,7 +154,7 @@
               <div class="card-body px-3 pt-3 pb-2 d-flex flex-column product-content">
                 <h6 class="product-title">{{ product.name|truncatechars:35 }}</h6>
                 <div class="product-rating mb-2">
-                  {% with rating=product.average_rating|default:0 %}
+                  {% with rating=product.average_ratings|default:0 %}
                     {% for _ in "12345" %}
                       {% if rating >= forloop.counter %}
                         <i class="fa-solid fa-star text-warning"></i>
@@ -278,4 +298,37 @@
   </div>
 </section>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const priceRange = document.getElementById('priceRange');
+  const maxPriceInput = document.getElementById('maxPrice');
+  const rangeMaxLabel = document.getElementById('rangeMaxLabel');
+
+  if (priceRange && maxPriceInput) {
+    priceRange.addEventListener('input', () => {
+      maxPriceInput.value = priceRange.value;
+      if (rangeMaxLabel) rangeMaxLabel.textContent = priceRange.value;
+    });
+
+    maxPriceInput.addEventListener('input', () => {
+      let newMax = parseInt(maxPriceInput.value, 10);
+      if (!isNaN(newMax)) {
+        priceRange.max = newMax;
+        priceRange.value = newMax;
+        if (rangeMaxLabel) rangeMaxLabel.textContent = newMax;
+      }
+    });
+  }
+});
+
+  function resetFilters() {
+    document.querySelector('form').reset();
+
+    const url = new URL(window.location);
+    url.search = '';
+    window.history.pushState({}, '', url);
+
+    location.reload();
+  }
+</script>
 {% endblock %}
