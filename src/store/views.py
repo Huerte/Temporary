@@ -246,85 +246,87 @@ def edit_profile_view(request):
 
     return render(request, 'store/edit-profile-page.html', context)
 
-def product_view(request):
-    # Initialize the products queryset
+from decimal import Decimal
+from django.db.models import Q, F, Value, Avg, ExpressionWrapper, DecimalField
+from django.core.paginator import Paginator
+from django.shortcuts import render
+from . import models
+
+def product_view(request, category=None):
     products = models.Product.objects.all()
-    category = models.Category.objects.all()
+    categories = models.Category.objects.all()
 
-    # Category filter with case-insensitive partial match
-    selected_category = request.GET.get('category')
+    # Get filters
+    selected_category = category or request.GET.get('category')
+    search_query = request.GET.get('q')
+    min_price = Decimal(request.GET.get('min_price', '0'))
+    max_price = Decimal(request.GET.get('max_price', '1000'))
+    sort_option = request.GET.get('sort', 'featured')
+
+    # Base filters
     if selected_category:
-        products = products.filter(category__name__icontains=selected_category)  # Use icontains for case-insensitive partial match
-
-
-    # Handle min_price and max_price from range
-    min_price = request.GET.get('min_price')
-    max_price = request.GET.get('max_price')
+        products = products.filter(category__name=selected_category)
     
-    # Default to 0 and 1000 if not set
-    min_price = Decimal(min_price) if min_price else Decimal(0)
-    max_price = Decimal(max_price) if max_price else Decimal(1000)
-    
+    if search_query:
+        products = products.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+
+    # Annotate discounted price & average rating
     discount_expr = ExpressionWrapper(
         F('price') * (Value(100) - F('discount_percentage')) / Value(100),
         output_field=DecimalField(max_digits=8, decimal_places=2)
     )
-    products = products.annotate(discounted_price_db=discount_expr)
-
-    # Filter by annotated discounted price
-    products = products.filter(
-        discounted_price_db__gte=min_price,
-        discounted_price_db__lte=max_price
+    products = products.annotate(
+        discounted_price_db=discount_expr,
+        avg_rating=Avg('reviews__rating')
     )
 
-    # Rating Filters
-    rating_filters = []
+    # Price range filter
+    products = products.filter(discounted_price_db__gte=min_price, discounted_price_db__lte=max_price)
+
+    # Rating filters
+    rating_q = Q()
     if 'five_star' in request.GET:
-        rating_filters.append(Q(reviews__rating__gte=5))
+        rating_q |= Q(avg_rating__gte=5)
     if 'four_star' in request.GET:
-        rating_filters.append(Q(reviews__rating__gte=4))
+        rating_q |= Q(avg_rating__gte=4)
     if 'three_star' in request.GET:
-        rating_filters.append(Q(reviews__rating__gte=3))
+        rating_q |= Q(avg_rating__gte=3)
 
-    if rating_filters:
-        combine_filters = rating_filters.pop()
-        for rating_filter in rating_filters:
-            combine_filters |= rating_filter
-        products = products.annotate(avg__rating=Avg('reviews__rating')).filter(combine_filters)
+    if rating_q:
+        products = products.filter(rating_q)
 
-    # Sorting Logic
-    sort_option = request.GET.get('sort', 'featured')
-    if sort_option == 'featured':
-        products = products.order_by('is_featured')
-        sort_label = "Featured"
-    elif sort_option == 'price-asc':
-        products = products.order_by('price')
+    # Sorting logic
+    if sort_option == 'price-asc':
+        products = products.order_by('discounted_price_db')
         sort_label = "Price: Low to High"
     elif sort_option == 'price-desc':
-        products = products.order_by('-price')
+        products = products.order_by('-discounted_price_db')
         sort_label = "Price: High to Low"
     elif sort_option == 'rating':
-        products = products.annotate(average_rating=Avg('reviews__rating')).order_by('-average_rating')
+        products = products.order_by('-avg_rating')
         sort_label = "Rating"
     elif sort_option == 'newest':
         products = products.order_by('-created_at')
         sort_label = "Newest"
     else:
-        products = products.order_by('name')
+        products = products.order_by('-is_featured')
         sort_label = "Featured"
 
     # Pagination
     paginator = Paginator(products, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
-    for product in products:
+
+    for product in page_obj:
         product.stars_range = range(1, 6)
 
     context = {
-        'products': page_obj.object_list, 
-        'categories': category, 
-        'selected_category': selected_category, 
+        'products': page_obj.object_list,
+        'categories': categories,
+        'selected_category': selected_category,
         'page_obj': page_obj,
         'show_pagination': paginator.num_pages > 1,
         'min_price': min_price,
