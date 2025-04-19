@@ -23,7 +23,11 @@ urlpatterns = [
     path('order-details-view/<str:order_id>/', views.order_details_view, name='order-details-view'),
     path('product-review-view/<str:order_id>/', views.product_review_view, name='product-review-view'),
     path('add-review/<str:product_id>/', views.add_review, name='add-review'),
-    path('search-product', views.search_product, name='search-product'),
+    path('search-product/', views.search_product, name='search-product'),
+    path('add-to-wishlist/<str:product_id>/', views.add_to_wishlist, name='add-to-wishlist'),
+    path('remove-from-wishlist/<str:product_id>/', views.remove_from_wishlist, name='remove-from-wishlist'),
+    path('wishlist-page/', views.wishlist_view, name='wishlist-page'),
+    path('wishlist-toggle/', views.toggle_wishlist, name='toggle-wishlist'),
 
     #Authentication Links
     path('login/', views.login_user, name='login-page'),

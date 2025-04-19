@@ -35,6 +35,11 @@ class PaymentMethodAdmin(admin.ModelAdmin):
     list_filter = ('payment_method', 'created_at')
     ordering = ['-created_at']
 
+class ProductWishlistAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product', 'created_at')
+    search_fields = ('user__username', 'product__name')
+    list_filter = ('created_at',)
+
 
 admin.site.register(Category)
 admin.site.register(Product, ProductAdmin)
@@ -47,3 +52,4 @@ admin.site.register(ProductReview)
 admin.site.register(PromoCode, PromoCodeAdmin)
 admin.site.register(PromoCodeUsage, PromoCodeUsageAdmin)
 admin.site.register(PaymentMethod, PaymentMethodAdmin)
+admin.site.register(ProductWishlist)

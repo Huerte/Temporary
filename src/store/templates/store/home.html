@@ -309,9 +309,27 @@
                                 
                                 <!-- Wishlist Button -->
                                 <div>
-                                    <button class="btn btn-light border rounded-circle shadow-sm">
-                                        <i class="fa fa-heart text-mute"></i>
-                                    </button>
+                                    {% if user.is_authenticated %}
+                                        {% if product.id in wishlist_product_ids %}
+                                            <form method="post" action="{% url 'remove-from-wishlist' product.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-danger border rounded-circle shadow-sm" title="Remove from Wishlist">
+                                                    <i class="fa fa-heart"></i>
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <form method="post" action="{% url 'add-to-wishlist' product.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-light border rounded-circle shadow-sm" title="Add to Wishlist">
+                                                    <i class="fa fa-heart text-muted"></i>
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    {% else %}
+                                        <a href="#" class="btn btn-light border rounded-circle shadow-sm" data-bs-toggle="modal" data-bs-target="#loginModal" title="Login to Wishlist">
+                                            <i class="fa fa-heart text-muted"></i>
+                                        </a>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -320,6 +338,53 @@
                 </div>
             </div>
             {% endfor %}
+            <script>
+                document.querySelectorAll('form').forEach(function(form) {
+                    form.addEventListener('submit', function(event) {
+                        event.preventDefault();
+            
+                        let formData = new FormData(form);
+                        let url = form.action;
+            
+                        fetch(url, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRFToken': document.querySelector('[name="csrfmiddlewaretoken"]').value
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data);  // Debug the response to see if it's correct
+                            if (data.success) {
+                                let heartIcon = form.querySelector('i');
+                                let button = form.querySelector('button');
+                                
+                                // Toggle the heart icon and button classes
+                                if (heartIcon.classList.contains('text-muted')) {
+                                    heartIcon.classList.remove('text-muted');
+                                    heartIcon.classList.add('text-white');
+                                    button.classList.remove('btn-light');
+                                    button.classList.add('btn-danger');
+                                    button.setAttribute('title', 'Remove from Wishlist');
+                                } else {
+                                    heartIcon.classList.add('text-muted');
+                                    heartIcon.classList.remove('text-danger');
+                                    button.classList.remove('btn-danger');
+                                    button.classList.add('btn-light');
+                                    button.setAttribute('title', 'Add to Wishlist');
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                    });
+                });
+            </script>
+            
+                       
         </div>
     </div>
 </section>

@@ -205,8 +205,15 @@
                                     <button type="submit" class="btn btn-dark py-2 fw-medium">
                                         <i class="fas fa-cart-plus me-2"></i> Add to Cart
                                     </button>
-                                    <button type="button" class="btn btn-outline-dark">
-                                        <i class="far fa-heart me-1"></i> Add to Wishlist
+                                    <button
+                                        type="button"
+                                        class="btn {% if product.id in wishlist_product_ids %}btn-danger{% else %}btn-outline-dark{% endif %} py-2 fw-medium wishlist-btn"
+                                        data-product-id="{{ product.id }}"
+                                        data-action="{% if product.id in wishlist_product_ids %}remove{% else %}add{% endif %}"
+                                        title="{% if product.id in wishlist_product_ids %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}"
+                                    >
+                                        <i class="fas fa-heart{% if product.id not in wishlist_product_ids %} text-muted{% endif %} me-2"></i>
+                                        {% if product.id in wishlist_product_ids %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}
                                     </button>
                                 </div>
                             {% endif %}
@@ -560,6 +567,27 @@
             });
         });
     });
+    
+        document.querySelectorAll('.wishlist-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const productId = this.dataset.productId;
+                const action = this.dataset.action;
+        
+                fetch("{% url 'toggle-wishlist' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "X-Requested-With": "XMLHttpRequest",
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: `product_id=${productId}&action=${action}`
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) location.reload(); // Refresh to reflect change
+                });
+            });
+        });
 </script>
 
 {% endblock %}

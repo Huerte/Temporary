@@ -39,7 +39,8 @@ def home(request):
         return redirect('login-page')
     # products = models.Product.objects.filter(is_featured=True)[:6]
     products = models.Product.objects.all()[:21]
-    return render(request, 'store/home.html', {'products': products})
+    wishlist_product_ids = models.ProductWishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
+    return render(request, 'store/home.html', {'products': products, 'wishlist_product_ids': wishlist_product_ids})
 
 def about_view(request):
     return render(request, 'store/about.html')
@@ -217,10 +218,11 @@ def profile_view(request):
     try:
         orders = models.Order.objects.filter(user=request.user)
         product_reviews = models.ProductReview.objects.filter(user=request.user)
+        wishlist = models.ProductWishlist.objects.filter(user=request.user)
     except models.Order.DoesNotExist:
         orders = None
     
-    return render(request, 'store/profile-page.html', {'user_address': user_address, 'orders': orders, 'product_reviews': product_reviews})
+    return render(request, 'store/profile-page.html', {'user_address': user_address, 'orders': orders, 'product_reviews': product_reviews, 'wishlist': wishlist})
 
 @login_required(login_url='/login')
 def edit_profile_view(request):
@@ -245,12 +247,6 @@ def edit_profile_view(request):
     context = {'user_address': user_address, 'countries': complete_countries}
 
     return render(request, 'store/edit-profile-page.html', context)
-
-from decimal import Decimal
-from django.db.models import Q, F, Value, Avg, ExpressionWrapper, DecimalField
-from django.core.paginator import Paginator
-from django.shortcuts import render
-from . import models
 
 def product_view(request, category=None):
     products = models.Product.objects.all()
@@ -323,6 +319,8 @@ def product_view(request, category=None):
     for product in page_obj:
         product.stars_range = range(1, 6)
 
+    wishlist_product_ids = models.ProductWishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
+
     context = {
         'products': page_obj.object_list,
         'categories': categories,
@@ -332,6 +330,7 @@ def product_view(request, category=None):
         'min_price': min_price,
         'max_price': max_price,
         'sort_label': sort_label,
+        'wishlist_product_ids': wishlist_product_ids
     }
 
     return render(request, 'store/products.html', context)
@@ -351,6 +350,13 @@ def product_details(request, product_id):
     can_review = models.OrderItem.objects.filter(order__user=request.user, order__status='DELIVERED', product=product).exists()
     related_products = models.Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
 
+    wishlist_product_ids = models.ProductWishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
+    action = request.POST.get('action')
+    if action == "add":
+        add_to_wishlist(product_id)
+    elif action == "remove":
+        remove_from_wishlist(product_id)
+        
     context = {
         'product': product,
         'product_reviews': product_reviews,
@@ -361,7 +367,8 @@ def product_details(request, product_id):
         'half_star': half_star,
         'empty_stars': range(empty_stars),
         'can_review': can_review,
-        'related_products': related_products
+        'related_products': related_products,
+        'wishlist_product_ids': wishlist_product_ids
     }
     return render(request, 'store/product-detail.html', context)
 
@@ -429,6 +436,21 @@ def remove_from_cart(request, product_id):
     return JsonResponse({'success': True})
 
 @login_required(login_url='/login')
+def toggle_wishlist(request):
+    product_id = request.POST.get('product_id')
+    action = request.POST.get('action')
+
+    try:
+        product = models.Product.objects.get(id=product_id)
+        if action == 'add':
+            models.ProductWishlist.objects.get_or_create(user=request.user, product=product)
+        elif action == 'remove':
+            models.ProductWishlist.objects.filter(user=request.user, product=product).delete()
+        return JsonResponse({'success': True})
+    except models.Product.DoesNotExist:
+        return JsonResponse({'success': False}, status=404)
+
+@login_required(login_url='/login')
 def update_cart(request, product_id):
     if request.method == 'POST':
         quantity = request.POST.get('quantity')
@@ -444,6 +466,34 @@ def update_cart(request, product_id):
         request.session['last_page'] = request.META['HTTP_REFERER']
     
     return redirect(request.session.get('last_page', '/default-redirect-url'))
+
+@login_required(login_url='/login')
+def add_to_wishlist(request, product_id):
+    if request.method == 'POST':
+        product = models.Product.objects.get(id=product_id)
+        models.ProductWishlist.objects.get_or_create(user=request.user, product=product)
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': True})
+
+    return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
+
+@login_required(login_url='/login')
+def remove_from_wishlist(request, product_id):
+    if request.method == 'POST':
+        models.ProductWishlist.objects.filter(user=request.user, product_id=product_id).delete()
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': True})
+
+    return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
+
+@login_required(login_url='/login')
+def wishlist_view(request):
+    wishlist_qs = models.ProductWishlist.objects.filter(user=request.user).select_related('product')
+    products = [item.product for item in wishlist_qs]
+
+    return render(request, 'store/wishlist-page.html', {'wishlist': products})
 
 @login_required(login_url='/login')
 def checkout_view(request):
