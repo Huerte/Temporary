@@ -247,13 +247,16 @@ def edit_profile_view(request):
     return render(request, 'store/edit-profile-page.html', context)
 
 def product_view(request):
+    # Initialize the products queryset
     products = models.Product.objects.all()
     category = models.Category.objects.all()
 
+    # Category filter with case-insensitive partial match
     selected_category = request.GET.get('category')
     if selected_category:
-        products = models.Product.objects.filter(category__name=selected_category)
-    
+        products = products.filter(category__name__icontains=selected_category)  # Use icontains for case-insensitive partial match
+
+
     # Handle min_price and max_price from range
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')

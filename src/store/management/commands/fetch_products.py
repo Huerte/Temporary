@@ -24,6 +24,7 @@ def fetch_products():
             # DummyJSON has nested 'category' as a string, not a dict
             cat_raw = item.get('category')
             cat_name = cat_raw['name'] if isinstance(cat_raw, dict) else str(cat_raw)
+            cat_name = cat_name.title()
             category, _ = Category.objects.get_or_create(name=cat_name)
 
             product_name = item.get('title') or item.get('name')
