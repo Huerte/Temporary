@@ -6,6 +6,7 @@ from django.core.files.temp import NamedTemporaryFile
 from django.core.files import File
 from django.utils.text import slugify
 from store.models import Product, Category
+from decimal import Decimal, InvalidOperation
 
 
 def fetch_products():
@@ -18,6 +19,13 @@ def fetch_products():
 
         product_name = item['title']
         price = Decimal(item['price'])
+        
+        try:
+          price = Decimal(str(raw)).quantize(Decimal('0.01'))
+      except InvalidOperation:
+          print(f"❌ Bad price for product {item.get('id')!r}: {raw!r}")
+          continue
+        
         description = item.get('description', '')
         image_urls = item['images'] if item['images'] else []
 
