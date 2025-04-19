@@ -1,32 +1,177 @@
-.hero-modern {
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  border-radius: 0 0 30px 30px;
-  padding: 80px 0;
+.hero-carousel {
   position: relative;
-  overflow: hidden;
 }
 
-.hero-modern::before {
-  content: "";
-  position: absolute;
-  top: -50px;
-  right: -50px;
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background: rgba(93, 95, 239, 0.1);
+.carousel-item {
+  height: 94vh;
+  min-height: 600px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
 }
 
-.hero-modern::after {
+.carousel-item::before {
   content: "";
   position: absolute;
-  bottom: -80px;
-  left: -80px;
-  width: 300px;
-  height: 300px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3); /* Dark overlay for better text readability */
+  z-index: 1;
+}
+
+.carousel-caption {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: left;
+  left: 10%;
+  right: auto;
+  max-width: 500px;
+  z-index: 2;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.carousel-caption h5 {
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.carousel-caption h2 {
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+}
+
+.carousel-caption p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  font-weight: 300;
+  letter-spacing: 1px;
+}
+
+.btn-explore-categories {
+  background-color: rgba(0, 0, 0, 0.15) !important;
+  color: #000;
+  transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1) !important;
+}
+
+.btn-explore-categories:hover {
+  background-color: #0d6efd !important;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.btn-shop-now {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1) !important;
+}
+
+.btn-shop-now:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  width: 5%;
+  z-index: 3;
+}
+
+.carousel-indicators {
+  bottom: 30px;
+  z-index: 3;
+}
+
+.carousel-indicators button {
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: rgba(255, 122, 80, 0.1);
-  pointer-events: none;
+  margin: 0 5px;
+}
+
+/* Background images for slides - diverse product categories */
+.bg-slide1 {
+  background-image: url("https://images.unsplash.com/photo-1595303526913-c7037797ebe7?q=80&w=2129&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+}
+
+.bg-slide2 {
+  background-image: url("https://images.unsplash.com/photo-1600494603989-9650cf6ddd3d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80");
+}
+
+.bg-slide3 {
+  background-image: url("https://images.unsplash.com/photo-1556910096-6f5e72db6803?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+}
+
+.bg-slide4 {
+  background-image: url("https://images.unsplash.com/photo-1607083206968-13611e3d76db?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80");
+}
+
+.carousel-indicators {
+  bottom: 30px; /* or adjust as needed */
+}
+
+.carousel-indicators [data-bs-target] {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  background-color: rgba(255, 255, 255, 0.4) !important;
+  border: none;
+  margin: 0 4px;
+  transition: background-color 0.3s ease;
+}
+
+.carousel-indicators .active {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+@media (max-width: 768px) {
+  .carousel-item {
+    height: 80vh;
+    position: relative;
+  }
+
+  .carousel-caption {
+    position: absolute;
+    top: 50%;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    padding: 0 1rem;
+    z-index: 2;
+  }
+
+  .carousel-caption h2 {
+    font-size: 2.5rem;
+  }
+
+  .carousel-caption h5,
+  .carousel-caption p {
+    text-align: center;
+  }
+
+  .btn-shop-now {
+    margin-top: 1.2rem;
+  }
 }
 
 .category-card {
