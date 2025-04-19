@@ -19,7 +19,7 @@ def fetch_products():
 
         product_name = item['title']
         price = Decimal(item['price'])
-        
+        raw = item.get('price')
         try:
           price = Decimal(str(raw)).quantize(Decimal('0.01'))
         except InvalidOperation:
