@@ -22,9 +22,9 @@ def fetch_products():
         
         try:
           price = Decimal(str(raw)).quantize(Decimal('0.01'))
-      except InvalidOperation:
-          print(f"❌ Bad price for product {item.get('id')!r}: {raw!r}")
-          continue
+        except InvalidOperation:
+            print(f"❌ Bad price for product {item.get('id')!r}: {raw!r}")
+            continue
         
         description = item.get('description', '')
         image_urls = item['images'] if item['images'] else []
