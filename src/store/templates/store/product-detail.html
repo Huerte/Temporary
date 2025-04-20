@@ -567,7 +567,7 @@
             });
         });
     });
-    
+
         document.querySelectorAll('.wishlist-btn').forEach(btn => {
             btn.addEventListener('click', function () {
                 const productId = this.dataset.productId;
@@ -577,17 +577,33 @@
                     method: "POST",
                     headers: {
                         "X-CSRFToken": "{{ csrf_token }}",
-                        "X-Requested-With": "XMLHttpRequest",
                         "Content-Type": "application/x-www-form-urlencoded"
                     },
-                    body: `product_id=${productId}&action=${action}`
+                    body: new URLSearchParams({ product_id: productId })
                 })
                 .then(res => res.json())
                 .then(data => {
-                    if (data.success) location.reload(); // Refresh to reflect change
+                    if (data.success) {
+                        const icon = this.querySelector('i');
+                        if (data.in_wishlist) {
+                            this.classList.remove("btn-outline-dark");
+                            this.classList.add("btn-danger");
+                            this.dataset.action = "remove";
+                            this.title = "Remove from Wishlist";
+                            icon.classList.remove("text-muted");
+                            this.innerHTML = '<i class="fas fa-heart me-2"></i>Remove from Wishlist';
+                        } else {
+                            this.classList.remove("btn-danger");
+                            this.classList.add("btn-outline-dark");
+                            this.dataset.action = "add";
+                            this.title = "Add to Wishlist";
+                            this.innerHTML = '<i class="fas fa-heart text-muted me-2"></i>Add to Wishlist';
+                        }
+                    }
                 });
             });
         });
+
 </script>
 
 {% endblock %}

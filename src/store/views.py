@@ -7,8 +7,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm, ForgotPassword
 from django.contrib.auth.forms import SetPasswordForm
+from django.views.decorators.http import require_POST
 from django.core.mail import send_mail, EmailMessage
 from django.template.loader import render_to_string
+from django.db.models.functions import Coalesce
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
@@ -21,7 +23,7 @@ from main import settings
 from . import models
 import pycountry
 
-
+# @login_required(login_url='/login')
 def home(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -37,9 +39,13 @@ def home(request):
             messages.error(request, 'User does not exist.')
 
         return redirect('login-page')
-    # products = models.Product.objects.filter(is_featured=True)[:6]
-    products = models.Product.objects.all()[:21]
-    wishlist_product_ids = models.ProductWishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
+    
+    products = models.Product.objects.all()[:21] # products = models.Product.objects.filter(is_featured=True)[:6]
+
+    wishlist_product_ids = []
+    if request.user.is_authenticated:
+        wishlist_product_ids = models.ProductWishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
+    
     return render(request, 'store/home.html', {'products': products, 'wishlist_product_ids': wishlist_product_ids})
 
 def about_view(request):
@@ -319,7 +325,9 @@ def product_view(request, category=None):
     for product in page_obj:
         product.stars_range = range(1, 6)
 
-    wishlist_product_ids = models.ProductWishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
+    wishlist_product_ids = []
+    if request.user.is_authenticated:
+        wishlist_product_ids = models.ProductWishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
 
     context = {
         'products': page_obj.object_list,
@@ -330,15 +338,25 @@ def product_view(request, category=None):
         'min_price': min_price,
         'max_price': max_price,
         'sort_label': sort_label,
+        'sort_option': sort_option,
         'wishlist_product_ids': wishlist_product_ids
     }
 
     return render(request, 'store/products.html', context)
 
 def product_details(request, product_id):
+
     product = get_object_or_404(models.Product, id=product_id)
-    cart_item_exist = models.CartItem.objects.filter(user=request.user, product=product).exists()
     product_reviews = models.ProductReview.objects.filter(product=product)
+
+    wishlist_product_ids = []
+    cart_item_exist = []
+    can_review = []
+    if request.user.is_authenticated:
+        wishlist_product_ids = models.ProductWishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
+        cart_item_exist = models.CartItem.objects.filter(user=request.user, product=product).exists()
+        can_review = models.OrderItem.objects.filter(order__user=request.user, order__status='DELIVERED', product=product).exists()
+
     # Savings = original price - discounted price
     savings = product.price - product.discounted_price
 
@@ -347,10 +365,8 @@ def product_details(request, product_id):
     half_star = 1 if (rounded_rating - full_stars) >= 0.5 else 0
     empty_stars = 5 - full_stars - half_star
 
-    can_review = models.OrderItem.objects.filter(order__user=request.user, order__status='DELIVERED', product=product).exists()
     related_products = models.Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
 
-    wishlist_product_ids = models.ProductWishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
     action = request.POST.get('action')
     if action == "add":
         add_to_wishlist(product_id)
@@ -436,21 +452,6 @@ def remove_from_cart(request, product_id):
     return JsonResponse({'success': True})
 
 @login_required(login_url='/login')
-def toggle_wishlist(request):
-    product_id = request.POST.get('product_id')
-    action = request.POST.get('action')
-
-    try:
-        product = models.Product.objects.get(id=product_id)
-        if action == 'add':
-            models.ProductWishlist.objects.get_or_create(user=request.user, product=product)
-        elif action == 'remove':
-            models.ProductWishlist.objects.filter(user=request.user, product=product).delete()
-        return JsonResponse({'success': True})
-    except models.Product.DoesNotExist:
-        return JsonResponse({'success': False}, status=404)
-
-@login_required(login_url='/login')
 def update_cart(request, product_id):
     if request.method == 'POST':
         quantity = request.POST.get('quantity')
@@ -467,6 +468,23 @@ def update_cart(request, product_id):
     
     return redirect(request.session.get('last_page', '/default-redirect-url'))
 
+@require_POST
+@login_required(login_url='/login')
+def toggle_wishlist(request):
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        try:
+            product = models.Product.objects.get(id=product_id)
+            wishlist_item, created = models.ProductWishlist.objects.get_or_create(user=request.user, product=product)
+            if not created:
+                wishlist_item.delete()
+                in_wishlist = False
+            else:
+                in_wishlist = True
+            return JsonResponse({'success': True, 'in_wishlist': in_wishlist})
+        except models.Product.DoesNotExist:
+            return JsonResponse({'success': False}, status=404)
+
 @login_required(login_url='/login')
 def add_to_wishlist(request, product_id):
     if request.method == 'POST':
@@ -474,7 +492,8 @@ def add_to_wishlist(request, product_id):
         models.ProductWishlist.objects.get_or_create(user=request.user, product=product)
 
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': True})
+            in_wishlist = models.ProductWishlist.objects.filter(user=request.user, product=product).exists()
+            return JsonResponse({'success': True, 'in_wishlist': in_wishlist})
 
     return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
 
@@ -484,7 +503,8 @@ def remove_from_wishlist(request, product_id):
         models.ProductWishlist.objects.filter(user=request.user, product_id=product_id).delete()
 
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': True})
+            in_wishlist = models.ProductWishlist.objects.filter(user=request.user, product_id=product_id).exists()
+            return JsonResponse({'success': True, 'in_wishlist': in_wishlist})
 
     return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
 
