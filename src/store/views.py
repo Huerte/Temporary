@@ -266,9 +266,9 @@ def product_view(request, category=None):
     sort_option = request.GET.get('sort', 'featured')
 
     # Base filters
-    if selected_category:
+    if selected_category and selected_category.lower() != 'all':
         products = products.filter(category__name=selected_category)
-    
+
     if search_query:
         products = products.filter(
             Q(name__icontains=search_query) |

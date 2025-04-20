@@ -25,7 +25,8 @@
 
           <form action="{% if selected_category %}{% url 'products_by_category' selected_category %}{% else %}{% url 'products' %}{% endif %}" method="GET">
             {% csrf_token %}
-          
+            
+            <!-- Category Links -->
             <div class="list-group list-group-flush mb-3" id="category-list">
               <a href="{% url 'products' %}?min_price={{ min_price }}&max_price={{ max_price }}&sort={{ sort_option }}"
                  class="list-group-item list-group-item-action d-flex align-items-center {% if not selected_category %}active bg-primary text-white{% endif %}">
@@ -37,8 +38,9 @@
                   <i class="fas fa-tag me-2"></i> {{ cat.name }}
                 </a>
               {% endfor %}
-            </div>            
+            </div>
           
+            <!-- Price Range -->
             <h6 class="fw-bold mb-2">Price Range</h6>
             <p class="small text-muted">$<span id="rangeMinLabel">{{ min_price }}</span> - $<span id="rangeMaxLabel">{{ max_price }}</span></p>
           
@@ -55,14 +57,14 @@
           
             <div class="d-flex gap-2 mb-3">
               <!-- Min Price Input -->
-              <input type="number" class="form-control form-control-sm" placeholder="Min" name="min_price" 
-                     value="{{ min_price }}" id="minPrice" min=0>
+              <input type="number" class="form-control form-control-sm" placeholder="Min" name="min_price"
+                     value="{{ min_price }}" id="minPrice" min="0">
               <!-- Max Price Input -->
-              <input type="number" class="form-control form-control-sm" placeholder="Max" name="max_price" 
-                     value="{{ max_price }}" id="maxPrice" min=0>
+              <input type="number" class="form-control form-control-sm" placeholder="Max" name="max_price"
+                     value="{{ max_price }}" id="maxPrice" min="0">
             </div>
           
-            <!-- Ratings -->
+            <!-- Ratings Filters -->
             <h6 class="fw-bold mb-2">Ratings</h6>
             <div class="form-check mb-1">
               <input class="form-check-input" type="checkbox" id="star5" name='five_star'>
@@ -74,6 +76,7 @@
                 <i class="fas fa-star text-warning"></i>
               </label>
             </div>
+          
             <div class="form-check mb-1">
               <input class="form-check-input" type="checkbox" id="star4" name='four_star'>
               <label class="form-check-label" for="star4">
@@ -84,6 +87,7 @@
                 &nbsp;&amp; Up
               </label>
             </div>
+          
             <div class="form-check mb-3">
               <input class="form-check-input" type="checkbox" id="star3" name='three_star'>
               <label class="form-check-label" for="star3">
@@ -99,7 +103,8 @@
               <button type="submit" class="btn btn-primary">Apply Filters</button>
               <button type="button" class="btn btn-outline-secondary" onclick="resetFilters()">Reset</button>
             </div>
-          </form>          
+          </form>
+                   
 
         </div>
       </aside>
@@ -117,13 +122,29 @@
                   <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown">
                       Sort By: {{ sort_label|default:"Featured" }}
                   </button>
-                  <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="?sort=featured&min_price={{ min_price }}&max_price={{ max_price }}&category={{ selected_category }}">Featured</a></li>
-                      <li><a class="dropdown-item" href="?sort=price-asc&min_price={{ min_price }}&max_price={{ max_price }}&category={{ selected_category }}">Price: Low to High</a></li>
-                      <li><a class="dropdown-item" href="?sort=price-desc&min_price={{ min_price }}&max_price={{ max_price }}&category={{ selected_category }}">Price: High to Low</a></li>
-                      <li><a class="dropdown-item" href="?sort=rating&min_price={{ min_price }}&max_price={{ max_price }}&category={{ selected_category }}">Rating</a></li>
-                      <li><a class="dropdown-item" href="?sort=newest&min_price={{ min_price }}&max_price={{ max_price }}&category={{ selected_category }}">Newest</a></li>
-                  </ul>
+                  {% if selected_category and selected_category != 'all' %}
+                  {% with category_param='&category='|add:selected_category %}
+                      <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" href="?sort=featured&min_price={{ min_price }}&max_price={{ max_price }}{{ category_param }}">Featured</a></li>
+                          <li><a class="dropdown-item" href="?sort=price-asc&min_price={{ min_price }}&max_price={{ max_price }}{{ category_param }}">Price: Low to High</a></li>
+                          <li><a class="dropdown-item" href="?sort=price-desc&min_price={{ min_price }}&max_price={{ max_price }}{{ category_param }}">Price: High to Low</a></li>
+                          <li><a class="dropdown-item" href="?sort=rating&min_price={{ min_price }}&max_price={{ max_price }}{{ category_param }}">Rating</a></li>
+                          <li><a class="dropdown-item" href="?sort=newest&min_price={{ min_price }}&max_price={{ max_price }}{{ category_param }}">Newest</a></li>
+                      </ul>
+                  {% endwith %}
+              {% else %}
+                  {% with category_param='' %}
+                      <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" href="?sort=featured&min_price={{ min_price }}&max_price={{ max_price }}{{ category_param }}">Featured</a></li>
+                          <li><a class="dropdown-item" href="?sort=price-asc&min_price={{ min_price }}&max_price={{ max_price }}{{ category_param }}">Price: Low to High</a></li>
+                          <li><a class="dropdown-item" href="?sort=price-desc&min_price={{ min_price }}&max_price={{ max_price }}{{ category_param }}">Price: High to Low</a></li>
+                          <li><a class="dropdown-item" href="?sort=rating&min_price={{ min_price }}&max_price={{ max_price }}{{ category_param }}">Rating</a></li>
+                          <li><a class="dropdown-item" href="?sort=newest&min_price={{ min_price }}&max_price={{ max_price }}{{ category_param }}">Newest</a></li>
+                      </ul>
+                  {% endwith %}
+              {% endif %}
+              
+              
               </div>
               <div class="btn-group" role="group">
                   <a href="?view=grid&min_price={{ min_price }}&max_price={{ max_price }}&category={{ selected_category }}&sort={{ sort_option }}" class="btn btn-outline-secondary btn-sm {% if view == 'grid' %}active{% endif %}"><i class="fas fa-th"></i></a>
@@ -304,27 +325,47 @@
 </section>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  const priceRange = document.getElementById('priceRange');
-  const maxPriceInput = document.getElementById('maxPrice');
-  const rangeMaxLabel = document.getElementById('rangeMaxLabel');
-
-  if (priceRange && maxPriceInput) {
-    priceRange.addEventListener('input', () => {
-      maxPriceInput.value = priceRange.value;
-      if (rangeMaxLabel) rangeMaxLabel.textContent = priceRange.value;
-    });
-
-    maxPriceInput.addEventListener('input', () => {
-      let newMax = parseInt(maxPriceInput.value, 10);
-      if (!isNaN(newMax)) {
-        priceRange.max = newMax;
-        priceRange.value = newMax;
-        if (rangeMaxLabel) rangeMaxLabel.textContent = newMax;
-      }
-    });
-  }
-});
+  document.addEventListener('DOMContentLoaded', function () {
+    const priceRange = document.getElementById('priceRange');
+    const maxPriceInput = document.getElementById('maxPrice');
+    const rangeMaxLabel = document.getElementById('rangeMaxLabel');
+    const form = document.querySelector('form');  // Get the form element
+  
+    // Function to update the URL with the current sort option
+    function updateSortParam() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sortOption = urlParams.get('sort') || 'featured';  // Default to 'featured' if not present
+      const minPrice = urlParams.get('min_price') || {{ min_price }};
+      const maxPrice = urlParams.get('max_price') || {{ max_price }};
+      
+      // Add sort, min_price, and max_price to the form action
+      form.action = form.action.split('?')[0] + `?sort=${sortOption}&min_price=${minPrice}&max_price=${maxPrice}`;
+    }
+  
+    // Initially update the sort param in the form
+    updateSortParam();
+  
+    // When the price range or max price is changed, update the form action to include the sort parameter
+    if (priceRange && maxPriceInput) {
+      priceRange.addEventListener('input', () => {
+        maxPriceInput.value = priceRange.value;
+        if (rangeMaxLabel) rangeMaxLabel.textContent = priceRange.value;
+        updateSortParam();  // Ensure the sort parameter is included
+      });
+  
+      maxPriceInput.addEventListener('input', () => {
+        let newMax = parseInt(maxPriceInput.value, 10);
+        if (!isNaN(newMax)) {
+          priceRange.max = newMax;
+          priceRange.value = newMax;
+          if (rangeMaxLabel) rangeMaxLabel.textContent = newMax;
+          updateSortParam();  // Ensure the sort parameter is included
+        }
+      });
+    }
+  });
+  
+  
 
   function resetFilters() {
     document.querySelector('form').reset();
