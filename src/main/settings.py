@@ -20,9 +20,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
 SECRET_KEY = '50wte%(wqoan^rk1d102aozvhwztks_gh^k_iv&4rtc&@62ei('
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -39,6 +36,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
+
     'store'
 ]
 
@@ -51,7 +55,31 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'main.middleware.admin_restrictor.AdminAccessMiddleware',
+
+    'allauth.account.middleware.AccountMiddleware',
 ]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': os.getenv('QAUTH_GOOGLE_CLIENT_ID'),
+            'secret': os.getenv('QAUTH_GOOGLE_SECRET'),
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+    },
+    'facebook': {
+        'APP': {
+            'client_id': os.getenv('QAUTH_FACEBOOK_CLIENT_ID'),
+            'secret': os.getenv('QAUTH_FACEBOOK_SECRET'),
+        },
+        'AUTH_PARAMS': {
+            'auth_type': 'reauthenticate',
+        },
+    },
+}
 
 ROOT_URLCONF = 'main.urls'
 
@@ -144,3 +172,17 @@ DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_LOGIN_METHODS = {'username', 'email'}
+SOCIALACCOUNT_QUERY_EMAIL = True
+SOCIALACCOUNT_AUTO_SIGNUP = True
+ACCOUNT_EMAIL_UNIQUE = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True

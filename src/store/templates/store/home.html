@@ -1,5 +1,6 @@
 {% extends 'store/index.html' %}
 {% block content %}
+{% load socialaccount %}
 
 {% if products %}
 <style>
@@ -649,10 +650,10 @@
 
             <!-- Social Buttons -->
             <div class="d-flex justify-content-between gap-2 mb-3">
-                <a href="#" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center">
+                <a href="{% provider_login_url 'facebook' %}" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center">
                 <i class="fab fa-facebook-f me-2"></i> <span class="d-none d-sm-inline">Facebook</span>
                 </a>
-                <a href="#" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center">
+                <a href="{% provider_login_url 'google' %}" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center">
                 <i class="fab fa-google me-2"></i> <span class="d-none d-sm-inline">Google</span>
                 </a>
             </div>

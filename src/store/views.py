@@ -23,7 +23,7 @@ from main import settings
 from . import models
 import pycountry
 
-# @login_required(login_url='/login')
+
 def home(request):
     if request.method == 'POST':
         email = request.POST.get('email')
