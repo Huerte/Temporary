@@ -9,7 +9,7 @@
 </style>
 
 <!-- Hero Carousel Section -->
-<div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel">
+<div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel" data-bs-interval="2000" data-bs-pause="false">
     <!-- Carousel Indicators -->
     <div class="carousel-indicators">
         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -21,7 +21,7 @@
     <!-- Carousel Items -->
     <div class="carousel-inner">
         <!-- Slide 1 - Electronics -->
-        <div class="carousel-item active bg-slide1">
+        <div class="carousel-item active" style="background-image: url('static/banner/gadgets.jpg');">
             <div class="container">
                 <div class="carousel-caption text-center">
                     <h5>Tech Deals</h5>
@@ -40,7 +40,7 @@
         </div>
 
         <!-- Slide 2 - Home Goods -->
-        <div class="carousel-item bg-slide2">
+        <div class="carousel-item" style="background-image: url('static/banner/living-spaces.jpg');">
             <div class="container">
                 <div class="carousel-caption text-center">
                     <h5>Home Collection</h5>
@@ -59,7 +59,7 @@
         </div>
 
         <!-- Slide 3 - Kitchen/Appliances -->
-        <div class="carousel-item bg-slide3">
+        <div class="carousel-item" style="background-image: url('static/banner/kitchen.jpg');">
             <div class="container">
                 <div class="carousel-caption text-center">
                     <h5>Kitchen Essentials</h5>
@@ -78,14 +78,14 @@
         </div>
 
         <!-- Slide 4 - Seasonal Sale -->
-        <div class="carousel-item bg-slide4">
+        <div class="carousel-item" style="background-image: url('static/banner/sale.jpg');">
             <div class="container">
                 <div class="carousel-caption text-center">
                     <h5>Limited Time</h5>
                     <h2>Mega Sale</h2>
                     <p>Up to 70% off on thousands of products across all categories</p>
                     <div class="d-flex justify-content-center flex-wrap gap-2 mt-3">
-                        <a href="#-categories" class="btn btn-outline-primary rounded-pill px-4 btn-lg text-white btn-explore-categories">
+                        <a href="#categories" class="btn btn-outline-primary rounded-pill px-4 btn-lg text-white btn-explore-categories">
                             Explore Categories
                         </a>
                         <a href="#" class="btn btn-primary rounded-pill btn-lg px-4 w-auto btn-shop-now">
@@ -625,8 +625,8 @@
 
             <!-- Email -->
             <div class="mb-3">
-              <label for="email" class="form-label fw-semibold">Email</label>
-              <input type="email" name="email" id="email" class="form-control" placeholder="m@example.com" required>
+              <label for="username" class="form-label fw-semibold">Username</label>
+              <input type="text" name="username" id="username" class="form-control" placeholder="" required>
             </div>
 
             <!-- Password -->
@@ -640,7 +640,7 @@
 
             <!-- Login -->
             <div class="d-grid mb-3">
-              <button type="submit" class="btn btn-dark">Login</button>
+              <button type="submit" class="btn btn-primary">Login</button>
             </div>
 
             <!-- Divider -->
@@ -650,10 +650,10 @@
 
             <!-- Social Buttons -->
             <div class="d-flex justify-content-between gap-2 mb-3">
-                <a href="{% provider_login_url 'facebook' %}" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center">
+                <a href="{% provider_login_url 'facebook' %}" class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center">
                 <i class="fab fa-facebook-f me-2"></i> <span class="d-none d-sm-inline">Facebook</span>
                 </a>
-                <a href="{% provider_login_url 'google' %}" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center">
+                <a href="{% provider_login_url 'google' %}" class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center">
                 <i class="fab fa-google me-2"></i> <span class="d-none d-sm-inline">Google</span>
                 </a>
             </div>

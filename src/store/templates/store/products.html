@@ -3,18 +3,89 @@
 
 {% block content %}
 
-<!-- Breadcrumb -->
-<nav aria-label="breadcrumb" class="bg-light py-3 mb-4 border-bottom">
-  <div class="container">
-    <ol class="breadcrumb mb-0">
-      <li class="breadcrumb-item"><a href="{% url 'store_home' %}"><i class="fas fa-home me-1"></i>Home</a></li>
-      <li class="breadcrumb-item active" aria-current="page">Products</li>
-    </ol>
+  <!-- Advertisement Carousel Section -->
+ <div id="advertisementCarousel" class="advertise-carousel carousel slide pb-5 mx-auto rounded" data-bs-ride="carousel" data-bs-interval="2000">
+  <!-- Indicators -->
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#advertisementCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#advertisementCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#advertisementCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    <button type="button" data-bs-target="#advertisementCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
   </div>
-</nav>
+
+  <!-- Carousel Inner -->
+  <div class="carousel-inner">
+    <!-- Slide 1 -->
+    <div class="carousel-item active advertise-carousel-item">
+      <div class="advertise-carousel-background" style="background-image: url('https://images.unsplash.com/photo-1607083206968-13611e3d76db?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+      <div class="advertise-carousel-overlay"></div>
+      <div class="container d-flex d-sm-block justify-content-center align-items-center" style="height: 50vh;">
+        <div class="advertise-carousel-caption pt-5 mt-5 text-start text-white ">
+          <span class="subtitle">Limited Time Offer</span>
+          <h1 class="display-4 fw-bold">SUMMER MEGA SALE</h1>
+          <h3 class="mb-4">Up to 50% off on all beauty products!</h3>
+          <div class="countdown-container">
+            <div class="countdown" data-endtime="2025-04-23T12:00:00">
+              <span class="countdown-label">ENDS IN:</span>
+              <div class="countdown-timer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="carousel-item advertise-carousel-item">
+      <div class="advertise-carousel-background" style="background-image: url('https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+      <div class="advertise-carousel-overlay"></div>
+      <div class="container d-flex d-sm-block justify-content-center align-items-center" style="height: 50vh;">
+        <div class="advertise-carousel-caption pt-5 mt-5 text-start text-white">
+          <span class="subtitle">Just Launched</span>
+          <h1 class="display-4 fw-bold">PREMIUM FRAGRANCES</h1>
+          <h3 class="mb-3">Discover our exclusive collection of luxury scents</h3>
+          <p class="shipping-info"><i class="fas fa-truck me-2"></i> Free shipping on orders over $50</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="carousel-item advertise-carousel-item">
+      <div class="advertise-carousel-background" style="background-image: url('https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+      <div class="advertise-carousel-overlay"></div>
+      <div class="container d-flex d-sm-block justify-content-center align-items-center" style="height: 50vh;">
+        <div class="advertise-carousel-caption pt-5 mt-5 text-start text-white">
+          <span class="subtitle">Don't Miss Out</span>
+          <h1 class="display-4 fw-bold">FLASH SALE TODAY ONLY!</h1>
+          <h3 class="mb-3">Buy one get one FREE on all makeup palettes</h3>
+          <div class="countdown-container">
+            <div class="countdown" data-endtime="2025-04-22T23:59:59">
+              <span class="countdown-label">ENDS IN:</span>
+              <div class="countdown-timer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4 -->
+    <div class="carousel-item advertise-carousel-item">
+      <div class="advertise-carousel-background" style="background-image: url('https://images.unsplash.com/photo-1556228720-195a672e8a03?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+      <div class="advertise-carousel-overlay"></div>
+      <div class="container d-flex d-sm-block justify-content-center align-items-center" style="height: 50vh;">
+        <div class="advertise-carousel-caption pt-5 mt-5 text-start text-white">
+          <span class="subtitle">Special Benefits</span>
+          <h1 class="display-4 fw-bold">MEMBERSHIP SPECIAL</h1>
+          <h3 class="mb-3">Join our VIP club and get 15% off every purchase</h3>
+          <p class="vip-info"><i class="fas fa-crown me-2"></i> Plus early access to sales and special events</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- Main Section -->
-<section class="products-section">
+<section class="products-section pt-5">
   <div class="container">
     <div class="row">
       
@@ -216,7 +287,7 @@
                 <div class="d-flex gap-3 align-items-center">
                   <div class="flex-grow-1">
                     {% if not user.is_authenticated %}
-                      <a href="#" class="btn btn-dark w-100" data-bs-toggle="modal" data-bs-target="#loginModal">
+                      <a href="#" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#loginModal">
                         <i class="bi bi-cart-plus me-2"></i> Add to Cart
                       </a>
                     {% elif product.id in products_in_cart %}
@@ -325,92 +396,91 @@
 </section>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const priceRange = document.getElementById('priceRange');
-    const maxPriceInput = document.getElementById('maxPrice');
-    const rangeMaxLabel = document.getElementById('rangeMaxLabel');
-    const form = document.querySelector('form');  // Get the form element
-  
-    // Function to update the URL with the current sort option
-    function updateSortParam() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const sortOption = urlParams.get('sort') || 'featured';  // Default to 'featured' if not present
-      const minPrice = urlParams.get('min_price') || {{ min_price }};
-      const maxPrice = urlParams.get('max_price') || {{ max_price }};
-      
-      // Add sort, min_price, and max_price to the form action
-      form.action = form.action.split('?')[0] + `?sort=${sortOption}&min_price=${minPrice}&max_price=${maxPrice}`;
-    }
-  
-    // Initially update the sort param in the form
-    updateSortParam();
-  
-    // When the price range or max price is changed, update the form action to include the sort parameter
-    if (priceRange && maxPriceInput) {
-      priceRange.addEventListener('input', () => {
-        maxPriceInput.value = priceRange.value;
-        if (rangeMaxLabel) rangeMaxLabel.textContent = priceRange.value;
-        updateSortParam();  // Ensure the sort parameter is included
-      });
-  
-      maxPriceInput.addEventListener('input', () => {
-        let newMax = parseInt(maxPriceInput.value, 10);
-        if (!isNaN(newMax)) {
-          priceRange.max = newMax;
-          priceRange.value = newMax;
-          if (rangeMaxLabel) rangeMaxLabel.textContent = newMax;
-          updateSortParam();  // Ensure the sort parameter is included
-        }
-      });
-    }
-  });
-  
-  
+ document.addEventListener('DOMContentLoaded', function () {
+  const priceRange = document.getElementById('priceRange');
+  const maxPriceInput = document.getElementById('maxPrice');
+  const rangeMaxLabel = document.getElementById('rangeMaxLabel');
+  const form = document.querySelector('form');  // Get the form element
 
-  function resetFilters() {
-    document.querySelector('form').reset();
-
-    const url = new URL(window.location);
-    url.search = '';
-    window.history.pushState({}, '', url);
-
-    location.reload();
+  // Function to update the URL with the current sort option
+  function updateSortParam() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sortOption = urlParams.get('sort') || 'featured';  // Default to 'featured' if not present
+    const minPrice = urlParams.get('min_price') || {{ min_price }};
+    const maxPrice = urlParams.get('max_price') || {{ max_price }};
+    
+    // Add sort, min_price, and max_price to the form action
+    form.action = form.action.split('?')[0] + `?sort=${sortOption}&min_price=${minPrice}&max_price=${maxPrice}`;
   }
 
-    document.querySelectorAll('.wishlist-form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const productId = this.dataset.productId;
-            const btn = this.querySelector('button');
-            const icon = btn.querySelector('i');
-    
-            fetch("{% url 'toggle-wishlist' %}", {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `product_id=${productId}`
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    if (data.in_wishlist) {
-                        btn.classList.remove('btn-light');
-                        btn.classList.add('btn-danger');
-                        icon.classList.remove('text-muted');
-                        icon.classList.add('text-white');
-                    } else {
-                        btn.classList.remove('btn-danger');
-                        btn.classList.add('btn-light');
-                        icon.classList.remove('text-white');
-                        icon.classList.add('text-muted');
-                    }
-                }
-            });
-        });
+  // Initially update the sort param in the form
+  updateSortParam();
+
+  // When the price range or max price is changed, update the form action to include the sort parameter
+  if (priceRange && maxPriceInput) {
+    priceRange.addEventListener('input', () => {
+      maxPriceInput.value = priceRange.value;
+      if (rangeMaxLabel) rangeMaxLabel.textContent = priceRange.value;
+      updateSortParam();  // Ensure the sort parameter is included
     });
-    
+
+    maxPriceInput.addEventListener('input', () => {
+      let newMax = parseInt(maxPriceInput.value, 10);
+      if (!isNaN(newMax)) {
+        priceRange.max = newMax;
+        priceRange.value = newMax;
+        if (rangeMaxLabel) rangeMaxLabel.textContent = newMax;
+        updateSortParam();  // Ensure the sort parameter is included
+      }
+    });
+  }
+});
+
+
+
+function resetFilters() {
+  document.querySelector('form').reset();
+
+  const url = new URL(window.location);
+  url.search = '';
+  window.history.pushState({}, '', url);
+
+  location.reload();
+}
+
+  document.querySelectorAll('.wishlist-form').forEach(form => {
+      form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const productId = this.dataset.productId;
+          const btn = this.querySelector('button');
+          const icon = btn.querySelector('i');
+  
+          fetch("{% url 'toggle-wishlist' %}", {
+              method: 'POST',
+              headers: {
+                  'X-CSRFToken': '{{ csrf_token }}',
+                  'X-Requested-With': 'XMLHttpRequest',
+                  'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              body: `product_id=${productId}`
+          })
+          .then(res => res.json())
+          .then(data => {
+              if (data.success) {
+                  if (data.in_wishlist) {
+                      btn.classList.remove('btn-light');
+                      btn.classList.add('btn-danger');
+                      icon.classList.remove('text-muted');
+                      icon.classList.add('text-white');
+                  } else {
+                      btn.classList.remove('btn-danger');
+                      btn.classList.add('btn-light');
+                      icon.classList.remove('text-white');
+                      icon.classList.add('text-muted');
+                  }
+              }
+          });
+      });
+  });
 </script>
 {% endblock %}

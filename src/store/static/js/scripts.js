@@ -171,3 +171,48 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+// product advertisement section
+function startCountdowns() {
+  const countdownElements = document.querySelectorAll('.countdown');
+
+  countdownElements.forEach((countdown) => {
+    const timerContainer = countdown.querySelector('.countdown-timer');
+    const endTime = new Date(countdown.dataset.endtime).getTime();
+
+    function updateTimer() {
+      const now = new Date().getTime();
+      const distance = endTime - now;
+
+      if (distance < 0) {
+        timerContainer.innerHTML = '<div class="time-block"><span class="time">0</span><span class="label">EXPIRED</span></div>';
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      timerContainer.innerHTML = `
+        ${days > 0 ? `<div class="time-block"><span class="time">${days}</span><span class="label">DAYS</span></div>` : ''}
+        <div class="time-block"><span class="time">${String(hours).padStart(2, '0')}</span><span class="label">HRS</span></div>
+        <div class="time-block"><span class="time">${String(minutes).padStart(2, '0')}</span><span class="label">MIN</span></div>
+        <div class="time-block"><span class="time">${String(seconds).padStart(2, '0')}</span><span class="label">SEC</span></div>
+      `;
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", startCountdowns);
+
+// 
+
+// products.html
+
+// dre ibutang
+  
+// 

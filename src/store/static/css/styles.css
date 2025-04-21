@@ -1,5 +1,20 @@
+html {
+  scroll-behavior: smooth;
+}
+
 .hero-carousel {
   position: relative;
+}
+
+.hero-carousel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* dark overlay */
+  z-index: 1;
 }
 
 .carousel-item {
@@ -62,9 +77,8 @@
 }
 
 .btn-explore-categories {
-  background-color: rgba(0, 0, 0, 0.15) !important;
-  color: #000;
   transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1) !important;
+  text-transform: uppercase;
 }
 
 .btn-explore-categories:hover {
@@ -74,9 +88,8 @@
 }
 
 .btn-shop-now {
-  text-transform: uppercase;
-  letter-spacing: 1px;
   transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1) !important;
+  text-transform: uppercase;
 }
 
 .btn-shop-now:hover {
@@ -100,23 +113,6 @@
   height: 12px;
   border-radius: 50%;
   margin: 0 5px;
-}
-
-/* Background images for slides - diverse product categories */
-.bg-slide1 {
-  background-image: url("https://images.unsplash.com/photo-1595303526913-c7037797ebe7?q=80&w=2129&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-}
-
-.bg-slide2 {
-  background-image: url("https://images.unsplash.com/photo-1600494603989-9650cf6ddd3d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80");
-}
-
-.bg-slide3 {
-  background-image: url("https://images.unsplash.com/photo-1556910096-6f5e72db6803?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-}
-
-.bg-slide4 {
-  background-image: url("https://images.unsplash.com/photo-1702246357824-a32be0d44883?q=80&w=2008&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
 }
 
 .carousel-indicators {
@@ -1120,3 +1116,403 @@
 .form-check:hover {
   background-color: #f8f9fa;
 }
+
+/* General Carousel Styling */
+.carousel {
+  position: relative;
+  height: 100vh;
+  max-height: 800px;
+  overflow: hidden;
+}
+
+.carousel-item {
+  height: 100vh;
+  max-height: 800px;
+  position: relative;
+}
+
+.carousel-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition: transform 3s ease-in-out;
+}
+
+.carousel-item.active .carousel-background {
+  transform: scale(1.05);
+}
+
+.carousel-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.4) 50%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+}
+
+.carousel-caption {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  right: auto;
+  max-width: 650px;
+  padding: 0;
+  text-align: left;
+  color: #fff;
+}
+
+/* Typography */
+.subtitle {
+  display: inline-block;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 5px 15px;
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+}
+
+.carousel-caption h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.carousel-caption h3 {
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Badges */
+.sale-badge,
+.limited-offer {
+  position: absolute;
+  z-index: 10;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  animation: pulse 2s infinite;
+}
+
+.sale-badge {
+  top: 30px;
+  right: 30px;
+  background-color: #ff3366;
+  color: white;
+  padding: 15px;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.flash-badge {
+  background-color: #ff6b00;
+}
+
+.limited-offer {
+  top: 30px;
+  right: 30px;
+  background-color: #fff;
+  color: #333;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.vip-badge {
+  background-color: #ffd700;
+  color: #333;
+}
+
+/* Countdown Timer */
+.countdown-container {
+  margin-bottom: 2rem;
+}
+
+.countdown {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.countdown-label {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+  opacity: 0.9;
+}
+
+.countdown-timer {
+  display: flex;
+  gap: 10px;
+}
+
+.time-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 8px 12px;
+  min-width: 60px;
+}
+
+.time {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.label {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  letter-spacing: 1px;
+}
+
+/* Buttons */
+.btn-shop-now {
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  background-color: #ff3366;
+  border: none;
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+}
+
+.btn-shop-now:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(255, 51, 102, 0.5);
+  background-color: #ff1a53;
+  color: white;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 2px solid white;
+  box-shadow: none;
+}
+
+.btn-outline:hover {
+  background-color: white;
+  color: #333;
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+}
+
+.btn-danger {
+  background-color: #ff6b00;
+  box-shadow: 0 4px 15px rgba(255, 107, 0, 0.4);
+}
+
+.btn-danger:hover {
+  background-color: #ff5500;
+  box-shadow: 0 8px 20px rgba(255, 107, 0, 0.5);
+}
+
+.btn-success {
+  background-color: #00c896;
+  box-shadow: 0 4px 15px rgba(0, 200, 150, 0.4);
+}
+
+.btn-success:hover {
+  background-color: #00b386;
+  box-shadow: 0 8px 20px rgba(0, 200, 150, 0.5);
+}
+
+/* Shipping and VIP Info */
+.shipping-info,
+.vip-info {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.15);
+  padding: 8px 16px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* product advertisements */
+.advertise-carousel {
+  position: relative;
+  height: 60vh;
+  max-height: 800px;
+  overflow: hidden;
+}
+
+.advertise-carousel-item {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.advertise-carousel-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+}
+
+.advertise-carousel-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 2;
+}
+
+.advertise-carousel-caption {
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  z-index: 3;
+  color: #fff;
+  padding: 1.5rem;
+  max-width: 100%;
+}
+
+.vip-badge {
+  background: purple;
+}
+
+.countdown-timer {
+  display: flex;
+  gap: 10px;
+  margin-top: 0.5rem;
+  z-index: 3;
+  color: black;
+}
+
+.time-block {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 12px;
+  text-align: center;
+  border-radius: 5px;
+  min-width: 60px;
+}
+
+.time {
+  font-size: 1.4rem;
+  font-weight: bold;
+  display: block;
+}
+
+.label {
+  font-size: 0.75rem;
+  color: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .advertise-carousel-caption h1 {
+    font-size: 2.5rem;
+  }
+  .advertise-carousel-caption h3 {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .advertise-carousel-caption {
+    text-align: center;
+    padding: 0 20px;
+  }
+
+  .advertise-carousel-caption h1 {
+    font-size: 2rem;
+  }
+
+  .advertise-carousel-caption h3 {
+    font-size: 1.1rem;
+  }
+
+  .time-block {
+    min-width: 45px;
+    padding: 6px 8px;
+  }
+
+  .time {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .advertise-carousel-caption h1 {
+    font-size: 1.6rem;
+  }
+
+  .advertise-carousel-caption h3 {
+    font-size: 1rem;
+  }
+
+  .time-block {
+    min-width: 40px;
+    padding: 5px;
+  }
+
+  .time {
+    font-size: 1rem;
+  }
+
+  .label {
+    font-size: 0.6rem;
+  }
+
+  .subtitle {
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .shipping-info,
+  .vip-info {
+    font-size: 0.85rem;
+  }
+}
+
+/*  */
