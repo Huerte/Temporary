@@ -268,6 +268,25 @@ html {
   position: relative;
 }
 
+.category-scroll-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.category-scroll-wrapper::-webkit-scrollbar {
+  height: 20px;
+}
+
+.category-scroll-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.category-filter {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .view-all {
   display: inline-flex;
   align-items: center;
@@ -1290,73 +1309,6 @@ html {
   letter-spacing: 1px;
 }
 
-/* Buttons */
-.btn-shop-now {
-  padding: 12px 30px;
-  font-size: 1rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border-radius: 30px;
-  transition: all 0.3s ease;
-  background-color: #ff3366;
-  border: none;
-  color: white;
-  box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
-}
-
-.btn-shop-now:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(255, 51, 102, 0.5);
-  background-color: #ff1a53;
-  color: white;
-}
-
-.btn-outline {
-  background-color: transparent;
-  border: 2px solid white;
-  box-shadow: none;
-}
-
-.btn-outline:hover {
-  background-color: white;
-  color: #333;
-  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
-}
-
-.btn-danger {
-  background-color: #ff6b00;
-  box-shadow: 0 4px 15px rgba(255, 107, 0, 0.4);
-}
-
-.btn-danger:hover {
-  background-color: #ff5500;
-  box-shadow: 0 8px 20px rgba(255, 107, 0, 0.5);
-}
-
-.btn-success {
-  background-color: #00c896;
-  box-shadow: 0 4px 15px rgba(0, 200, 150, 0.4);
-}
-
-.btn-success:hover {
-  background-color: #00b386;
-  box-shadow: 0 8px 20px rgba(0, 200, 150, 0.5);
-}
-
-/* Shipping and VIP Info */
-.shipping-info,
-.vip-info {
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-  display: flex;
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0.15);
-  padding: 8px 16px;
-  border-radius: 4px;
-  width: fit-content;
-}
-
 /* Animations */
 @keyframes pulse {
   0% {
@@ -1415,10 +1367,6 @@ html {
   color: #fff;
   padding: 1.5rem;
   max-width: 100%;
-}
-
-.vip-badge {
-  background: purple;
 }
 
 .countdown-timer {
@@ -1507,11 +1455,6 @@ html {
   .subtitle {
     font-size: 0.8rem;
     margin-bottom: 1rem;
-  }
-
-  .shipping-info,
-  .vip-info {
-    font-size: 0.85rem;
   }
 }
 

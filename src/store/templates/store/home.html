@@ -204,8 +204,11 @@
             </div>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-            <div class="d-flex flex-wrap gap-2 align-items-center">
+        <div class="row align-items-center mb-4 gx-2 gy-3">
+        <!<div class="d-flex align-items-center gap-2 flex-nowrap mb-4">
+        <!-- Categories (80%) -->
+        <div class="category-scroll-wrapper flex-grow-1" style="flex-basis: 80%;">
+            <div class="d-flex flex-nowrap gap-2 align-items-center overflow-auto">
                 <button class="category-filter active">All</button>
                 <button class="category-filter">Hoodies</button>
                 <button class="category-filter">T-Shirts</button>
@@ -213,19 +216,23 @@
                 <button class="category-filter">New Arrivals</button>
                 <button class="category-filter">Best Sellers</button>
             </div>
-        
-            <div class="d-flex align-items-center ms-auto">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'products' %}" class="text-primary fw-semibold text-decoration-none">
-                        View All Products <i class="fa fa-arrow-right ms-1"></i>
-                    </a>
-                {% else %}
-                    <a href="#" class="text-primary fw-semibold text-decoration-none" data-bs-toggle="modal" data-bs-target="#loginModal">
-                        View All Products <i class="fa fa-arrow-right ms-1"></i>
-                    </a>
-                {% endif %}
-            </div>
         </div>
+
+        <!-- View All Products (20%) -->
+        <div class="flex-shrink-0" style="flex-basis: 20%; text-align: right;">
+            {% if user.is_authenticated %}
+                <a href="{% url 'products' %}" class="text-primary fw-semibold text-decoration-none">
+                    View All <i class="fa fa-arrow-right ms-1"></i>
+                </a>
+            {% else %}
+                <a href="#" class="text-primary fw-semibold text-decoration-none" data-bs-toggle="modal" data-bs-target="#loginModal">
+                    View All <i class="fa fa-arrow-right ms-1"></i>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+
         
 
         <div class="row g-4">
