@@ -446,10 +446,10 @@ def remove_from_cart(request, product_id):
             product = models.Product.objects.get(id=product_id)
             cart_item = models.CartItem.objects.get(user=request.user, product=product)
             cart_item.delete()
+            return JsonResponse({'success': True})
         except models.CartItem.DoesNotExist:
-            pass
-
-    return JsonResponse({'success': True})
+            return JsonResponse({'success': False})
+    return JsonResponse({'success': False})
 
 @login_required(login_url='/login')
 def update_cart(request, product_id):

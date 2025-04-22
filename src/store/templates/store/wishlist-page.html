@@ -99,15 +99,15 @@
                     {% else %}
                     <form method="post" action="{% url 'add-to-cart' product.id %}">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-dark w-100">
-                        <i class="fas fa-shopping-cart me-2"></i>Add to Cart
-                    </button>
+                    <button type="button" class="btn btn-dark w-100 add-to-cart-btn" data-id="{{ product.id }}">
+                      <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                    </button> 
                     </form>
                     {% endif %}
                     <form method="post" action="{% url 'remove-from-wishlist' product.id %}">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-danger w-100">
-                        <i class="fas fa-heart-broken me-2"></i>Remove
+                    <button type="button" class="btn btn-outline-danger w-100 remove-wishlist-btn" data-id="{{ product.id }}">
+                      <i class="fas fa-heart-broken me-2"></i>Remove
                     </button>
                     </form>
                 </div>
@@ -162,7 +162,7 @@
 </section>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
+  {% comment %} document.addEventListener("DOMContentLoaded", function () {
     const buttons = document.querySelectorAll(".view-toggle button");
     const items = document.querySelectorAll(".product-item");
 
@@ -190,6 +190,72 @@
         });
       });
     });
-  });
+  }); {% endcomment %}
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const buttons = document.querySelectorAll(".view-toggle button");
+      const items = document.querySelectorAll(".product-item");
+  
+      const savedView = localStorage.getItem("wishlistView") || "grid";
+      const activateView = (view) => {
+        buttons.forEach(btn => {
+          btn.classList.toggle("active", btn.dataset.view === view);
+        });
+  
+        items.forEach(item => {
+          const gridCard = item.querySelector(".product-card-grid");
+          const columnCard = item.querySelector(".product-card-column");
+  
+          if (view === "grid") {
+            item.classList.remove("col-12");
+            item.classList.add("col-sm-6", "col-md-4");
+            gridCard.classList.remove("d-none");
+            columnCard.classList.add("d-none");
+          } else {
+            item.classList.remove("col-sm-6", "col-md-4");
+            item.classList.add("col-12");
+            gridCard.classList.add("d-none");
+            columnCard.classList.remove("d-none");
+          }
+        });
+      };
+  
+      activateView(savedView);
+  
+      buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const view = btn.dataset.view;
+          localStorage.setItem("wishlistView", view);
+          activateView(view);
+        });
+      });
+    });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".add-to-cart-btn, .remove-wishlist-btn").forEach(btn => {
+          btn.addEventListener("click", function (e) {
+            e.preventDefault();
+            const productId = this.dataset.id;
+            const form = this.closest("form");
+            const action = form.action;
+    
+            fetch(action, {
+              method: "POST",
+              headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": form.querySelector('[name="csrfmiddlewaretoken"]').value
+              }
+            }).then(() => {
+              if (this.classList.contains("remove-wishlist-btn")) {
+                form.closest(".product-item").remove();
+              } else {
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-check me-2"></i>In Cart';
+              }
+            });
+          });
+        });
+      });
+    
 </script>
 {% endblock %}

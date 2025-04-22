@@ -71,11 +71,11 @@
                             </td>
 
                             <td class="align-middle text-center">
-                                <form action="{% url 'remove-from-cart' item.id %}" method="post" class="d-inline">
-                                  {% csrf_token %}
-                                  <button type="submit" class="btn btn-sm fw-bold">
-                                    Delete
-                                  </button>
+                                <form method="POST" action="{% url 'remove-from-cart' item.product.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm fw-bold remove-from-cart">
+                                        Delete
+                                    </button>                                  
                                 </form>
                             </td>
                               
@@ -234,7 +234,7 @@
 <script>
     (() => {
         'use strict'
-        // Form validation
+        // Bootstrap form validation
         const forms = document.querySelectorAll('.needs-validation')
         Array.from(forms).forEach(form => {
             form.addEventListener('submit', event => {
@@ -245,16 +245,48 @@
                 form.classList.add('was-validated')
             }, false)
         })
-        
-        // Update hidden payment method field when radio buttons change
+    
+        // Payment method selection
         const paymentRadios = document.querySelectorAll('input[name="paymentMethod"]')
         const selectedPaymentField = document.getElementById('selected_payment')
-        
         paymentRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
+            radio.addEventListener('change', function () {
                 selectedPaymentField.value = this.value
             })
         })
     })()
-</script>
+
+    document.querySelectorAll('.remove-from-cart').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const form = this.closest('form');  // Find the form closest to the clicked button
+            const formId = form.id;
+            
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    'product_id': formId.split('-')[2]  // Get product ID from form ID
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove item row from the table or update cart contents dynamically
+                    form.closest('tr').remove();  // Remove the cart item row
+                } else {
+                    alert('Failed to remove item from cart.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+    
+</script>    
 {% endblock %}
