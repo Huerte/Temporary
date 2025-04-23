@@ -40,7 +40,11 @@ class ProductWishlistAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'product__name')
     list_filter = ('created_at',)
 
-
+class SubscriberAdmin(admin.ModelAdmin):
+    list_display = ('email', 'subscribed_at')
+    search_fields = ('email__icontains',)
+    list_filter = ('subscribed_at',)
+    
 admin.site.register(Category)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(CartItem)
@@ -53,3 +57,4 @@ admin.site.register(PromoCode, PromoCodeAdmin)
 admin.site.register(PromoCodeUsage, PromoCodeUsageAdmin)
 admin.site.register(PaymentMethod, PaymentMethodAdmin)
 admin.site.register(ProductWishlist)
+admin.site.register(Subscriber,SubscriberAdmin)

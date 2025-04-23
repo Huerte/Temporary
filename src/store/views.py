@@ -34,19 +34,20 @@ def home(request):
                 login(request, user)
                 return redirect('store_home')
             else:
-                messages.error(request, 'Incorrect password.')
+                messages.error(request, 'Incorrect password.', extra_tags="login-msg")
         except User.DoesNotExist:
-            messages.error(request, 'User does not exist.')
+            messages.error(request, 'User does not exist.', extra_tags="login-msg")
 
         return redirect('login-page')
     
     products = models.Product.objects.all()[:21] # products = models.Product.objects.filter(is_featured=True)[:6]
 
     wishlist_product_ids = []
+    subscribed = []
     if request.user.is_authenticated:
         wishlist_product_ids = models.ProductWishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
-    
-    return render(request, 'store/home.html', {'products': products, 'wishlist_product_ids': wishlist_product_ids})
+        subscribed = models.Subscriber.objects.filter(email=request.user.email)
+    return render(request, 'store/home.html', {'products': products, 'wishlist_product_ids': wishlist_product_ids, 'subscribed': subscribed})
 
 def about_view(request):
     return render(request, 'store/about.html')
@@ -64,7 +65,7 @@ def login_user(request):
         try:
            user = User.objects.get(username=username)
         except User.DoesNotExist:
-            messages.error(request, 'User does not exists.')
+            messages.error(request, 'User does not exists.', extra_tags="login-msg")
             return redirect('login-page')
         
         user = authenticate(request, username=username, password=password)
@@ -72,7 +73,7 @@ def login_user(request):
             login(request, user)
             return redirect('store_home')
         else:
-            messages.error(request, 'Username or Password does not exists')
+            messages.error(request, 'Username or Password does not exists', extra_tags="login-msg")
             
     return render(request, 'store/authentication-page/login_page.html')
 
@@ -132,11 +133,11 @@ def forgot_password(request):
             return redirect('password-reset-sent', reset_id=new_password_reset.reset_id)
 
         except User.DoesNotExist:
-            messages.error(request, f"No user with email '{email}' found")
+            messages.error(request, f"No user with email '{email}' found", extra_tags="forgot-pass-msg")
             return redirect('forgot-password')
         except Exception as e:
             # Catch other errors (e.g., email failure)
-            messages.error(request, f"An error occurred: {str(e)}")
+            messages.error(request, f"An error occurred: {str(e)}", extra_tags="forgot-pass-msg")
             return redirect('forgot-password')
 
     return render(request, 'store/authentication-page/reset-password/forgot-password.html')
@@ -146,7 +147,7 @@ def password_reset_sent(request, reset_id):
     if models.PasswordReset.objects.filter(reset_id=reset_id).exists():
         return render(request, 'store/authentication-page/reset-password/password-reset-sent.html')
     else:
-        messages.error(request, f"Invalid reset id")
+        messages.error(request, f"Invalid reset id", extra_tags="forgot-pass-msg")
         return redirect('forgot-password')
 
 def reset_password(request, reset_id):
@@ -161,16 +162,16 @@ def reset_password(request, reset_id):
 
             if password1 != password2:
                 password_have_error = True
-                messages.error(request, f"Password does not match")
+                messages.error(request, f"Password does not match", extra_tags="reset-pass-msg")
             if len(password1) < 8:
                 password_have_error = True
-                messages.error(request, f"Password must atleast 8 characters")
+                messages.error(request, f"Password must atleast 8 characters", extra_tags="reset-pass-msg")
 
             expiration_time = reset_entry.created_when + timezone.timedelta(minutes=10)
             if timezone.now() > expiration_time:
                 password_have_error = True
                 reset_entry.delete()
-                messages.error(request, f"Reset Link has expired")
+                messages.error(request, f"Reset Link has expired", extra_tags="reset-pass-msg")
                 
             if not password_have_error:
                 user = reset_entry.user
@@ -178,13 +179,13 @@ def reset_password(request, reset_id):
                 user.save()
                 reset_entry.delete()
 
-                messages.success(request, f"Password successfully reset")
+                messages.success(request, f"Password successfully reset", extra_tags="reset-pass-msg")
                 return redirect('login-page')
             else:
                 return redirect('reset-password', reset_id=str(reset_entry.reset_id))
 
     except models.PasswordReset.DoesNotExist:
-        messages.error(request, f"Invalid reset id")
+        messages.error(request, f"Invalid reset id", extra_tags="reset-pass-msg")
         return redirect('forgot-password')
     
     return render(request, 'store/authentication-page/reset-password/reset-password.html', {'reset_id': str(reset_entry.reset_id)})
@@ -203,10 +204,10 @@ def change_password_view(request):
 
             if new_password != confirm_password:
                 password_have_error = True
-                messages.error(request, f"Password does not match")
+                messages.error(request, f"Password does not match", extra_tags="change-pass-msg")
             if len(new_password) < 8:
                 password_have_error = True
-                messages.error(request, f"Password must atleast 8 characters")
+                messages.error(request, f"Password must atleast 8 characters", extra_tags="change-pass-msg")
 
             if not password_have_error:
                 user.set_password(new_password)
@@ -214,7 +215,7 @@ def change_password_view(request):
                 login(request, user)
                 return redirect('profile-page')
         else:
-            messages.error(request, 'Incorrect password.')
+            messages.error(request, 'Incorrect password.', extra_tags="change-pass-msg")
 
     return render(request, 'store/authentication-page/reset-password/change-password.html')
 
@@ -531,8 +532,7 @@ def checkout_view(request):
 
     if request.method == 'POST':
         if not user_address.full_name or not user_address.address:
-            print('hello world')
-            messages.error(request, "Please add a shipping address before placing your order.")
+            messages.error(request, "Please add a shipping address before placing your order.", extra_tags="checkout-msg")
             return redirect('checkout-view')
         
         notes = request.POST.get('notes')
@@ -658,7 +658,7 @@ def apply_promo(request):
         if not code:
             request.session.pop('promo_code', None)
             request.session.pop('promo_discount', None)
-            messages.info(request, "Promo code cleared.")
+            messages.info(request, "Promo code cleared.", extra_tags="cart-msg")
             return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
 
         try:
@@ -669,11 +669,11 @@ def apply_promo(request):
                 # Store promo code and discount percentage in session for cart view
                 request.session['promo_code'] = promo.code
                 request.session['promo_discount'] = promo.discount_percentage
-                messages.success(request, f"Promo code '{promo.code}' applied successfully! You get a {promo.discount_percentage}% discount.")
+                messages.success(request, f"Promo code '{promo.code}' applied successfully! You get a {promo.discount_percentage}% discount.", extra_tags="cart-msg")
             else:
-                messages.error(request, "Promo code is expired, inactive, or you've exceeded the usage limit.")
+                messages.error(request, "Promo code is expired, inactive, or you've exceeded the usage limit.", extra_tags="cart-msg")
         except models.PromoCode.DoesNotExist:
-            messages.error(request, "Invalid promo code.")
+            messages.error(request, "Invalid promo code.", extra_tags="cart-msg")
     
     return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
 
@@ -705,7 +705,7 @@ def contact(request):
             fail_silently=False,
         )
 
-        messages.success(request, "Thank you for contacting us. We will get back to you shortly!")
+        messages.success(request, "Thank you for contacting us. We will get back to you shortly!", extra_tags="contact-msg")
         return redirect('contact')
 
     return render(request, 'store/contact.html')
@@ -753,3 +753,22 @@ def add_review(request, product_id):
         product_review.save()
 
     return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))
+
+@login_required(login_url='/login')
+def orders_view(request):
+    orders = models.Order.objects.filter(user=request.user)
+
+    return render(request, 'store/orders.html', {'orders': orders,})
+
+@require_POST
+@login_required(login_url='/login')
+def subscribe_email(request):
+    user_email = request.user.email
+
+    if request.method == "POST":
+        sub = models.Subscriber.objects.filter(email=user_email).first()
+        if sub:
+            sub.delete()
+        else:
+            models.Subscriber.objects.create(email=user_email)
+        return redirect(request.META.get('HTTP_REFERER', 'default-redirect-url'))

@@ -10,8 +10,8 @@ from store.models import Product, Category
 
 def fetch_products():
     urls = [
-        'https://dummyjson.com/products',
         'https://fakestoreapi.com/products',
+        'https://dummyjson.com/products',
         'https://api.escuelajs.co/api/v1/products', # Had a problem in api itself
     ]
 

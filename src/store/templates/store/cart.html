@@ -2,9 +2,10 @@
 
 {% block content %}
 <div class="container py-5">
-  {% if messages %}
-            <div class="container mb-4">
-                {% for message in messages %}
+    {% if messages %}
+        <div class="container mb-4">
+            {% for message in messages %}
+                {% if 'cart-msg' in message.extra_tags %}
                     <div class="alert {{ message.tags }} alert-dismissible fade show shadow-sm border-0" role="alert">
                         <div class="d-flex align-items-center">
                             {% if message.tags == 'success' %}
@@ -18,9 +19,10 @@
                         </div>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                {% endfor %}
-            </div>
-  {% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <div class="row">
       <!-- Cart Items (Left Column) -->

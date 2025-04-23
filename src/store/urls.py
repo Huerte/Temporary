@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 
+
 urlpatterns = [
     path('', views.home, name='store_home'),
     path('about/', views.about_view, name='about'),
@@ -28,6 +29,8 @@ urlpatterns = [
     path('remove-from-wishlist/<str:product_id>/', views.remove_from_wishlist, name='remove-from-wishlist'),
     path('wishlist-page/', views.wishlist_view, name='wishlist-page'),
     path('wishlist-toggle/', views.toggle_wishlist, name='toggle-wishlist'),
+    path('orders-page/', views.orders_view, name='orders-page'),
+    path("subscribe/", views.subscribe_email, name="subscribe"),
 
     #Authentication Links
     path('login/', views.login_user, name='login-page'),

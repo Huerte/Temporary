@@ -162,35 +162,6 @@
 </section>
 
 <script>
-  {% comment %} document.addEventListener("DOMContentLoaded", function () {
-    const buttons = document.querySelectorAll(".view-toggle button");
-    const items = document.querySelectorAll(".product-item");
-
-    buttons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        buttons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        const view = btn.dataset.view;
-
-        items.forEach(item => {
-          const gridCard = item.querySelector(".product-card-grid");
-          const columnCard = item.querySelector(".product-card-column");
-
-          if (view === "grid") {
-            item.classList.remove("col-12");
-            item.classList.add("col-sm-6", "col-md-4");
-            gridCard.classList.remove("d-none");
-            columnCard.classList.add("d-none");
-          } else {
-            item.classList.remove("col-sm-6", "col-md-4");
-            item.classList.add("col-12");
-            gridCard.classList.add("d-none");
-            columnCard.classList.remove("d-none");
-          }
-        });
-      });
-    });
-  }); {% endcomment %}
 
     document.addEventListener("DOMContentLoaded", function () {
       const buttons = document.querySelectorAll(".view-toggle button");

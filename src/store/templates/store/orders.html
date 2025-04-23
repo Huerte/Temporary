@@ -1,0 +1,110 @@
+{% extends 'store/index.html' %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+{% block content %}
+<style>
+  .order-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    gap: 1.5rem;
+  }
+
+  .order-summary {
+    flex-grow: 1;
+  }
+
+  .order-meta {
+    min-width: 200px;
+    text-align: right;
+  }
+
+  .order-id {
+    font-weight: 600;
+    color: #212529;
+  }
+
+  .order-status {
+    text-transform: capitalize;
+    font-weight: 500;
+  }
+
+  .order-link:hover {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .text-strike {
+    text-decoration: line-through;
+    font-size: 0.9rem;
+  }
+
+  .status-pill {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+  }
+
+  .status-PENDING { background-color: #ffc107; color: #212529; }
+  .status-PROCESSING { background-color: #0d6efd; color: #fff; }
+  .status-SHIPPED { background-color: #20c997; color: #fff; }
+  .status-DELIVERED { background-color: #198754; color: #fff; }
+</style>
+
+<nav aria-label="breadcrumb" class="bg-light py-3 mb-4 border-bottom">
+  <div class="container">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="{% url 'store_home' %}"><i class="fas fa-home me-1"></i>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">My Orders</li>
+    </ol>
+  </div>
+</nav>
+
+<section class="py-5">
+  <div class="container">
+    <h4 class="fw-semibold mb-4">My Orders</h4>
+
+    {% if orders %}
+      <div class="d-flex flex-column gap-4">
+        {% for order in orders %}
+          <a href="{% url 'order-details-view' order.id %}" class="order-link">
+            <div class="order-card shadow-sm">
+              <div>
+                <i class="fas fa-box fa-2x text-primary"></i>
+              </div>
+              <div class="order-summary">
+                <div class="order-id mb-1">Order #{{ order.id }}</div>
+                <div class="small text-muted">Placed on {{ order.created_at|date:"M d, Y" }}</div>
+                <div class="mt-2">
+                  {% for item in order.order_items.all %}
+                    <span class="badge bg-light border text-dark me-2 mb-1">{{ item.product.name }} × {{ item.quantity }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="order-meta">
+                <div class="mb-1 fw-bold text-primary">${{ order.total_price|floatformat:2 }}</div>
+                <div class="status-pill status-{{ order.status }}">{{ order.status }}</div>
+                {% if order.is_paid %}
+                  <div class="text-success mt-1 small"><i class="fas fa-check-circle me-1"></i>Paid</div>
+                {% else %}
+                  <div class="text-danger mt-1 small"><i class="fas fa-exclamation-circle me-1"></i>Unpaid</div>
+                {% endif %}
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-5">
+        <i class="fas fa-receipt fa-3x text-muted mb-4"></i>
+        <h4 class="fw-bold text-muted">No orders found.</h4>
+        <p class="text-muted">Once you place an order, it will appear here.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

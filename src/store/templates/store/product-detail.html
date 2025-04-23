@@ -326,12 +326,23 @@
                         <div class="mb-4 p-4 bg-light rounded">
                             <h5 class="mb-3">Write a Review</h5>
                             {% if messages %}
-                                <div class="mb-3">
+                                <div class="container mb-4">
                                     {% for message in messages %}
-                                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                        {{ message }}
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
+                                        {% if 'detail-review-msg' in message.extra_tags %}
+                                            <div class="alert {{ message.tags }} alert-dismissible fade show shadow-sm border-0" role="alert">
+                                                <div class="d-flex align-items-center">
+                                                    {% if message.tags == 'success' %}
+                                                        <i class="fas fa-check-circle me-2"></i>
+                                                    {% elif message.tags == 'error' %}
+                                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                                    {% else %}
+                                                        <i class="fas fa-info-circle me-2"></i>
+                                                    {% endif %}
+                                                    <div>{{ message }}</div>
+                                                </div>
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        {% endif %}
                                     {% endfor %}
                                 </div>
                             {% endif %}

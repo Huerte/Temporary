@@ -22,11 +22,6 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = '50wte%(wqoan^rk1d102aozvhwztks_gh^k_iv&4rtc&@62ei('
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -186,3 +181,7 @@ SOCIALACCOUNT_AUTO_SIGNUP = True
 ACCOUNT_EMAIL_UNIQUE = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
