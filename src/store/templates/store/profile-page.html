@@ -14,12 +14,17 @@
         <div class="col-lg-4">
             <div class="card h-100 p-4 text-center">
                 <!-- User Avatar -->
-                <img 
-                    src="{% if user_address.user_profile %}{{ user_address.user_profile.url }}{% else %}https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png{% endif %}" 
-                    alt="Profile Picture"
-                    class="rounded-circle mb-3 shadow-sm mx-auto d-block" 
-                    style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #e9ecef;"
-                >
+                {% if user_address.user_profile and user_address.user_profile.url %}
+                    <img src="{{ user_address.user_profile.url }}" 
+                        alt="Profile Picture"
+                        class="rounded-circle mb-3 shadow-sm mx-auto d-block"
+                        style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #e9ecef;">
+                {% else %}
+                    <img src="https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png" 
+                        alt="Profile Picture"
+                        class="rounded-circle mb-3 shadow-sm mx-auto d-block"
+                        style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #e9ecef;">
+                {% endif %}
 
                 <!-- Username -->
                 <h3 class="fw-bold mb-0">{{ user.username }}</h3>

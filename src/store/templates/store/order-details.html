@@ -20,22 +20,177 @@
     h4.fw-bold {
         margin-bottom: 20px;
     }
+
+    .order-tracker {
+            margin: 30px 0;
+            padding: 20px 0;
+            position: relative;
+        }
+        .step-container {
+            position: relative;
+            text-align: center;
+        }
+        .step-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            position: relative;
+            z-index: 2;
+            border: 3px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        .step-circle.active {
+            background-color: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+            box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+        }
+        .step-circle.completed {
+            background-color: #198754;
+            color: white;
+            border-color: #198754;
+        }
+        .step-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        .step-date {
+            font-size: 0.75rem;
+            color: #6c757d;
+        }
+        .progress-track {
+            position: absolute;
+            top: 45px;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+        .progress-fill {
+            position: absolute;
+            top: 45px;
+            left: 0;
+            height: 6px;
+            background-color: #198754;
+            z-index: 1;
+            transition: width 0.8s ease;
+        }
+        /* Progress percentages for different stages */
+        .progress-fill.step-1 { width: 12.5%; }  /* Halfway to step 2 */
+        .progress-fill.step-2 { width: 37.5%; }  /* Halfway between steps 2 and 3 */
+        .progress-fill.step-3 { width: 62.5%; }  /* Halfway between steps 3 and 4 */
+        .progress-fill.step-4 { width: 87.5%; }  /* Halfway between steps 4 and 5 */
+        .progress-fill.step-5 { width: 100%; }   /* Completed */
+        
+        .step-connector {
+            position: absolute;
+            top: 25px;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: 1;
+            width: 100%;
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 767px) {
+            .step-title {
+                font-size: 0.7rem;
+            }
+            .step-date {
+                font-size: 0.65rem;
+            }
+            .step-circle {
+                width: 40px;
+                height: 40px;
+            }
+            .progress-track, .progress-fill {
+                top: 40px;
+            }
+        }
 </style>
 
 <div class="container py-5">
-    <nav aria-label="breadcrumb" class="bg-light py-3 mb-4 border-bottom">
-        <div class="container">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{% url 'profile-page' %}">Profile</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Order Details</li>
-            </ol>
-        </div>
-    </nav>
-
     <div class="text-center mb-5">
         <h1 class="display-5 fw-bold">Order #{{ order.id }}</h1>
         <p class="text-muted">Review the details of your order</p>
     </div>
+
+    <!-- Order Status Tracker -->
+        <div class="order-tracker">
+            <!-- Main progress track (background) -->
+            <div class="progress-track"></div>
+            
+            <!-- Filled progress track (shows completion) -->
+            <div class="progress-fill step-2"></div>
+            
+            <div class="row">
+                <!-- Step 1: Order Placed -->
+                <div class="col step-container">
+                    <div class="status-badge">
+                        <span class="badge bg-success">Completed</span>
+                    </div>
+                    <div class="step-circle completed">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="step-title">Order Placed</div>
+                    <div class="step-date">Apr 21, 2025</div>
+                </div>
+                
+                <!-- Step 2: Processing -->
+                <div class="col step-container">
+                    <div class="status-badge">
+                        <span class="badge bg-primary">In Progress</span>
+                    </div>
+                    <div class="step-circle active">
+                        <i class="fas fa-cog fa-spin"></i>
+                    </div>
+                    <div class="step-title">Processing</div>
+                    <div class="step-date">In progress</div>
+                </div>
+                
+                <!-- Step 3: Packing -->
+                <div class="col step-container">
+                    <div class="step-circle">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="step-title">Packing</div>
+                    <div class="step-date">-</div>
+                </div>
+                
+                <!-- Step 4: Shipped -->
+                <div class="col step-container">
+                    <div class="step-circle">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <div class="step-title">Shipped</div>
+                    <div class="step-date">-</div>
+                </div>
+                
+                <!-- Step 5: Delivered -->
+                <div class="col step-container">
+                    <div class="step-circle">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="step-title">Delivered</div>
+                    <div class="step-date">-</div>
+                </div>
+            </div>
+        </div>
 
     <!-- Order Summary -->
     <div class="card mb-4 p-4">

@@ -34,6 +34,7 @@ urlpatterns = [
 
     #Authentication Links
     path('login/', views.login_user, name='login-page'),
+
     path('register/', views.register_user, name='register-page'),
     path('logout/', views.logout_view, name='logout'),
     
