@@ -20,10 +20,12 @@
                         class="rounded-circle mb-3 shadow-sm mx-auto d-block"
                         style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #e9ecef;">
                 {% else %}
-                    <img src="https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png" 
-                        alt="Profile Picture"
-                        class="rounded-circle mb-3 shadow-sm mx-auto d-block"
-                        style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #e9ecef;">
+                <span 
+                    class="rounded-circle mx-auto d-flex justify-content-center align-items-center" 
+                    style="width: 150px; height: 150px; background-color: #3498db; color: white; font-weight: bold; 
+                           border: 1px solid rgb(158, 158, 158); font-size: 40px;">
+                    {{ user.username|slice:":1"|upper }}
+                </span>
                 {% endif %}
 
                 <!-- Username -->

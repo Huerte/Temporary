@@ -266,11 +266,11 @@
                 </div>
                 <div class="product-price">
                   {% if product.is_on_sale %}
-                    <span class="current-price">${{ product.discounted_price }}</span>
-                    <span class="original-price">${{ product.price }}</span>
+                    <span class="current-price">{{ product.price_display }}</span>
+                    <span class="original-price">{{ product.price }}</span>
                     <span class="discount-percent">-{{ product.discount_percentage }}%</span>
                   {% else %}
-                    <span class="current-price">${{ product.price }}</span>
+                    <span class="current-price">{{ product.price_display }}</span>
                   {% endif %}
                 </div>
                 <div class="product-availability {% if product.stock <= 5 %}low-stock{% else %}in-stock{% endif %}">

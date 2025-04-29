@@ -18,7 +18,7 @@ from django.http import JsonResponse
 from django.contrib import messages
 from django.utils import timezone
 from django.urls import reverse
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from main import settings
 from . import models
 import pycountry
@@ -81,9 +81,10 @@ def home(request):
 
         return redirect("login-page")
 
-    products = models.Product.objects.all()[
-        :21
-    ]  # products = models.Product.objects.filter(is_featured=True)[:6]
+    products = models.Product.objects.all()[:21]
+
+    for product in products:
+        product.price_display = product.price_in_peso
 
     wishlist_product_ids = []
     subscribed = []
@@ -392,14 +393,22 @@ def product_view(request, category=None):
     products = models.Product.objects.all()
     categories = models.Category.objects.all()
 
-    # Get filters
     selected_category = category or request.GET.get("category")
     search_query = request.GET.get("q")
-    min_price = Decimal(request.GET.get("min_price", "0"))
-    max_price = Decimal(request.GET.get("max_price", "1000"))
+
+    # Validate and parse min_price and max_price
+    try:
+        min_price = Decimal(request.GET.get("min_price", "0"))
+    except (ValueError, InvalidOperation):
+        min_price = Decimal("0")
+
+    try:
+        max_price = Decimal(request.GET.get("max_price", "1000"))
+    except (ValueError, InvalidOperation):
+        max_price = Decimal("1000")
+
     sort_option = request.GET.get("sort", "featured")
 
-    # Base filters
     if selected_category and selected_category.lower() != "all":
         products = products.filter(category__name=selected_category)
 
@@ -408,128 +417,24 @@ def product_view(request, category=None):
             Q(name__icontains=search_query) | Q(description__icontains=search_query)
         )
 
-    # Annotate discounted price & average rating
-    discount_expr = ExpressionWrapper(
-        F("price") * (Value(100) - F("discount_percentage")) / Value(100),
-        output_field=DecimalField(max_digits=8, decimal_places=2),
-    )
-    products = products.annotate(
-        discounted_price_db=discount_expr, avg_rating=Avg("reviews__rating")
-    )
-
-    # Price range filter
-    products = products.filter(
-        discounted_price_db__gte=min_price, discounted_price_db__lte=max_price
-    )
-
-    # Rating filters
-    rating_q = Q()
-    if "five_star" in request.GET:
-        rating_q |= Q(avg_rating__gte=5)
-    if "four_star" in request.GET:
-        rating_q |= Q(avg_rating__gte=4)
-    if "three_star" in request.GET:
-        rating_q |= Q(avg_rating__gte=3)
-
-    if rating_q:
-        products = products.filter(rating_q)
-
-    # Sorting logic
-    if sort_option == "price-asc":
-        products = products.order_by("discounted_price_db")
-        sort_label = "Price: Low to High"
-    elif sort_option == "price-desc":
-        products = products.order_by("-discounted_price_db")
-        sort_label = "Price: High to Low"
-    elif sort_option == "rating":
-        products = products.order_by("-avg_rating")
-        sort_label = "Rating"
-    elif sort_option == "newest":
-        products = products.order_by("-created_at")
-        sort_label = "Newest"
-    else:
-        products = products.order_by("-is_featured")
-        sort_label = "Featured"
-
-    # Pagination
-    paginator = Paginator(products, 9)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
-
-    for product in page_obj:
-        product.stars_range = range(1, 6)
-
-    wishlist_product_ids = []
-    if request.user.is_authenticated:
-        wishlist_product_ids = models.ProductWishlist.objects.filter(
-            user=request.user
-        ).values_list("product_id", flat=True)
+    for product in products:
+        product.price_display = product.price_in_peso
 
     context = {
-        "products": page_obj.object_list,
+        "products": products,
         "categories": categories,
         "selected_category": selected_category,
-        "page_obj": page_obj,
-        "show_pagination": paginator.num_pages > 1,
-        "min_price": min_price,
-        "max_price": max_price,
-        "sort_label": sort_label,
-        "sort_option": sort_option,
-        "wishlist_product_ids": wishlist_product_ids,
     }
 
     return render(request, "store/products.html", context)
 
 
 def product_details(request, product_id):
-
     product = get_object_or_404(models.Product, id=product_id)
-    product_reviews = models.ProductReview.objects.filter(product=product)
-
-    wishlist_product_ids = []
-    cart_item_exist = []
-    can_review = []
-    if request.user.is_authenticated:
-        wishlist_product_ids = models.ProductWishlist.objects.filter(
-            user=request.user
-        ).values_list("product_id", flat=True)
-        cart_item_exist = models.CartItem.objects.filter(
-            user=request.user, product=product
-        ).exists()
-        can_review = models.OrderItem.objects.filter(
-            order__user=request.user, order__status="DELIVERED", product=product
-        ).exists()
-
-    # Savings = original price - discounted price
-    savings = product.price - product.discounted_price
-
-    rounded_rating = round(product.average_ratings or 0, 1)
-    full_stars = int(rounded_rating)
-    half_star = 1 if (rounded_rating - full_stars) >= 0.5 else 0
-    empty_stars = 5 - full_stars - half_star
-
-    related_products = models.Product.objects.filter(category=product.category).exclude(
-        id=product.id
-    )[:4]
-
-    action = request.POST.get("action")
-    if action == "add":
-        add_to_wishlist(product_id)
-    elif action == "remove":
-        remove_from_wishlist(product_id)
+    product.price_display = product.price_in_peso
 
     context = {
         "product": product,
-        "product_reviews": product_reviews,
-        "cart_item_exist": cart_item_exist,
-        "savings": savings,
-        "rounded_rating": rounded_rating,
-        "full_stars": range(full_stars),
-        "half_star": half_star,
-        "empty_stars": range(empty_stars),
-        "can_review": can_review,
-        "related_products": related_products,
-        "wishlist_product_ids": wishlist_product_ids,
     }
     return render(request, "store/product-detail.html", context)
 
@@ -538,8 +443,15 @@ def product_details(request, product_id):
 def cart_view(request):
     cart_items = models.CartItem.objects.filter(user=request.user)
 
+    # Ensure prices are displayed in pesos and handle invalid values
+    for item in cart_items:
+        try:
+            item.product.price_display = Decimal(str(item.product.price)) * Decimal("59")
+        except (InvalidOperation, TypeError, ValueError):
+            item.product.price_display = Decimal("0")
+
     sub_total = sum(
-        item.product.discounted_price * item.quantity for item in cart_items
+        item.product.price_display * item.quantity for item in cart_items
     )
 
     promo_discount = request.session.get("promo_discount", 0)

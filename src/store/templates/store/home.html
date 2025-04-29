@@ -8,7 +8,7 @@
 </style>
 
 <!-- Hero Carousel Section -->
-<div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel" data-bs-interval="2000" data-bs-pause="false">
+<div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel" data-bs-interval="5000" data-bs-pause="false">
     <!-- Carousel Indicators -->
     <div class="carousel-indicators">
         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -272,11 +272,11 @@
 
                         <div class="product-price">
                             {% if product.is_on_sale %}
-                                <span class="current-price">${{ product.discounted_price }}</span>
-                                <span class="original-price">${{ product.price }}</span>
+                                <span class="current-price">{{ product.price_display }}</span>
+                                <span class="original-price">{{ product.price }}</span>
                                 <span class="discount-percent">-{{ product.discount_percentage }}%</span>
                             {% else %}
-                                <span class="current-price">${{ product.price }}</span>
+                                <span class="current-price">{{ product.price_display }}</span>
                             {% endif %}
                         </div>
 

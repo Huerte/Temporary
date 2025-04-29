@@ -36,30 +36,30 @@
   
             <div class="cart-items">
               <!-- Table Headers -->
-              <div class="d-none d-md-flex row py-2 mb-3 bg-light rounded">
-                <div class="col-md-5"><span class="fw-bold">Product</span></div>
-                <div class="col-md-2 text-center"><span class="fw-bold">Unit Price</span></div>
-                <div class="col-md-2 text-center"><span class="fw-bold">Quantity</span></div>
-                <div class="col-md-2 text-center"><span class="fw-bold">Subtotal</span></div>
-                <div class="col-md-1 text-end"><span class="fw-bold">Actions</span></div>
-              </div>
+              <div class="d-none d-md-flex row py-2 mb-3 bg-light rounded fw-bold text-dark text-center align-items-center">
+                <div class="col-md-4 text-start">Product</div>
+                <div class="col-md-2">Unit Price</div>
+                <div class="col-md-2">Quantity</div>
+                <div class="col-md-2">Subtotal</div>
+                <div class="col-md-2">Actions</div>
+              </div>              
   
               {% for item in cart_items %}
                 <div class="row mb-4 pb-3 border-bottom">
-                  <div class="col-md-5 mb-3 mb-md-0">
+                  <div class="col-md-4 mb-3 mb-md-0">
                     <div class="d-flex">
-                      <div class="me-3">
+                      <div>
                         <img src="{{ item.product.image }}" alt="{{ item.product.name }}" class="cart-item-img">
                       </div>
                       <div>
-                        <h5 class="mb-1">{{ item.product.name }}</h5>
+                        <h6 class="mb-1 fw-bold">{{ item.product.name }}</h5>
                         <span class="category-badge">{{ item.product.category.name }}</span>
                       </div>
                     </div>
                   </div>
 
                   <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
-                    <span class="price-tag">₱{{ item.product.price }}</span>
+                    <span class="price-tag">₱{{ item.product.price_display|floatformat:2 }}</span>
                   </div>
 
                   <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
@@ -74,10 +74,10 @@
                   </div>
                   
                   <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
-                    <span class="price-tag">₱{{ item.get_total }}</span>
+                    <span class="price-tag">₱{{ item.product.price|floatformat:2|add:item.quantity|floatformat:2 }}</span>
                   </div>
 
-                  <div class="col-6 col-md-1 text-center d-flex align-items-center justify-content-center">
+                  <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
                     <form class="remove-cart-form" data-product-id="{{ item.product.id }}" method="post" action="{% url 'remove-from-cart' item.product.id %}">
                       {% csrf_token %}
                       <button type="button" class="btn fw-bold btn-sm delete-cart-btn">Delete</button>

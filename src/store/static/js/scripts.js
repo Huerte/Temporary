@@ -184,6 +184,50 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+// ===============================
+// Live Quantity Update for Subtotal
+// ===============================
+document.querySelectorAll(".quantity-input").forEach((input) => {
+  const debounce = (fn, delay) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => fn(...args), delay);
+    };
+  };
+
+  const updateSubtotal = debounce(async (input) => {
+    const form = input.closest("form");
+    const url = form.action;
+    const formData = new FormData(form);
+
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+        },
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const subtotalElement = form.closest(".row").querySelector(".price-tag");
+        if (subtotalElement) {
+          subtotalElement.textContent = `₱${data.subtotal.toFixed(2)}`;
+        }
+      } else {
+        console.error("Failed to update subtotal");
+      }
+    } catch (err) {
+      console.error("Error updating subtotal:", err);
+    }
+  }, 500);
+
+  input.addEventListener("input", () => updateSubtotal(input));
+});
+
 // product advertisement section
 function startCountdowns() {
   const countdownElements = document.querySelectorAll('.countdown');
@@ -226,5 +270,3 @@ document.addEventListener("DOMContentLoaded", startCountdowns);
 // products.html
 
 // dre ibutang
-  
-// 

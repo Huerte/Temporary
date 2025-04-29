@@ -40,6 +40,12 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+    
+    @property
+    def price_in_peso(self):
+        price_in_peso = self.price * Decimal(59.41)
+        formatted_price = f"₱{price_in_peso.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):,}"
+        return formatted_price
 
     @property
     def is_on_sale(self):

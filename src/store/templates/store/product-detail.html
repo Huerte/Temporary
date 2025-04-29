@@ -111,15 +111,15 @@
                             <div class="mb-4">
                                 {% if product.is_on_sale %}
                                     <div class="d-flex align-items-center">
-                                        <h3 class="fw-bold text-danger mb-0">${{ product.discounted_price }}</h3>
-                                        <span class="text-muted text-decoration-line-through fs-5 ms-2">${{ product.price }}</span>
+                                        <h3 class="fw-bold text-danger mb-0">{{ product.price_display }}</h3>
+                                        <span class="text-muted text-decoration-line-through fs-5 ms-2">{{ product.price }}</span>
                                         <span class="badge bg-danger ms-2">SALE</span>
                                     </div>
                                     <div class="text-success mt-1">
-                                        <small>You save: ${{ savings|floatformat:2 }}</small>
+                                        <small>You save: {{ savings|floatformat:2 }}</small>
                                     </div>
                                 {% else %}
-                                    <h3 class="fw-bold mb-0">${{ product.price }}</h3>
+                                    <h3 class="fw-bold mb-0">{{ product.price_display }}</h3>
                                 {% endif %}
 
                             </div>
