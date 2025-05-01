@@ -190,5 +190,5 @@ SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-ALLOWED_HOSTS = ['*']  # Replace '*' with your Render domain once deployed
+DEBUG = False
+ALLOWED_HOSTS = ['*']
