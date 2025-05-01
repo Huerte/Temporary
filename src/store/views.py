@@ -137,29 +137,45 @@ def get_color(username):
     return colors[hash_val % len(colors)]
 
 
+# def login_user(request):
+#     if request.method == "POST":
+#         username = request.POST.get("username", "").strip()
+#         password = request.POST.get("password", "")
+#         context = {"username": username}
+
+#         if not username or not password:
+#             messages.error(request, "Both fields are required.", extra_tags="login-msg")
+#             return render(request, "store/authentication-page/login_page.html", context)
+
+#         if not User.objects.filter(username=username).exists():
+#             messages.error(request, "User does not exist.", extra_tags="login-msg")
+#             return render(request, "store/authentication-page/login_page.html", context)
+
+#         user = authenticate(request, username=username, password=password)
+#         if user:
+#             login(request, user)
+#             return redirect("store_home")
+#         else:
+#             messages.error(request, "Incorrect password.", extra_tags="login-msg")
+#             return render(request, "store/authentication-page/login_page.html", context)
+
+#     return render(
+#         request, "store/authentication-page/login_page.html", {"hide_login_modal": True}
+#     )
+
+from django.contrib.auth.forms import AuthenticationForm
+
 def login_user(request):
     if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            messages.error(request, "User does not exists.", extra_tags="login-msg")
-            return redirect("login-page")
-
-        user = authenticate(request, username=username, password=password)
-        if user:
-            login(request, user)
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            login(request, form.get_user())
             return redirect("store_home")
-        else:
-            messages.error(
-                request, "Username or Password does not exists", extra_tags="login-msg"
-            )
-
-    return render(
-        request, "store/authentication-page/login_page.html", {"hide_login_modal": True}
-    )
+    else:
+        form = AuthenticationForm()
+    return render(request, 
+                  "store/authentication-page/login_page.html", 
+                  {"form": form, "hide_login_modal": True})
 
 
 def register_user(request):
