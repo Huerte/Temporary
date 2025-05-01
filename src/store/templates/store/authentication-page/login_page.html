@@ -12,11 +12,11 @@
     <!-- Left Panel -->
     <div class="col-lg-6 d-flex flex-column p-4 gap-3">
       <!-- Logo -->
-      <div class="d-flex justify-content-center justify-content-lg-start align-items-center gap-2 mb-4">
-        <a class="navbar-brand d-flex align-items-center fw-bold fs-4 text-primary" href="{% url 'store_home' %}">
-            <i class="fas fa-shopping-cart me-2"></i> ShopNow
-        </a>
-      </div>
+    <div class="d-flex justify-content-center justify-content-lg-start align-items-center gap-2 mb-4">
+    <a class="navbar-brand d-flex align-items-center fw-bold fs-4 text-primary" href="{% url 'store_home' %}">
+      <i class="fas fa-shopping-cart me-2"></i> ShopNow
+    </a>
+    </div>
 
       <!-- Login Form Centered -->
       <div class="flex-grow-1 d-flex align-items-center justify-content-center">
@@ -53,7 +53,7 @@
             </div>
 
             <div class="d-grid mb-3">
-              <button type="submit" class="btn btn-primary">Login</button>
+              <button type="submit" class="btn btn-primary" id="scrollTarget">Login</button>
             </div>
             </form>
 
@@ -79,7 +79,7 @@
 
             <div class="text-center small">
               Don’t have an account?
-              <a href="{% url 'register-page' %}" class="text-decoration-underline">Sign up</a>
+              <a href="{% url 'register-page' %}" class="text-decoration-underline target">Sign up</a>
             </div>
         </div>
       </div>
@@ -92,4 +92,13 @@
     </div>
   </div>
 </div>
+
+   <script>
+      window.onload = function() {
+        const target = document.querySelector('#scrollTarget');
+        if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      };
+    </script>
 {% endblock %}
