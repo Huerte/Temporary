@@ -36,27 +36,6 @@
 
 {% block content %}
 <div class="login-wrapper">
-    {% if messages %}
-        <div class="container mb-4">
-            {% for message in messages %}
-                {% if 'login-msg' in message.extra_tags %}
-                    <div class="alert {{ message.tags }} alert-dismissible fade show shadow-sm border-0" role="alert">
-                        <div class="d-flex align-items-center">
-                            {% if message.tags == 'success' %}
-                                <i class="fas fa-check-circle me-2"></i>
-                            {% elif message.tags == 'error' %}
-                                <i class="fas fa-exclamation-circle me-2"></i>
-                            {% else %}
-                                <i class="fas fa-info-circle me-2"></i>
-                            {% endif %}
-                            <div>{{ message }}</div>
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-    {% endif %}
 
     <!-- Slide Panel (Left) -->
     <div class="left-panel col-lg-6 d-none d-lg-block p-0">
@@ -73,6 +52,30 @@
     <!-- Login Form (Right) -->
     <div class="right-panel col-lg-6 col-12">
         <div class="form-container">
+
+            <!-- Message Notifications -->
+            {% if messages %}
+                <div class="container mb-4">
+                    {% for message in messages %}
+                        {% if 'login-msg' in message.extra_tags %}
+                            <div class="alert {{ message.tags }} alert-dismissible fade show shadow-sm border-0" role="alert">
+                                <div class="d-flex align-items-center">
+                                    {% if message.tags == 'success' %}
+                                        <i class="fas fa-check-circle me-2"></i>
+                                    {% elif message.tags == 'error' %}
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                    {% else %}
+                                        <i class="fas fa-info-circle me-2"></i>
+                                    {% endif %}
+                                    <div>{{ message }}</div>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <!-- End of Message Notifications -->
 
             <h3 class="mb-4 text-center fw-bold">Login</h3>
             <form action="{% url 'login-page' %}" method="POST">

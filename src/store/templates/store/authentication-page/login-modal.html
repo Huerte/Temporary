@@ -20,20 +20,20 @@
             <p class="text-muted small">Login to your ShopNow account</p>
           </div>
 
-          <form id="loginForm" action="{% url 'store_home' %}" method="POST">
+            <form id="loginForm" action="{% url 'login-page' %}" method="POST">
             {% csrf_token %}
 
             <!-- Email -->
             <div class="mb-3">
               <label for="username" class="form-label fw-semibold">Username</label>
-              <input type="text" name="username" id="username" class="form-control" placeholder="" required>
+              <input type="text" name="username" id="username" class="form-control" placeholder="" value="{{ request.POST.username|default:'' }}" required>
             </div>
 
             <!-- Password -->
             <div class="mb-3">
               <div class="d-flex justify-content-between align-items-center">
-                <label for="password" class="form-label fw-semibold mb-0">Password</label>
-                <a href="{% url 'forgot-password' %}" class="text-decoration-underline small">Forgot your password?</a>
+              <label for="password" class="form-label fw-semibold mb-0">Password</label>
+              <a href="{% url 'forgot-password' %}" class="text-decoration-underline small">Forgot your password?</a>
               </div>
               <input type="password" name="password" id="password" class="form-control" required>
             </div>
@@ -50,27 +50,27 @@
 
             <!-- Social Buttons -->
             <div class="d-flex justify-content-between gap-2 mb-3">
-                <a href="{% provider_login_url 'facebook' %}" class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center">
-                <i class="fab fa-facebook-f me-2"></i> <span class="d-none d-sm-inline">Facebook</span>
-                </a>
-                <a href="{% provider_login_url 'google' %}" class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center">
-                <i class="fab fa-google me-2"></i> <span class="d-none d-sm-inline">Google</span>
-                </a>
+              <a href="{% provider_login_url 'facebook' %}" class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center">
+              <i class="fab fa-facebook-f me-2"></i> <span class="d-none d-sm-inline">Facebook</span>
+              </a>
+              <a href="{% provider_login_url 'google' %}" class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center">
+              <i class="fab fa-google me-2"></i> <span class="d-none d-sm-inline">Google</span>
+              </a>
             </div>
 
             <!-- Signup -->
             <div class="text-center mt-4">
               <p class="small mb-1">
-                Don't have an account?
-                <a href="#" class="text-decoration-underline">Sign up</a>
+              Don't have an account?
+              <a href="{% url 'register-page' %}" class="text-decoration-underline">Sign up</a>
               </p>
               <p class="text-muted small">
-                By clicking continue, you agree to our
-                <a href="#" class="text-decoration-underline">Terms of Service</a> and
-                <a href="#" class="text-decoration-underline">Privacy Policy</a>.
+              By clicking continue, you agree to our
+              <a href="#" class="text-decoration-underline">Terms of Service</a> and
+              <a href="#" class="text-decoration-underline">Privacy Policy</a>.
               </p>
             </div>
-          </form>
+            </form>
         </div>
 
         <!-- Illustration Side -->
