@@ -45,7 +45,7 @@ class Product(models.Model):
     def price_in_peso(self):
         PHILIPPINE_PESO_TO_USD = 59.41
         price_in_peso = self.price * Decimal(PHILIPPINE_PESO_TO_USD)
-        return price_in_peso
+        return price_in_peso.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
     @property
     def is_on_sale(self):

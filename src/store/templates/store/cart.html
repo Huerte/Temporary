@@ -49,10 +49,14 @@
                   <div class="col-md-4 mb-3 mb-md-0">
                     <div class="d-flex">
                       <div>
-                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-item-img">
+                        <img src="{{ item.product.image }}" alt="{{ item.product.name }}" class="cart-item-img">
                       </div>
                       <div>
-                        <h6 class="mb-1 fw-bold">{{ item.product.name }}</h5>
+                        <h6 class="mb-1 fw-bold">
+                          <a href="{% url 'product-details' item.product.id %}" class="text-decoration-none text-dark">
+                            {{ item.product.name }}
+                          </a>
+                        </h6>                        
                         <span class="category-badge">{{ item.product.category.name }}</span>
                       </div>
                     </div>

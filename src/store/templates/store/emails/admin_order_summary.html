@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>New Order Notification</title>
+</head>
+<body style="background-color:#f8f9fa; font-family:Arial, sans-serif; margin:0; padding:0;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:30px;">
+    <tr>
+      <td align="center">
+        <table width="700" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:12px; box-shadow:0 0 10px rgba(0,0,0,0.05);">
+          <tr>
+            <td align="center" style="background-color:#0d6efd; color:#ffffff; padding:20px; border-top-left-radius:12px; border-top-right-radius:12px;">
+              <h2 style="margin:0; font-size:20px;">📦 New Order Received</h2>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px;">
+              <h3 style="margin-top:0; color:#0d6efd;">🧾 Order Summary</h3>
+              <ul style="list-style:none; padding:0; margin-bottom:30px;">
+                <li style="padding:10px 0; border-bottom:1px solid #eee;">
+                  🔢 <strong>Order ID:</strong> {{ order.id }}
+                </li>
+                <li style="padding:10px 0; border-bottom:1px solid #eee;">
+                  👤 <strong>User:</strong> {{ order.user.get_full_name }}
+                </li>
+                <li style="padding:10px 0; border-bottom:1px solid #eee;">
+                  📧 <strong>Email:</strong> {{ order.user.email }}
+                </li>
+                <li style="padding:10px 0;">
+                  💳 <strong>Payment Method:</strong> {{ payment_method }}
+                </li>
+              </ul>
+
+              <h3 style="color:#0d6efd;">📦 Ordered Items</h3>
+              {% for item in order_items %}
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:15px; border:1px solid #e9ecef; border-radius:8px;">
+                <tr>
+                  <td style="padding:15px;">
+                    <h4 style="margin:0 0 5px 0; font-size:16px;">📦 {{ item.product.name }} <span style="background-color:#6c757d; color:#fff; padding:2px 8px; border-radius:12px; font-size:12px;">x{{ item.quantity }}</span></h4>
+                    <p style="margin:0;"><strong>Price:</strong> ₱{{ item.total_price }}</p>
+                  </td>
+                </tr>
+              </table>
+              {% endfor %}
+
+              <div style="margin-top:20px;">
+                <p style="margin:10px 0;">🏷️ <strong>Voucher Discount:</strong> ₱{{ voucher_discount }}</p>
+                <p style="margin:10px 0;">🚚 <strong>Shipping:</strong> ₱{{ shipping }}</p>
+                <p style="margin:10px 0;">💰 <strong>Total Price:</strong> ₱{{ total_price }}</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:20px; font-size:14px; color:#6c757d;">
+              &copy; {{ current_year }} ShopNow. All rights reserved.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

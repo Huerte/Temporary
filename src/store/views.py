@@ -188,14 +188,11 @@ def forgot_password(request):
         email = request.POST.get("email")
 
         try:
-            # Check if the user exists
             user = User.objects.get(email__iexact=email)
 
-            # Create a password reset record
             new_password_reset = models.PasswordReset(user=user)
             new_password_reset.save()
 
-            # Generate password reset URL
             password_reset_url = reverse(
                 "reset-password", kwargs={"reset_id": str(new_password_reset.reset_id)}
             )
@@ -203,14 +200,10 @@ def forgot_password(request):
                 f"{request.scheme}://{request.get_host()}{password_reset_url}"
             )
 
-            # Email body (can be plain text or HTML)
-            email_body = f"""
-                <p>Click the link below to reset your password:</p>
-                <p><a href="{full_password_reset_url}">Reset your password</a></p>
-                <p>The link will expire in 10 minutes.</p>
-            """
+            email_body = render_to_string(
+                "emails/password_reset_email.html", {"reset_url": full_password_reset_url}
+            )
 
-            # Send the email
             email_message = EmailMessage(
                 "Reset your password",
                 email_body,
@@ -218,13 +211,10 @@ def forgot_password(request):
                 [email],  # Receiver's email
             )
 
-            # Set content type to HTML for better formatting
             email_message.content_subtype = "html"
 
-            # Send email and handle potential error
             email_message.send(fail_silently=False)
 
-            # Redirect to a page notifying user that an email has been sent
             return redirect("password-reset-sent", reset_id=new_password_reset.reset_id)
 
         except User.DoesNotExist:
@@ -741,7 +731,16 @@ def order_success_page(request):
 
     payment = models.PaymentMethod.objects.filter(order=order).first()
 
+    payment_method = order_data.get("payment_method")
+
     order.generate_next_update_time()
+
+    address = None
+    if request.user.is_authenticated:
+        try:
+            address = models.ShippingAddress.objects.get(user=request.user)
+        except models.ShippingAddress.DoesNotExist:
+            pass
 
     context = {
         "order": order,
@@ -751,7 +750,44 @@ def order_success_page(request):
         "shipping": order_data.get("shipping", 0),
         "total_price": order.total_price,
         "payment": payment,
+        "user_address": address,
+        "payment_method": payment_method,
     }
+    
+    # Admin email (order summary)
+    admin_email_subject = "New Order Received"
+    admin_email_body = render_to_string(
+        "store/emails/admin_order_summary.html", context
+    )
+    admin_email_message = EmailMessage(
+        admin_email_subject,
+        admin_email_body,
+        settings.EMAIL_HOST_USER,
+        [settings.EMAIL_HOST_USER],
+    )
+    admin_email_message.content_subtype = "html"
+    admin_email_message.send(fail_silently=False)
+
+
+    # User email (receipt)
+    user_email_subject = "Your Order Receipt"
+    user_email_body = render_to_string(
+        "store/emails/user_order_receipt.html", context
+    )
+    user_email_message = EmailMessage(
+        user_email_subject,
+        user_email_body,
+        settings.EMAIL_HOST_USER,
+        [request.user.email],
+    )
+    user_email_message.content_subtype = "html"
+    user_email_message.send(fail_silently=False)
+
+    messages.success(
+        request,
+        "Thank you for your order! A receipt has been sent to your email.",
+        extra_tags="order-success-msg",
+    )
 
     return render(request, "store/order-success-page.html", context)
 
@@ -765,13 +801,19 @@ def order_details_view(request, order_id):
 
     promo_code_usage = models.PromoCodeUsage.objects.filter(order=order).first()
     promo_code = promo_code_usage.promo_code if promo_code_usage else None
-
+    address = None
+    if request.user.is_authenticated:
+        try:
+            address = models.ShippingAddress.objects.get(user=request.user)
+        except models.ShippingAddress.DoesNotExist:
+            pass
     context = {
         "order": order,
         "order_items": order.order_items.all(),
         "user_address": user_address,
         "payment": payment_method,
         "promo_code": promo_code,
+        "user_address": address,
     }
 
     return render(request, "store/order-details.html", context)
@@ -821,29 +863,31 @@ def contact(request):
         subject = request.POST.get("subject")
         message = request.POST.get("message")
 
-        email_subject = f"New Contact Form Submission: {subject}"
+        email_subject = f"Contact Form Submission: {subject}"
         email_body = (
-            f"Dear Site Owner,\n\n"
-            f"You have received a new message from your contact form.\n\n"
-            f"Sender's Name: {name}\n"
-            f"Sender's Email: {email}\n"
-            f"Subject: {subject}\n\n"
-            f"Message:\n{message}\n\n"
-            f"Best regards,\n"
-            f"Your Website Contact Form"
+            "Dear Support Team,\n\n"
+            "You have received a new inquiry via the website contact form. Please find the details below:\n\n"
+            f"Name       : {name}\n"
+            f"Email       : {email}\n"
+            f"Subject    : {subject}\n\n"
+            "Message:\n"
+            f"{message.strip()}\n\n"
+            "Please follow up with the sender as appropriate.\n\n"
+            "Regards,\n"
+            "Website Contact Form Notification System"
         )
 
         send_mail(
             email_subject,
             email_body,
-            email,
+            settings.EMAIL_HOST_USER,
             [settings.EMAIL_HOST_USER],
             fail_silently=False,
         )
 
         messages.success(
             request,
-            "Thank you for contacting us. We will get back to you shortly!",
+            "Thank you for reaching out! Our team will respond to your message shortly.",
             extra_tags="contact-msg",
         )
         return redirect("contact")
@@ -909,12 +953,20 @@ def orders_view(request):
     for order in orders:
         if order.next_status_update and timezone.now() >= order.next_status_update:
             order.advance_status()
+    
+    address = None
+    if request.user.is_authenticated:
+        try:
+            address = models.ShippingAddress.objects.get(user=request.user)
+        except models.ShippingAddress.DoesNotExist:
+            pass
 
     return render(
         request,
         "store/orders.html",
         {
             "orders": orders,
+            "user_address": address,
         },
     )
 
