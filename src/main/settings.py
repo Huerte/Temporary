@@ -77,6 +77,8 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {
             'auth_type': 'reauthenticate',
         },
+        'SCOPE': ['email'],
+        'FIELDS': ['email', 'name'],
     },
 }
 
