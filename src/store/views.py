@@ -201,13 +201,13 @@ def forgot_password(request):
             )
 
             email_body = render_to_string(
-                "emails/password_reset_email.html", {"reset_url": full_password_reset_url}
+                "store/emails/password_reset_email.html", {"reset_url": full_password_reset_url}
             )
 
             email_message = EmailMessage(
                 "Reset your password",
                 email_body,
-                settings.EMAIL_HOST_USER,
+                f"ShopNow <{settings.EMAIL_HOST_USER}>",
                 [email],  # Receiver's email
             )
 
@@ -762,7 +762,7 @@ def order_success_page(request):
     admin_email_message = EmailMessage(
         admin_email_subject,
         admin_email_body,
-        settings.EMAIL_HOST_USER,
+        f"ShopNow <{settings.EMAIL_HOST_USER}>",
         [settings.EMAIL_HOST_USER],
     )
     admin_email_message.content_subtype = "html"
@@ -777,7 +777,7 @@ def order_success_page(request):
     user_email_message = EmailMessage(
         user_email_subject,
         user_email_body,
-        settings.EMAIL_HOST_USER,
+        f"ShopNow <{settings.EMAIL_HOST_USER}>",
         [request.user.email],
     )
     user_email_message.content_subtype = "html"
@@ -880,7 +880,7 @@ def contact(request):
         send_mail(
             email_subject,
             email_body,
-            settings.EMAIL_HOST_USER,
+            f"ShopNow <{settings.EMAIL_HOST_USER}>",
             [settings.EMAIL_HOST_USER],
             fail_silently=False,
         )
