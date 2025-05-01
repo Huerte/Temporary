@@ -2,246 +2,311 @@
 {% load static %}
 
 {% block content %}
-<!-- Header Section -->
-<header class="about-header text-center" style="background-color: #f9fafb; display: block;">
-    <div class="container">
-        <h1 class="display-4 fw-bold">About Our Project</h1>
-        <p class="lead">Learn more about our e-commerce platform and the team behind it</p>
-    </div>
-</header>
+    <!-- Header Section -->
+    <header class="about-header text-center" style="background-color: #f9fafb; display: block;">
+        <div class="container">
+            <h1 class="display-4 fw-bold">About Our Project</h1>
+            <p class="lead">Learn more about our e-commerce platform and the team behind it</p>
+        </div>
+    </header>
 
-<!-- Project Background Section -->
-<section class="section-padding">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h2 class="mb-4">Project Background</h2>
-                <p class="lead">This web application is part of our midterm project for the subject Software Design.</p>
-                <p>It simulates a basic online store where users can browse products, manage a cart, and explore user-friendly UI/UX principles. The main goal is to demonstrate good software structure, team collaboration, and responsive design practices.</p>
-                
-                <div class="mt-4">
-                    <h5>Technical Stack:</h5>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><i class="fas fa-server me-2 text-primary"></i> <strong>Backend:</strong> Django</li>
-                        <li class="list-group-item"><i class="fas fa-code me-2 text-primary"></i> <strong>Frontend:</strong> HTML, CSS, JavaScript, and Bootstrap</li>
-                        <li class="list-group-item"><i class="fas fa-database me-2 text-primary"></i> <strong>Database:</strong> Configured in Django (SQLite by default)</li>
-                    </ul>
+    <!-- Project Background Section -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="mb-4">Project Background</h2>
+                    <p class="lead">This web application is part of our midterm project for the subject Software Design.</p>
+                    <p>It simulates a basic online store where users can browse products, manage a cart, and explore user-friendly UI/UX principles. The main goal is to demonstrate good software structure, team collaboration, and responsive design practices.</p>
+
+                    <div class="mt-4">
+                        <h5>Technical Stack:</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <i class="fas fa-server me-2 text-primary"></i>
+                                <strong>Backend:</strong> Django
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-code me-2 text-primary"></i>
+                                <strong>Frontend:</strong> HTML, CSS, JavaScript, and Bootstrap
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-database me-2 text-primary"></i>
+                                <strong>Database:</strong> Configured in Django (SQLite by default)
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-6 mt-4 mt-lg-0">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <h4 class="card-title mb-4">Project Timeline</h4>
-                        <div class="timeline">
-                            <div class="timeline-item">
-                                <h5>Project Inception</h5>
-                                <p>Initial planning and requirements gathering</p>
-                            </div>
-                            <div class="timeline-item">
-                                <h5>Design Phase</h5>
-                                <p>UI/UX design and database schema planning</p>
-                            </div>
-                            <div class="timeline-item">
-                                <h5>Development</h5>
-                                <p>Implementation of core features and functionality</p>
-                            </div>
-                            <div class="timeline-item">
-                                <h5>Testing</h5>
-                                <p>Quality assurance and bug fixing</p>
-                            </div>
-                            <div class="timeline-item">
-                                <h5>Deployment</h5>
-                                <p>Final presentation and submission</p>
+                <div class="col-lg-6 mt-4 mt-lg-0">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">Project Timeline</h4>
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <h5>Project Inception</h5>
+                                    <p>Initial planning and requirements gathering</p>
+                                </div>
+                                <div class="timeline-item">
+                                    <h5>Design Phase</h5>
+                                    <p>UI/UX design and database schema planning</p>
+                                </div>
+                                <div class="timeline-item">
+                                    <h5>Development</h5>
+                                    <p>Implementation of core features and functionality</p>
+                                </div>
+                                <div class="timeline-item">
+                                    <h5>Testing</h5>
+                                    <p>Quality assurance and bug fixing</p>
+                                </div>
+                                <div class="timeline-item">
+                                    <h5>Deployment</h5>
+                                    <p>Final presentation and submission</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Team Members Section -->
-<section class="bg-light-blue section-padding">
-    <div class="container">
-        <h2 class="text-center mb-5">Our Team</h2>
-        <div class="row g-4">
-            <!-- Team Member 1 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 text-center shadow-sm">
-                    <div class="card-body">
-                        <img src="https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png" class="team-member-img mb-3" alt="Team Member 1">
-                        <h5 class="card-title">Claire Jem Dedicatoria</h5>
-                        <p class="card-text text-muted">Frontend Developer</p>
-                        <p class="card-text">Responsible for UI/UX design and frontend implementation.</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <a href="https://github.com/Venomous-pie" class="btn btn-outline-primary btn-sm"><i class="fab fa-github"></i></a>
-                            <a href="https://www.linkedin.com/in/dedicatoriacj" class="btn btn-outline-primary btn-sm"><i class="fab fa-linkedin"></i></a>
+    <!-- Team Members Section -->
+    <section class="bg-light-blue section-padding">
+        <div class="container">
+            <h2 class="text-center mb-5">Our Team</h2>
+            <div class="row g-4">
+                <!-- Team Member 1 -->
+                <div class="col-md-6 col-lg-6">
+                    <div class="card h-100 text-center shadow-sm">
+                        <div class="card-body">
+                            <img src="https://avatars.githubusercontent.com/u/107486731?v=4https://avatars.githubusercontent.com/u/107486731?v=4" class="team-member-img mb-3" alt="Team Member 1">
+                            <h5 class="card-title">Claire Jem Dedicatoria</h5>
+                            <p class="card-text text-muted">Frontend Developer</p>
+                            <p class="card-text">Responsible for UI/UX design and frontend implementation.</p>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="https://github.com/Venomous-pie" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                <a href="https://www.linkedin.com/in/dedicatoriacj" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Team Member 2 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 text-center shadow-sm">
-                    <div class="card-body">
-                        <img src="{% static 'meme-img/backendDev.png'%}" class="team-member-img mb-3" alt="Team Member 2">
-                        <h5 class="card-title">Jerald P. Huerte</h5>
-                        <p class="card-text text-muted">Backend Developer</p>
-                        <p class="card-text">Responsible for Django backend and database management.</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <a href="https://github.com/Huerte" class="btn btn-outline-primary btn-sm"><i class="fab fa-github"></i></a>
-                            <a href="#" class="btn btn-outline-primary btn-sm"><i class="fab fa-linkedin"></i></a>
+
+                <!-- Team Member 2 -->
+                <div class="col-md-6 col-lg-6">
+                    <div class="card h-100 text-center shadow-sm">
+                        <div class="card-body">
+                            <img src="{% static 'meme-img/backendDev.png' %}" class="team-member-img mb-3" alt="Team Member 2">
+                            <h5 class="card-title">Jerald P. Huerte</h5>
+                            <p class="card-text text-muted">Backend Developer</p>
+                            <p class="card-text">Responsible for Django backend and database management.</p>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="https://github.com/Huerte" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Team Member 3 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 text-center shadow-sm">
-                    <div class="card-body">
-                        <img src="https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png" class="team-member-img mb-3" alt="Team Member 3">
-                        <h5 class="card-title">Team Member 3</h5>
-                        <p class="card-text text-muted">Full Stack Developer</p>
-                        <p class="card-text">Responsible for integration and feature implementation.</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <a href="#" class="btn btn-outline-primary btn-sm"><i class="fab fa-github"></i></a>
-                            <a href="#" class="btn btn-outline-primary btn-sm"><i class="fab fa-linkedin"></i></a>
+
+                <!-- Team Member 3 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 text-center shadow-sm">
+                        <div class="card-body">
+                            <img src="https://i.pinimg.com/736x/85/9a/f7/859af748d1eed0d67d5801a6df188a89.jpg" class="team-member-img mb-3" alt="Team Member 3">
+                            <h5 class="card-title">Jerald & Claire Jem</h5>
+                            <p class="card-text text-muted">Full Stack Developer</p>
+                            <p class="card-text">Responsible for integration and feature implementation.</p>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Team Member 4 -->
-            <div class="col-md-6 col-lg-6">
-                <div class="card h-100 text-center shadow-sm">
-                    <div class="card-body">
-                        <img src="https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png" class="team-member-img mb-3" alt="Team Member 4">
-                        <h5 class="card-title">Team Member 4</h5>
-                        <p class="card-text text-muted">QA Engineer</p>
-                        <p class="card-text">Responsible for testing and quality assurance.</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <a href="#" class="btn btn-outline-primary btn-sm"><i class="fab fa-github"></i></a>
-                            <a href="#" class="btn btn-outline-primary btn-sm"><i class="fab fa-linkedin"></i></a>
+
+                <!-- Team Member 4 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 text-center shadow-sm">
+                        <div class="card-body">
+                            <img src="https://shorturl.at/wm9Cj" class="team-member-img mb-3" alt="Team Member 4">
+                            <h5 class="card-title">Celes Peter Arpilleda4</h5>
+                            <p class="card-text text-muted">QA Engineer</p>
+                            <p class="card-text">Responsible for testing and quality assurance.</p>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Team Member 5 -->
-            <div class="col-md-6 col-lg-6">
-                <div class="card h-100 text-center shadow-sm">
-                    <div class="card-body">
-                        <img src="https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png" class="team-member-img mb-3" alt="Team Member 5">
-                        <h5 class="card-title">Team Member 5</h5>
-                        <p class="card-text text-muted">Project Manager</p>
-                        <p class="card-text">Responsible for coordination and documentation.</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <a href="#" class="btn btn-outline-primary btn-sm"><i class="fab fa-github"></i></a>
-                            <a href="#" class="btn btn-outline-primary btn-sm"><i class="fab fa-linkedin"></i></a>
+
+                <!-- Team Member 5 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 text-center shadow-sm">
+                        <div class="card-body">
+                            <img src="https://shorturl.at/iQfzS" class="team-member-img mb-3" alt="Team Member 5">
+                            <h5 class="card-title">Princess Jasper Garcia</h5>
+                            <p class="card-text text-muted">Project Manager</p>
+                            <p class="card-text">Responsible for coordination and documentation.</p>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 6 -->
+                <div class="col-md-6 col-lg-6 mx-auto">
+                    <div class="card h-100 text-center shadow-sm">
+                        <div class="card-body">
+                            <img src="https://shorturl.at/7N7mW" class="team-member-img mb-3" alt="Team Member 6">
+                            <h5 class="card-title">John Rustom Reginio</h5>
+                            <p class="card-text text-muted">DevOps Engineer</p>
+                            <p class="card-text">Responsible for deployment and CI/CD pipeline management.</p>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Course Information Section -->
-<section class="section-padding">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <h3 class="card-title text-center mb-4">Course Information</h3>
-                        <table class="table">
-                            <tbody>
-                                <tr>
-                                    <th scope="row" width="30%">Course</th>
-                                    <td>Computer Engineering</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Subject</th>
-                                    <td>Software Design</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Instructor</th>
-                                    <td>Prof. Dione S. Duero</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Semester</th>
-                                    <td>2nd Sem AY 2024-2025</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Project Type</th>
-                                    <td>Midterm Project</td>
-                                </tr>
-                            </tbody>
-                        </table>
+    <!-- Course Information Section -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <h3 class="card-title text-center mb-4">Course Information</h3>
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" width="30%">Course</th>
+                                        <td>Computer Engineering</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Subject</th>
+                                        <td>Software Design</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Instructor</th>
+                                        <td>Prof. Dione S. Duero</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Semester</th>
+                                        <td>2nd Sem AY 2024-2025</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Project Type</th>
+                                        <td>Midterm Project</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Call to Action -->
-<section class="bg-primary text-white text-center py-5">
-    <div class="container">
-        <h2>Ready to explore our e-commerce platform?</h2>
-        <p class="lead">Check out our products and experience the user-friendly interface we've designed.</p>
-        <a href="{% url 'products' %}" class="btn btn-outline-light mt-3 px-4 py-2">Browse Products</a>
-    </div>
-</section>
+    <!-- Call to Action -->
+    <section class="bg-primary text-white text-center py-5">
+        <div class="container">
+            <h2>Ready to explore our e-commerce platform?</h2>
+            <p class="lead">Check out our products and experience the user-friendly interface we've designed.</p>
+            <a href="{% url 'products' %}" class="btn btn-outline-light mt-3 px-4 py-2">Browse Products</a>
+        </div>
+    </section>
 
-<style>
-    .team-member-img {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 50%;
-    }
-    .bg-light-blue {
-        background-color: #f8f9fa;
-    }
-    .section-padding {
-        padding: 80px 0;
-    }
-    .about-header {
-        background-size: cover;
-        background-position: center;
-        color: rgb(0, 0, 0);
-        padding: 100px 0;
-    }
-    .timeline {
-        position: relative;
-        padding-left: 30px;
-    }
-    .timeline::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 2px;
-        background-color: #dee2e6;
-    }
-    .timeline-item {
-        position: relative;
-        margin-bottom: 30px;
-    }
-    .timeline-item::before {
-        content: '';
-        position: absolute;
-        left: -34px;
-        top: 0;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background-color: #0d6efd;
-    }
-</style>
+    <style>
+        .team-member-img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .bg-light-blue {
+            background-color: #f8f9fa;
+        }
+
+        .section-padding {
+            padding: 80px 0;
+        }
+
+        .about-header {
+            background-size: cover;
+            background-position: center;
+            color: rgb(0, 0, 0);
+            padding: 100px 0;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background-color: #dee2e6;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #0d6efd;
+        }
+    </style>
+
+<script>
+    document.querySelectorAll('img').forEach(img => {
+        img.onerror = function () {
+            this.src = 'https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png'; // Fallback image
+            this.onerror = null; // Prevent infinite loop in case the fallback image also fails
+        };
+    });
+</script>
 {% endblock %}
