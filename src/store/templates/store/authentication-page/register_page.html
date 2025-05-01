@@ -13,11 +13,11 @@
       <!-- Logo -->
       <div class="d-flex justify-content-center justify-content-lg-start align-items-center gap-2 mb-4">
         <a class="navbar-brand d-flex align-items-center fw-bold fs-4 text-primary" href="{% url 'store_home' %}">
-            <i class="fas fa-shopping-cart me-2"></i> ShopNow
+          <i class="fas fa-shopping-cart me-2"></i> ShopNow
         </a>
       </div>
 
-      <!-- Register Form Centered -->
+      <!-- Register Form -->
       <div class="flex-grow-1 d-flex align-items-center justify-content-center">
         <div class="w-100" style="max-width: 400px;">
           <form action="{% url 'register-page' %}" method="POST">
@@ -29,48 +29,54 @@
             </div>
 
             {% if form.non_field_errors %}
-              <div class="alert alert-danger">
-                {{ form.non_field_errors }}
-              </div>
+              <div class="alert alert-danger">{{ form.non_field_errors }}</div>
             {% endif %}
 
+            <!-- Username -->
             <div class="mb-3">
               <label for="username" class="form-label">Username</label>
-              <input type="text" name="username" id="username" class="form-control" value="{{ form.username.value|default_if_none:'' }}" required>
+              <input type="text" name="username" id="username" class="form-control" value="{{ form.username.value|default_if_none:'' }}" placeholder="John Doe" required>
               {% if form.username.errors %}
                 <div class="text-danger">{{ form.username.errors.0 }}</div>
               {% endif %}
             </div>
 
+            <!-- Email -->
             <div class="mb-3">
               <label for="email" class="form-label">Email</label>
-              <input type="email" name="email" id="email" class="form-control" value="{{ form.email.value|default_if_none:'' }}" required>
+              <input type="email" name="email" id="email" class="form-control" value="{{ form.email.value|default_if_none:'' }}" placeholder="example@example.com" required>
               {% if form.email.errors %}
                 <div class="text-danger">{{ form.email.errors.0 }}</div>
               {% endif %}
             </div>
 
-            <div class="mb-3">
+            <!-- Password 1 -->
+            <div class="mb-3 position-relative">
               <label for="password1" class="form-label" id="scrollTarget">Password</label>
-              <input type="password" name="password1" id="password1" class="form-control" required>
+              <input type="password" name="password1" id="password1" class="form-control pe-5" required>
+              <i class="fas fa-eye position-absolute top-0 end-0 mt-2 me-3 text-muted" id="togglePassword1" style="cursor: pointer; height: 120%; display: flex; align-items: center;"></i>
               {% if form.password1.errors %}
                 <div class="text-danger">{{ form.password1.errors.0 }}</div>
               {% endif %}
             </div>
 
-            <div class="mb-3">
+            <!-- Password 2 -->
+            <div class="mb-3 position-relative">
               <label for="password2" class="form-label">Confirm Password</label>
-              <input type="password" name="password2" id="password2" class="form-control" required>
+              <input type="password" name="password2" id="password2" class="form-control pe-5" required>
+              <i class="fas fa-eye position-absolute top-0 end-0 mt-2 me-3 text-muted" id="togglePassword2" style="cursor: pointer; height: 120%; display: flex; align-items: center;"></i>
               {% if form.password2.errors %}
                 <div class="text-danger">{{ form.password2.errors.0 }}</div>
               {% endif %}
             </div>
 
+            <!-- Submit -->
             <div class="d-grid mb-3">
               <button type="submit" class="btn btn-primary">Register</button>
             </div>
           </form>
 
+          <!-- Divider -->
           <div class="text-center position-relative my-4">
             <hr class="m-0">
             <span class="position-absolute top-50 start-50 translate-middle bg-white px-2 text-muted small">
@@ -78,6 +84,7 @@
             </span>
           </div>
 
+          <!-- Social Auth Buttons -->
           <div class="d-grid mb-3">
             <a href="{% provider_login_url 'google' %}" class="btn btn-outline-dark d-flex align-items-center justify-content-center gap-2">
               <i class="fab fa-google"></i>
@@ -91,6 +98,7 @@
             </a>
           </div>
 
+          <!-- Footer -->
           <div class="text-center small">
             Already have an account?
             <a href="{% url 'login-page' %}" class="text-decoration-underline">Login</a>
@@ -102,17 +110,35 @@
     <!-- Right Image Panel -->
     <div class="col-lg-6 d-none d-lg-block position-relative p-0">
       <img src="{% static 'media/login-bg.jpg' %}" alt="Image" class="img-fluid w-100 h-100 object-fit-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x600.png';">
-      <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-25 d-dark-block"></div>
+      <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-25"></div>
     </div>
   </div>
 </div>
 
-   <script>
+<!-- Password Toggle Script -->
+<script>
       window.onload = function() {
         const target = document.querySelector('#scrollTarget');
         if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       };
-    </script>
+
+  function setupPasswordToggle(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+
+    icon.addEventListener('click', () => {
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      icon.classList.toggle('fa-eye');
+      icon.classList.toggle('fa-eye-slash');
+    });
+  }
+
+  setupPasswordToggle('password1', 'togglePassword1');
+  setupPasswordToggle('password2', 'togglePassword2');
+
+  
+</script>
 {% endblock %}
