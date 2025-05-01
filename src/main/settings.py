@@ -52,6 +52,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'main.middleware.admin_restrictor.AdminAccessMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'allauth.account.middleware.AccountMiddleware',
 ]
@@ -154,6 +156,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 #     os.path.join(BASE_DIR, 'store', 'static'),  # Adjust this path if needed
 # ]
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
