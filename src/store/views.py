@@ -12,13 +12,13 @@ from django.core.mail import send_mail, EmailMessage
 from django.template.loader import render_to_string
 from django.db.models.functions import Coalesce
 from django.contrib.auth import get_user_model
+from decimal import Decimal, InvalidOperation
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.contrib import messages
 from django.utils import timezone
 from django.urls import reverse
-from decimal import Decimal, InvalidOperation
 from main import settings
 from . import models
 import pycountry
@@ -88,11 +88,16 @@ def home(request):
 
     wishlist_product_ids = []
     subscribed = []
+    address = []
     if request.user.is_authenticated:
         wishlist_product_ids = models.ProductWishlist.objects.filter(
             user=request.user
         ).values_list("product_id", flat=True)
         subscribed = models.Subscriber.objects.filter(email=request.user.email)
+        try:
+            address = models.ShippingAddress.objects.get(user=request.user)
+        except models.ShippingAddress.DoesNotExist:
+            pass
     return render(
         request,
         "store/home.html",
@@ -100,17 +105,30 @@ def home(request):
             "products": products,
             "wishlist_product_ids": wishlist_product_ids,
             "subscribed": subscribed,
+            "user_address": address,
         },
     )
 
 
 def about_view(request):
-    return render(request, "store/about.html")
+    address = None
+    if request.user.is_authenticated:
+        try:
+            address = models.ShippingAddress.objects.get(user=request.user)
+        except models.ShippingAddress.DoesNotExist:
+            pass
+    return render(request, "store/about.html", {"user_address": address})
 
 
 @login_required(login_url="/login")
 def contact_view(request):
-    return render(request, "store/contact.html")
+    address = None
+    if request.user.is_authenticated:
+        try:
+            address = models.ShippingAddress.objects.get(user=request.user)
+        except models.ShippingAddress.DoesNotExist:
+            pass
+    return render(request, "store/contact.html", {"user_address": address})
 
 
 def get_color(username):
@@ -420,10 +438,18 @@ def product_view(request, category=None):
     for product in products:
         product.price_display = product.price_in_peso
 
+    address = None
+    if request.user.is_authenticated:
+        try:
+            address = models.ShippingAddress.objects.get(user=request.user)
+        except models.ShippingAddress.DoesNotExist:
+            pass
+
     context = {
         "products": products,
         "categories": categories,
         "selected_category": selected_category,
+        "user_address": address,
     }
 
     return render(request, "store/products.html", context)
@@ -432,9 +458,16 @@ def product_view(request, category=None):
 def product_details(request, product_id):
     product = get_object_or_404(models.Product, id=product_id)
     product.price_display = product.price_in_peso
+    address = None
+    if request.user.is_authenticated:
+        try:
+            address = models.ShippingAddress.objects.get(user=request.user)
+        except models.ShippingAddress.DoesNotExist:
+            pass
 
     context = {
         "product": product,
+        "user_address": address,
     }
     return render(request, "store/product-detail.html", context)
 
@@ -443,15 +476,8 @@ def product_details(request, product_id):
 def cart_view(request):
     cart_items = models.CartItem.objects.filter(user=request.user)
 
-    # Ensure prices are displayed in pesos and handle invalid values
-    for item in cart_items:
-        try:
-            item.product.price_display = Decimal(str(item.product.price)) * Decimal("59")
-        except (InvalidOperation, TypeError, ValueError):
-            item.product.price_display = Decimal("0")
-
     sub_total = sum(
-        item.product.price_display * item.quantity for item in cart_items
+        item.product.discounted_price * item.quantity for item in cart_items
     )
 
     promo_discount = request.session.get("promo_discount", 0)
@@ -463,6 +489,10 @@ def cart_view(request):
         user_address = models.ShippingAddress.objects.get(user=request.user)
     except models.ShippingAddress.DoesNotExist:
         user_address = None
+
+    # Calculate total price for each cart item
+    for item in cart_items:
+        item.total_price = item.product.discounted_price * item.quantity
 
     context = {
         "cart_items": cart_items if cart_items else [],

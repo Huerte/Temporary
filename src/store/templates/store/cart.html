@@ -49,7 +49,7 @@
                   <div class="col-md-4 mb-3 mb-md-0">
                     <div class="d-flex">
                       <div>
-                        <img src="{{ item.product.image }}" alt="{{ item.product.name }}" class="cart-item-img">
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-item-img">
                       </div>
                       <div>
                         <h6 class="mb-1 fw-bold">{{ item.product.name }}</h5>
@@ -59,7 +59,7 @@
                   </div>
 
                   <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
-                    <span class="price-tag">₱{{ item.product.price_display|floatformat:2 }}</span>
+                    <span class="price-tag">₱{{ item.product.discounted_price|floatformat:2 }}</span>
                   </div>
 
                   <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
@@ -74,7 +74,7 @@
                   </div>
                   
                   <div class="col-6 col-md-2 d-flex align-items-center justify-content-center">
-                    <span class="price-tag">₱{{ item.product.price|floatformat:2|add:item.quantity|floatformat:2 }}</span>
+                    <span class="price-tag">₱{{ item.total_price|floatformat:2 }}</span>
                   </div>
 
                   <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">

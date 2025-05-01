@@ -43,9 +43,9 @@ class Product(models.Model):
     
     @property
     def price_in_peso(self):
-        price_in_peso = self.price * Decimal(59.41)
-        formatted_price = f"₱{price_in_peso.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):,}"
-        return formatted_price
+        PHILIPPINE_PESO_TO_USD = 59.41
+        price_in_peso = self.price * Decimal(PHILIPPINE_PESO_TO_USD)
+        return price_in_peso
 
     @property
     def is_on_sale(self):
@@ -53,12 +53,13 @@ class Product(models.Model):
 
     @property
     def discounted_price(self):
+        price_in_peso = self.price_in_peso
         if self.is_on_sale:
-            discounted = self.price * (
+            discounted = price_in_peso * (
                 Decimal(1) - Decimal(self.discount_percentage) / Decimal(100)
             )
             return discounted.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-        return self.price
+        return price_in_peso
 
     @property
     def buyers_count_display(self):
