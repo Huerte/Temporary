@@ -52,7 +52,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'main.middleware.admin_restrictor.AdminAccessMiddleware',
-    'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'allauth.account.middleware.AccountMiddleware',
@@ -135,6 +134,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -178,11 +181,17 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
+SITE_ID = 1
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://shopnow-15z0.onrender.com",
+    # "https://localhost:8000/"
+]
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
 
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+ACCOUNT_SIGNUP_FIELDS = []
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_LOGIN_METHODS = {'username', 'email'}
 SOCIALACCOUNT_QUERY_EMAIL = True
@@ -190,7 +199,12 @@ SOCIALACCOUNT_AUTO_SIGNUP = True
 ACCOUNT_EMAIL_UNIQUE = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+# SECURE_SSL_REDIRECT = True #Ensure all traffic is redirected to HTTPS
+
+#This will create a customized username if the callback dont return a username
+SOCIALACCOUNT_ADAPTER = 'accounts.adapter.CustomSocialAccountAdapter' 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
+
 ALLOWED_HOSTS = ['*']
