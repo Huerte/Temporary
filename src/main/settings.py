@@ -1,8 +1,10 @@
 from django.contrib.messages import constants as messages
-from pathlib import Path
 from dotenv import load_dotenv
-import os
 from decouple import config
+from pathlib import Path
+import dj_database_url
+import os
+
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
@@ -109,10 +111,11 @@ WSGI_APPLICATION = 'main.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
+    'default': dj_database_url.config(conn_max_age=600)
 }
 
 
@@ -199,7 +202,7 @@ SOCIALACCOUNT_AUTO_SIGNUP = True
 ACCOUNT_EMAIL_UNIQUE = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
-# SECURE_SSL_REDIRECT = True #Ensure all traffic is redirected to HTTPS
+SECURE_SSL_REDIRECT = True #Ensure all traffic is redirected to HTTPS
 
 #This will create a customized username if the callback dont return a username
 SOCIALACCOUNT_ADAPTER = 'accounts.adapter.CustomSocialAccountAdapter' 
