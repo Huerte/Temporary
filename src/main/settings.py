@@ -14,7 +14,7 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # Security Settings
 SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = True#config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = ['*', 'localhost']
 
 CSRF_COOKIE_SECURE = True
@@ -58,11 +58,11 @@ WSGI_APPLICATION = 'main.wsgi.application'
 
 # Database Configuration
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
-    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+    #'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
 }
 
 # Authentication Backends
@@ -136,7 +136,7 @@ ACCOUNT_LOGIN_METHODS = {'username', 'email'}
 ACCOUNT_EMAIL_UNIQUE = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
-SECURE_SSL_REDIRECT = True #Ensure all traffic is redirected to HTTPS
+SECURE_SSL_REDIRECT = False #Ensure all traffic is redirected to HTTPS
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
@@ -172,8 +172,8 @@ MESSAGE_TAGS = {
 
 # CSRF Trusted Origins
 CSRF_TRUSTED_ORIGINS = [
-    "https://shopnow-15z0.onrender.com",
-    # "https://localhost:8000/",
+    #"https://shopnow-15z0.onrender.com",
+    "http://localhost:8000/",
 ]
 
 # Default Primary Key Field Type
